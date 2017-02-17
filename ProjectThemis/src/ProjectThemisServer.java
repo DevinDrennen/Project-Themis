@@ -54,6 +54,7 @@ class ServerThread extends Thread {
 	BufferedReader is = null;
 	PrintWriter os = null;
 	Socket s = null;
+	int clientID;
 
 	public ServerThread(Socket s) {
 		this.s = s;
@@ -117,6 +118,8 @@ class ServerThread extends Thread {
 			os.flush();
 			System.out.println("Response to Client " + s.getRemoteSocketAddress() + "  :  " + inputs[1]);
 			break;
+			
+		case "GETID": //The GetID class will handle logins etc. The client should send this FIRST.
 			
 		case "TICTACTOE": //The TicTacToe prompt means we'll be handling the TicTacToe game's commands. 
 

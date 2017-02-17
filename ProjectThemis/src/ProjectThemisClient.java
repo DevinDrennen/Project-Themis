@@ -3,10 +3,24 @@ import java.net.*;
 
 public class ProjectThemisClient {
 
+	static String user = null;
+	static String pass = null;
+	static int id;
+	//For 2/24 someone needs to make a PW salting and hashing program to encrypt passwords.
+	
 	public static void main(String[] args) throws IOException{
         String hostName = "localhost";
         int portNumber = 4445;
 
+        if(args.length >= 2){
+        	user = args[0];
+        	pass = args[1];
+        }
+        else{ //Remove this before deployment.
+        	user = "user";
+        	pass = "pass";
+        }
+        
         try (
             Socket echoSocket = new Socket(hostName, portNumber);
             PrintWriter os =
@@ -20,8 +34,10 @@ public class ProjectThemisClient {
         ) {
         	
         	String line;
+        	os.println("GETID " + user + " " + pass);
         	new TicTacToeClient(3);         
         	line=is.readLine();
+        	
           
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
@@ -31,5 +47,12 @@ public class ProjectThemisClient {
                 hostName);
             System.exit(1);
         } 
+	}
+	private void processInput(String inputLine) {
+		String[] inputs = inputLine.split(" ");
+
+		switch (inputs[0]) {
+
+		}
 	}
 }
