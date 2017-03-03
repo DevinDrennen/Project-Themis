@@ -1,13 +1,1 @@
-PasswordAuthentication will be called on launching the game client.
-User will enter username and password.
-Password will be hashed, salted, and transmitted to the server, where it will be authenticated against the stored password hash and salt.
-Server will return User ID to the client, which will then be used to access games.
 
-
-Detailed:
-  PasswordAuthentication() will be called by the main navigation class, which will pass the entered username and password to the PasswordAuthentication class.
-  It will then Hash the password and generate a salt.
-  The first time a user enters their login, both the Hash and the salted hash will be sent to the server.
-  The hash and salt will be stored with the username in the server, the salted hash will not.
-  On subsequent logins, the salted hash will be sent along with the salt, which will then be used to check the salted hash by salting the stored hash and comparing the two.
-  If they match, the user ID will be returned to the client, otherwise, an error message will appear and the client will ask for another attempt.
