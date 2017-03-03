@@ -11,6 +11,12 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 /**
+*Can be used on both server and client, has auth and encreption in the same class
+*/
+
+
+
+/**
  * Hash passwords for storage, and test passwords against password tokens.
  * 
  * Instances of this class can be used concurrently by multiple threads.
