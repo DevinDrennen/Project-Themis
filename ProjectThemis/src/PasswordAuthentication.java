@@ -77,6 +77,8 @@ public final class PasswordAuthentication
    * Hash a password for storage.
    * 
    * @return a secure authentication token to be stored for later authentication 
+   *
+   * Store this token with the username to be authenticated against later
    */
   public String hash(char[] password)
   {
@@ -94,6 +96,8 @@ public final class PasswordAuthentication
    * Authenticate with a password and a stored password token.
    * 
    * @return true if the password and token match
+   *
+   * Pass stored token and entered password here
    */
   public boolean authenticate(char[] password, String token)
   {
