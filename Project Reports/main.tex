@@ -1,0 +1,127 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{url}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage[]{hyperref}
+\usepackage{memhfixc}
+
+\usepackage{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
+
+\begin{document}
+\title{\textbf{CS 341 Project (Project Themis)}}
+\author{\textbf{Created by:} \\\Large Byron Lewandowski (lewandowskib@etown.edu) \\\Large Devin Drennen (drennend@etown.edu)\\\Large Matt Kowalski (kowalskim@etown.edu)   \\\Large Alpha Sow (sowa@etown.edu)  \\\Large Alex Good (gooda@etown.edu) \\https://www.sharelatex.com/project/58afb4f045b9839a55ff357f 
+\\https://github.com/DevinDrennen/Project-Themis 
+\\https://www.dropbox.com/home }
+
+\date{\textbf{March 1st, 2017}}
+\maketitle
+
+\tableofcontents\clearpage
+
+\listoffigures\clearpage
+\listoftables\clearpage
+
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+%\maxsecnumdepth{subsection}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% *****************************************************
+
+\section{Customer Statement of Requirements}
+
+\subsection{Introduction}
+
+Our Project will be about creating a collection of games with help of two clients: Dr. Gu and our other classmate's teams. For our intended system, which can be referred as a collection of games, will need the following: \textbf{clients, resources, equipment, and our team members.} For clients, we have both our professor and the other team groups. Our intended game system must be played as human versus human. There will be no human versus computer interaction because of the complexity of the system. Next, resources will be a 5 student-team (diverse set of skills) and the time to finish the proposed game system. Another beneficial resource will be the help and guidance from our professor. The equipment needed will be Java (Eclipse), IDE's, computer(s), MySQL, and team members. All of these resources are essential to the project and are needed to get the system functional. Lastly, our team members will be needed for our system because without the diverse set of skills of a 5 person team experts in java, databases, and/or other skills. 
+
+Other systems such as the gaming websites Miniclip, Pogo, Y8, and others use a collection of various genres and types also know as a gaming collection. They are much more advanced systems, but still use the common team, resources, and equipment so the system can operate correctly. Our team is motivated to create a collection of games which will allow clients to freely entertain and continue conversation and interaction amongst people. Starting off we do not have any previous version history, our current version is Project Themis Version 1.0.
+
+\subsection{Background}
+Since we are doing a collection of games, there will be minor similarities of other game systems such as websites like Miniclip, Pogo, Y8, and others. The main difference is we are doing a currently working on one finished full game. After the the one game is finished, we will look into our list for other games in mind to develop and create. In the early stages of our project we created user stories for some games such as Battleship, Checkers, Chess, and Othello. In comparison to other gaming systems, Battleship-game.org allows you to play the game online and/or with a friend. 247.7 Checkers lets you play either by one player and two. Chess.com allows you to play chess against the computer and or human player. Lastly Othello-on-line.org has a version of Othello that lets you verse the computer and play against an opponent as well. Our most unique feature would be just having the 1 on 1 game play against a real person, also having a database which would store our game's data in the server we create which can be accessed without the server being  physically there. The feature of simplicity and accuracy will be a positive pointer for our gaming system collection.
+
+\subsection{Devices and Specification}
+Requires Windows, Mac, and or Linux operating systems. The language used for Project Themis version 1.0 is English. Code will be written in Java and MySQL.
+
+ Our game collection system will only be available on computers, no phones or tablets. 
+
+
+
+
+
+
+
+% *****************************************************
+
+
+\section{Glossary of Terms}
+
+\textbf{Database} - Databases are a place to store information. In our case the database will store the collection of our games so they can be accessed. 
+
+\textbf{Clients} - Clients are the specific people whom will be using our game collection system, in this case we have two clients (Dr. Gu and the Other teams).
+
+\textbf{Java} - Coding language used to run on an IDE which can be used to create client-server web applications. For our case we are using the code to create the games in the Java language. 
+
+\textbf{Computer} - An electronic device for storing and processing data. In our case we are using it to run and create our game collection system. Very important we have more than computer
+
+\textbf{LaTex} - a document preparation system which uses plain text to the opposed formatted text. We are using this to create a PDF of our project pre/final report. 
+
+\textbf{API} - Also known as application program interface is a set of routines, protocols and tools for building software applications. In this case we are using different API's to create the different applications of our intended game collection
+
+\textbf{SQL} - Query language used for requesting information from a database. We are using it to store our game collection in it then be able to access it through the queries.
+
+\textbf{De-bugging} - Also known as debug, is to identify and remove errors from a computer hardware and or software. In our case we would test and check our code in Eclipse, LaTex and SQL/MySQL.
+
+\textbf{Slack} - Brings all communication together in one place for a team. We are using that as our team communication for this project.
+
+\textbf{Dropbox} - a file hosting service which allows for file storage, synchronization, and other personal cloud integration. We are storing our overall project information/code in dropbox.
+
+\textbf{GitHub} - a web-based version control repository and internet hosting service. We are using this to distribute our version control and source code within our repository/group GitHub
+
+\section{System Requirements}
+Below are the basic functional and non-functional requirements for our system:
+
+
+%\textbf{Note:} Keep the above explanation for clarification in your own document if necessary. 
+
+\subsection{Functional Requirements}
+
+The user should be able to start our game system by running the .jar file. Next they should be prompted to log-in to the system using their log on user name and password. From there a menu for the system should appear and the user should be able to click on a game of their choice and it should start a new game. Once they have made a move the system should send the game data to the server where it will be stored for the second player to access. Once the second play accesses the game they make their moves. A possible option for our system will be to add a help menu that when clicked on will explain the basic moves of the game being played.
+
+
+\subsection{Non-Functional Requirements}
+
+The system should have a relatively quick response time when it comes to user input. As far as response time from the server it should not take more than a few minutes for the system to send the game data to the server and the server to update the game for the second player. The system should be available at any time of the day. As far as reliability the system should not be down for more than a couple hours unless it is a server hardware issue. We should be able to maintain the software end of the system at any time making maintenance relatively quick and easy. The server will be secure by using a hashing function to store the users log-on information. 
+
+\subsection{On-Screen Appearance Requirements}
+
+
+\begin{table}[H]
+  %\caption{function requirements}\label{tab:fr}
+  \begin{center}
+  \begin{tabular}{| c | c | p{8cm} | }
+  \hline
+  Identifier $q$ & Priority & Description  \\ \hline
+  REQ-1 & 3 & Requirements must include a feasible size playing interface with readable icons, buttons, and fonts.
+\\ \hline
+  REQ-2 & 2 & A possible on screen help button, which may list the possible controls for each game. For example mouse clicks, and or keyboard specific strokes. \\ \hline
+  REQ-3 & 5 & The User interface \textbf{shall} have user friendly icons and other simplicity options to help show the user where to start, stop, pause, and expand the game. \\ \hline
+  REQ-4 & 5 & The Game-Collection System \textbf{should} be user friendly and simple to use. \\ \hline
+  
+  
+  \end{tabular}
+\end{center}
+\end{table}
+
+
+% *****************************************************
+
+
+
+
+
+\end{document}
