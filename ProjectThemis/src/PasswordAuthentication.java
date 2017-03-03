@@ -12,6 +12,8 @@ import javax.crypto.spec.PBEKeySpec;
 
 /**
 *Can be used on both server and client, has auth and encreption in the same class
+*Will be called by the main client executable when the login screen is displayed
+*Will be called by the server upon receiving the relevant string from a client
 */
 
 
