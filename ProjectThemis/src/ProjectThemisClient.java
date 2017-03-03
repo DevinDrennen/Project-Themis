@@ -20,7 +20,7 @@ public class ProjectThemisClient {
         ) {
         	
         	String line;
-        	new TicTacToeClient(3);         
+        	new PasswordAuthentication();         
         	line=is.readLine();
           
         } catch (UnknownHostException e) {
