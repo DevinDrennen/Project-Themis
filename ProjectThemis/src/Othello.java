@@ -4,7 +4,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-public class Board extends JFrame {
+public class Othello extends JFrame {
 	int dimension;
 	String name;
     char[][] board;
@@ -15,7 +15,7 @@ public class Board extends JFrame {
     int moveCount = 0;
     boolean gameOver = false;
     
-	public Board(int d, String GameName) {
+	public Othello(int d, String GameName) {
 		  int i,j;
 		  
 	        setTitle(GameName);
@@ -80,7 +80,7 @@ public class Board extends JFrame {
 			
 		}
     public static void main(String[] args) {
-    	new Board(8, "Othello");
+    	new Othello(8, "Othello");
     }
 
 }
