@@ -37,10 +37,10 @@ public class Othello extends JFrame {
 				boardpanel.add(display[i][j]);
 				board[i][j] = ' ';
 			}
-		display[3][3].setText("B");
-		display[4][4].setText("B");
-		display[4][3].setText("W");
-		display[3][4].setText("W");
+		display[3][3].setBackgroundColor(Color.BLACK);
+		display[4][4].setBackgroundColor(Color.BLACK);
+		display[4][3].setBackgroundColor(Color.WHITE);
+		display[3][4].setBackgroundColor(C);
 		add(boardpanel,BorderLayout.CENTER);
 		add(playerTurn,BorderLayout.NORTH);
 		playerTurn.setHorizontalAlignment(JLabel.CENTER);
@@ -64,14 +64,14 @@ public class Othello extends JFrame {
 			if (!gameOver) {
 				if (bTurn && board[r][c] == ' ' && checkArea(r,c,'B')) {
 					board[r][c] = 'B';
-					display[r][c].setText("B");
+					display[r][c].setBackgroundColor(Color.BLACK);
 					flipTilesB(r,c);
 					moveCount++;
 					playerTurn.setText("It is W's Turn!");
 				}
 				else if (wTurn && board[r][c] == ' ') {
 					board[r][c] = 'W';
-					display[r][c].setText("W");
+					display[r][c].setBackgroundColor(Color.WHITE);
 					flipTilesW(r,c);
 					moveCount++;
 					playerTurn.setText("It is B's Turn!");
@@ -106,6 +106,7 @@ public class Othello extends JFrame {
 				if(board[r][j] == 'B')
 					blackScore--;
 				board[r][j] = 'W';
+				display[r][c].setBackgroundColor(Color.WHITE);
 				whiteScore++;
 			}
 
@@ -116,6 +117,7 @@ public class Othello extends JFrame {
 				if(board[i][c] == 'B')
 					blackScore--;
 				board[i][c] = 'W';
+				display[r][c].setBackgroundColor(Color.WHITE);
 				whiteScore++;
 			}
 
@@ -126,6 +128,7 @@ public class Othello extends JFrame {
 				if(board[i][j] == 'B')
 					blackScore--;
 				board[i][j] = 'W';
+				display[r][c].setBackgroundColor(Color.WHITE);
 				whiteScore++;
 			}
 
@@ -142,6 +145,7 @@ public class Othello extends JFrame {
 				if(board[r][j] == 'w')
 					whiteScore--;
 				board[r][j] = 'B';
+				display[r][c].setBackgroundColor(Color.BLACK);
 				blackScore++;
 			}
 
@@ -152,6 +156,7 @@ public class Othello extends JFrame {
 				if(board[i][c] == 'w')
 					whiteScore--;
 				board[i][c] = 'B';
+				display[r][c].setBackgroundColor(Color.BLACK);
 				blackScore++;
 			}
 
@@ -162,6 +167,7 @@ public class Othello extends JFrame {
 				if(board[i][j] == 'w')
 					whiteScore--;
 				board[i][j] = 'B';
+				display[r][c].setBackgroundColor(Color.BLACK);
 				blackScore++;
 			}
 
