@@ -35,7 +35,7 @@ public class ProjectThemisClient {
         	
         	String line;
         	os.println("GETID " + user + " " + pass);
-        	new TicTacToeClient(3);         
+        	new TicTacToeClient(3, is, os);         
         	line=is.readLine();
         	
           

@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
  
 import javax.swing.*;
 /* Author: Alex Good
@@ -24,12 +25,18 @@ public class TicTacToeClient extends JFrame {
     boolean gameOver = false;
     boolean xTurn = true;
     boolean oTurn = false;
-    boolean isX = false;
-    boolean isO = false;
+    int gameID;
+    
+    BufferedReader is;
+    PrintWriter os;
  
-    public TicTacToeClient(int n) {
+    public TicTacToeClient(int n, BufferedReader inputStream, PrintWriter outputStream) {
         int i,j;
  
+        is = inputStream;
+        os = outputStream;
+        
+        
         setTitle("Tic Tac Toe");
         setSize(500,500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -69,17 +76,19 @@ public class TicTacToeClient extends JFrame {
         }
         public void actionPerformed(ActionEvent e) {
             if (!gameOver) {
-                if (xTurn && board[r][c] == ' ' && isX) {
+                if (xTurn && board[r][c] == ' ' && (moveCount % 2 == 0)) {
                     board[r][c] = 'X';
                     display[r][c].setText("X");
                     moveCount++;
                     playerTurn.setText("It is O's Turn!");
+                    os.println("TTT MOVE + " + r + " " + c + " " + 1);
                 }
-                else if (oTurn && board[r][c] == ' ' && isO) {
+                else if (oTurn && board[r][c] == ' ' && (moveCount % 2 == 1)) {
                     board[r][c] = 'O';
                     display[r][c].setText("O");
                     moveCount++;
                     playerTurn.setText("It is X's Turn!");
+                    os.println("TTT MOVE + " + r + " " + c + " " + 2);
                 }
  
                 xTurn = !xTurn;
@@ -110,7 +119,7 @@ public class TicTacToeClient extends JFrame {
  
     //checks for win or tie
      
-    public void winCheck(char h, int count) {
+    private void winCheck(char h, int count) {
         int j,i;
  
         for (i = 0; i < board.length; i++) 
@@ -138,10 +147,48 @@ public class TicTacToeClient extends JFrame {
         if (count > 8 && gameOver == false) 
             playerTurn.setText("Out of moves, no one wins!");
     }
-
-    public static void main(String[] args) {
-        new TicTacToeClient(3);
- 
+    
+    private void markX(int r, int c){
+    	if(board[r][c] != 'X'){
+    		board[r][c] = 'X';
+        	display[r][c].setText("X");
+        	moveCount++;
+    	}
     }
-
+    
+    private void markY(int r, int c){
+    	if(board[r][c] != 'Y'){
+    		board[r][c] = 'Y';
+    		display[r][c].setText("Y");
+    		moveCount++;
+    	}
+    }
+    
+    private boolean markMove(int r, int c, int data){
+    	if(data == 1)
+    		markX(r, c);
+    	else if (data == 2)
+    		markY(r, c);
+    	else 
+    		return false; // For future error checking.
+   
+    	// After placing a move or breaking out if there were no valid moves, check how many moves have been made.
+    	// An odd number of moves means it's O's turn, even number means it's X's.
+    	if(moveCount % 2 == 0)
+    		playerTurn.setText("It is X's Turn!");
+    	else
+    		playerTurn.setText("It is O's Turn!");
+    
+    	// For future error checking, return true if this method ran successfully.
+    	return true;
+    	
+    }
+    
+    public void processInputs(String[] inputs){
+    	switch (inputs[1]){
+    	case "MOVE":
+    		markMove(Integer.parseInt(inputs[2]), Integer.parseInt(inputs[3]), Integer.parseInt(inputs[4]));
+    	}
+    }
+    
 }

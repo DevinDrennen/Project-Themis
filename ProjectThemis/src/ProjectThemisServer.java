@@ -122,7 +122,7 @@ class ServerThread extends Thread {
 		case "GETID": //The GetID class will handle logins etc. The client should send this FIRST.
 			
 		case "TICTACTOE": //The TicTacToe prompt means we'll be handling the TicTacToe game's commands. 
-
+			TicTacToeServer ttts = new TicTacToeServer(is, os, clientID);
 		}
 	}
 }

@@ -24,10 +24,20 @@ public class TicTacToeServer {
 	final String PASS = "123456";
 	
 	int playerID;
+	int pvpID;
 	
-	public TicTacToeServer(BufferedReader is, PrintWriter os, int PID){
+	boolean running = false;
+	
+	BufferedReader is;
+	PrintWriter os;
+	
+	public TicTacToeServer(BufferedReader inputStream, PrintWriter outputStream, int PID){
 		
 		playerID = PID;
+		running = true;
+		
+		is = inputStream;
+		os = outputStream;
 		
 		final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 		try{
@@ -41,6 +51,8 @@ public class TicTacToeServer {
 		try{
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
+			
+			/*
 			rs = stmt.executeQuery("SELECT EMP_ID, EMP_ADDR_CITY FROM EMPLOYEE WHERE EMP_ADDR_CITY = \"Elizabethtown\"");
 			if (stmt.execute("SELECT EMP_ID, EMP_ADDR_CITY FROM EMPLOYEE WHERE EMP_ADDR_CITY = \"Elizabethtown\"")) {
 				rs = stmt.getResultSet();
@@ -57,12 +69,24 @@ public class TicTacToeServer {
 			        System.out.println("");
 
 			    }
+			    
+			    */
 			
 		}
 		catch (SQLException e){
 		    System.out.println("SQLException: " + e.getMessage());
 		    System.out.println("SQLState: " + e.getSQLState());
 		    System.out.println("VendorError: " + e.getErrorCode());
+		}
+		
+		while(running){
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			sendMoves(markMoves());
 		}
 	}
 	
@@ -78,21 +102,59 @@ public class TicTacToeServer {
 		try{
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
-			rs = stmt.executeQuery("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID WHERE PVP_GAME_ID EQUALS 1 AND PVP_PLAYER_P2 IS NULL"); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
-			if (stmt.execute("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID WHERE PVP_GAME_ID EQUALS 1 AND PVP_PLAYER_P2 IS NULL")) {
+			rs = stmt.executeQuery("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID EQUALS 1 AND PVP_PLAYER_P2 IS NULL"); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
+			if (stmt.execute("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID EQUALS 1 AND PVP_PLAYER_P2 IS NULL")) {
 				rs = stmt.getResultSet();
 				}
 			    
 			    ResultSetMetaData rsmd = rs.getMetaData();
 			    int columnsNumber = rsmd.getColumnCount();
 			    if (rs.next()) {
-			        rs.getInt(1);
+			    	pvpID = rs.getInt(0);
+			        stmt.execute("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID);
 			    }    
 		}
 		catch (SQLException e){
 		    System.out.println("SQLException: " + e.getMessage());
 		    System.out.println("SQLState: " + e.getSQLState());
 		    System.out.println("VendorError: " + e.getErrorCode());
+		}
+	}
+	
+	int[][] markMoves(){
+		int[][] moves = new int[9][3]; //Maximum needed for TTT
+		try{
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery("SELECT ROW, COL, D1 FROM MOVES WHERE PVP_ID EQUALS " + pvpID); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
+			if (stmt.execute("SELECT ROW, COL, D1 FROM MOVES WHERE PVP_ID EQUALS " + pvpID)) {
+				rs = stmt.getResultSet();
+				}
+			    
+			    ResultSetMetaData rsmd = rs.getMetaData();
+			    int columnsNumber = rsmd.getColumnCount();
+			    int i = 0;
+			    while (rs.next()) {
+			    	moves[i][0] = rs.getInt(0);
+			    	moves[i][1] = rs.getInt(1);
+			    	moves[i][2] = rs.getInt(2);
+			    	i++;
+			    }    
+			    
+			    return moves;
+		}
+		catch (SQLException e){
+		    System.out.println("SQLException: " + e.getMessage());
+		    System.out.println("SQLState: " + e.getSQLState());
+		    System.out.println("VendorError: " + e.getErrorCode());
+		}
+		
+		return null;
+	}
+	
+	void sendMoves(int[][] moves){
+		for(int i = 0; i < moves.length; i++){
+			os.println("TTT MOVE + " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
 		}
 	}
 }
