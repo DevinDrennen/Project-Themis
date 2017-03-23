@@ -1,4 +1,3 @@
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -14,27 +13,31 @@ public class Connect4 extends JFrame {
 	static JButton[][] display;
 	JPanel boardpanel;
 	JLabel playerTurn = new JLabel("It is Red's Turn!");
-	//JButton NewGame = new JButton("New Game");
 	int moveCount = 0;
 	boolean gameOver = false;
-	//static boolean redTurn = true;
+	int numRows;
+	int numCols;
+
+	static int currentRow;
 
 	static Turn turn;
 
 	public Connect4(int n) {
 		int r,c;
+		numRows = n;
+		numCols = n+1;
 		turn = new Turn();
 		turn.red();
 		setTitle("Connect Four");
 		setSize(500,500);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
-		board = new char[n][n+1];
-		display = new JButton[n][n+1];
+		board = new char[numRows][numCols];
+		display = new JButton[numRows][numCols];
 		boardpanel = new JPanel();
-		boardpanel.setLayout(new GridLayout(n,n+1));
-		for (r=0;r<n;r++)
-			for (c=0;c<n+1;c++) {
+		boardpanel.setLayout(new GridLayout(numRows,numCols));
+		for (r=0;r<numRows;r++)
+			for (c=0;c<numCols;c++) {
 				display[r][c] = new JButton();
 				display[r][c].setFont(new Font(null,1,40));
 				display[r][c].setFocusPainted(false);
@@ -43,12 +46,9 @@ public class Connect4 extends JFrame {
 				board[r][c] = ' ';
 			}
 		add(boardpanel,BorderLayout.CENTER);
-		//add(NewGame,BorderLayout.SOUTH);
 		add(playerTurn,BorderLayout.NORTH);
 		playerTurn.setHorizontalAlignment(JLabel.CENTER);
 		playerTurn.setFont(new Font(null,1,24));
-		//NewGame.setFont(new Font(null,1,20));
-		//NewGame.addActionListener(new NewGameListener());
 		setLocationRelativeTo(null);
 		setVisible(true);
 
@@ -67,7 +67,7 @@ public class Connect4 extends JFrame {
 			if (!gameOver) {
 				if (makeMove(r,c)) {
 					moveCount++;
-					winCheck(turn.symbol,moveCount);
+					winCheck(turn.symbol, moveCount, currentRow, c);
 					turn.flip();  
 					playerTurn.setText("It is " +turn.name+ "'s Turn!");
 				}
@@ -80,8 +80,8 @@ public class Connect4 extends JFrame {
 		while (i>=0){
 			if (board[i][col]==' '){
 				board[i][col]=turn.symbol;
-				//display[i][col].setText(""+turn.symbol);
 				display[i][col].setBackground(turn.color);
+				currentRow=i;
 				return true;
 			}
 			i--;
@@ -91,34 +91,37 @@ public class Connect4 extends JFrame {
 	}
 
 	//checks for win or tie
+	public void winCheck(char player, int moveCount, int row, int col) {
+		int count = 0;
 
-	public void winCheck(char h, int count) {
-		int j,i;
-
-		for (i = 0; i < board.length; i++) 
-			if ((board[i][0] == h) && (board[i][1] == h) && (board[i][2] == h)) {
-				playerTurn.setText(h+" Wins!");
-				gameOver = true;
-			}
-
-		for (j = 0; j < board.length; j++)
-			if ((board[0][j] ==  h) && (board[1][j] == h) && (board[2][j] == h)) { 
-				playerTurn.setText(h+" Wins!");
-				gameOver = true;
-			}
-
-		if ((board[0][0] == h) && (board[1][1] == h) && (board[2][2] == h)) {
-			playerTurn.setText(h+" Wins!");
-			gameOver = true;
-		}
-
-		if ((board[0][2] == h) && (board[1][1] == h) && (board[2][0] == h)) {
-			playerTurn.setText(h+" Wins!"); 
-			gameOver = true;
-		}
-
-		if (count > 8 && gameOver == false) 
+		if (moveCount >= 42 && !gameOver) {
 			playerTurn.setText("Out of moves, no one wins!");
+			gameOver = true;
+		}
+
+		if (moveCount >= 7 && !gameOver) {
+			//horizontal check
+			for (int i=0;i<numCols;i++) {
+				if (board[row][i] == player)
+					count++;
+				else 
+					count = 0;
+				if (count >= 4)
+					gameOver = true;
+			}
+			count = 0;
+
+			//vertical check
+			for (int i=0;i<numRows;i++) {
+				if (board[i][col] == player)
+					count++;
+				else
+					count = 0;
+				if (count >= 4)
+					gameOver = true;
+			}
+			count = 0;
+		}
 	}
 
 	public static void main(String[] args) {
