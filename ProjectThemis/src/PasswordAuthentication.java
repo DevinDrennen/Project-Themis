@@ -10,22 +10,6 @@ import java.util.regex.Pattern;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-/**
-*Can be used on both server and client, has auth and encreption in the same class
-*Will be called by the main client executable when the login screen is displayed
-*Will be called by the server upon receiving the relevant string from a client
-*/
-
-
-
-/**
- * Hash passwords for storage, and test passwords against password tokens.
- * 
- * Instances of this class can be used concurrently by multiple threads.
- *  
- * @author erickson
- * @see <a href="http://stackoverflow.com/a/2861125/3474">StackOverflow</a>
- */
 public final class PasswordAuthentication
 {
 
@@ -77,8 +61,6 @@ public final class PasswordAuthentication
    * Hash a password for storage.
    * 
    * @return a secure authentication token to be stored for later authentication 
-   *
-   * Store this token with the username to be authenticated against later
    */
   public String hash(char[] password)
   {
@@ -96,8 +78,6 @@ public final class PasswordAuthentication
    * Authenticate with a password and a stored password token.
    * 
    * @return true if the password and token match
-   *
-   * Pass stored token and entered password here
    */
   public boolean authenticate(char[] password, String token)
   {
