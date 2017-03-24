@@ -1,3 +1,6 @@
+//This is purely for reference
+//Of no use - to be removed before final version.
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;

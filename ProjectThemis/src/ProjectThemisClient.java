@@ -6,7 +6,10 @@ public class ProjectThemisClient {
 	static String user = null;
 	static String pass = null;
 	static int id;
-	//For 2/24 someone needs to make a PW salting and hashing program to encrypt passwords.
+	
+	
+	//Here's some fun stuff:
+	TicTacToeClient tttc;
 	
 	public static void main(String[] args) throws IOException{
         String hostName = "localhost";
@@ -52,7 +55,9 @@ public class ProjectThemisClient {
 		String[] inputs = inputLine.split(" ");
 
 		switch (inputs[0]) {
-
+		case "TICTACTOE":
+			if(tttc != null)
+				tttc.processInput(inputs);
 		}
 	}
 }

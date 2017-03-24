@@ -90,7 +90,7 @@ public class TicTacToeServer {
 		}
 	}
 	
-	void inputHandling(String[] inputs, PrintWriter os){
+	void processInput(String[] inputs){
 		switch (inputs[1]) {
 			case "NEWGAME": //The Client is trying to start a new game.
 				SQLNewGame();
@@ -154,7 +154,7 @@ public class TicTacToeServer {
 	
 	void sendMoves(int[][] moves){
 		for(int i = 0; i < moves.length; i++){
-			os.println("TTT MOVE + " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
+			os.println("TICTACTOE MOVE + " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
 		}
 	}
 }
