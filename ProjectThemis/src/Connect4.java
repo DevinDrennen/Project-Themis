@@ -81,6 +81,7 @@ public class Connect4 extends JFrame {
 			if (board[i][col]==' '){
 				board[i][col]=turn.symbol;
 				display[i][col].setBackground(turn.color);
+				display[i][col].setText(""+turn.symbol);
 				currentRow=i;
 				return true;
 			}
@@ -90,43 +91,119 @@ public class Connect4 extends JFrame {
 
 	}
 
-	//checks for win or tie
+	//checks for win or tie ***NEEDS FINE TUNING OF DIAGONAL CHECKS***
 	public void winCheck(char player, int moveCount, int row, int col) {
 		int count = 0;
 
 		if (moveCount >= 42 && !gameOver) {
 			playerTurn.setText("Out of moves, no one wins!");
 			gameOver = true;
+			JOptionPane tieMessage = new JOptionPane();
+			JOptionPane.showMessageDialog(tieMessage, "No winner, it's a tie!");
 		}
 
 		if (moveCount >= 7 && !gameOver) {
 			//horizontal check
-			for (int i=0;i<numCols;i++) {
-				if (board[row][i] == player)
+			for (int c=0;c<numCols;c++) {
+				if (board[row][c] == player)
 					count++;
 				else 
 					count = 0;
-				if (count >= 4)
+				if (count >= 4) {
 					gameOver = true;
+					winnerMessage();
+				}
 			}
 			count = 0;
 
 			//vertical check
-			for (int i=0;i<numRows;i++) {
-				if (board[i][col] == player)
+			for (int r=0;r<numRows;r++) {
+				if (board[r][col] == player)
 					count++;
 				else
 					count = 0;
-				if (count >= 4)
+				if (count >= 4) {
 					gameOver = true;
+					winnerMessage();
+				}
+			}
+			count = 0;
+
+			//down diagonal check of rows
+			for (int rowStart = 0; rowStart < numRows - 3; rowStart++) {
+				//only goes to numRows-3 because there's not 4 in diagonal direction below that
+				int r,c;
+				for (r = rowStart, c = 0; r < numRows && c < numCols; r++, c++ ) {
+					if (board[r][c] == player)
+						count++;
+					else
+						count = 0;
+					if (count >= 4) {
+						gameOver = true;
+						winnerMessage();
+					}
+				}
+			}
+			count = 0;
+			
+			//down diagonal check of columns
+			for (int colStart = 1; colStart < numRows - 3; colStart++) {
+				//starts at 1 because 0 was already checked in rows loop
+				int r,c;
+				for (r = 0, c = colStart; r < numRows && c < numCols; r++, c++ ) {
+					if (board[r][c] == player)
+						count++;
+					else
+						count = 0;
+					if (count >= 4) {
+						gameOver = true;
+						winnerMessage();
+					}
+				}
+			}
+			count = 0;
+			
+			//up diagonal check of rows
+			for (int rowStart = numRows-1; rowStart > numRows - 3; rowStart--) {
+				int r,c;
+				for (r = rowStart, c = 0; r > 0 && c < numCols; r--, c++) {
+					if (board[r][c] == player)
+						count++;
+					else
+						count = 0;
+					if (count >= 4) {
+						gameOver = true;
+						winnerMessage();
+					}
+				}
+			}
+			count = 0;
+			
+			//up diagonal check of columns
+			for (int colStart = 1; colStart < numCols - 3; colStart++) {
+				int r,c;
+				for (r = numRows - 1, c = colStart; r > 0 && c < numCols; r--, c++) {
+					if (board[r][c] == player)
+						count++;
+					else
+						count = 0;
+					if (count >= 4) {
+						gameOver = true;
+						winnerMessage();
+					}
+				}
 			}
 			count = 0;
 		}
 	}
 
+	public void winnerMessage() {
+		JOptionPane window = new JOptionPane();
+		JOptionPane.showMessageDialog(window, turn.name + "(" + turn.symbol + ")" + " wins!");
+	}
+
 	public static void main(String[] args) {
 		new Connect4(6);
-
 	}
 
 }
