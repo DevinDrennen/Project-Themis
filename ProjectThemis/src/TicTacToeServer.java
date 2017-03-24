@@ -95,7 +95,26 @@ public class TicTacToeServer {
 			case "NEWGAME": //The Client is trying to start a new game.
 				SQLNewGame();
 				break;
+			case "MOVE":
+				markMove(inputs[2], inputs[3], inputs[4]);
 		}
+	}
+	
+	//Mark a new move. Return true if it succeeds.
+	boolean markMove(String row, String col, String dat){
+		try{
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery("INSERT INTO MOVES VALUES(," + playerID + ", " + pvpID + ", " + row + ", " + col + ", " + dat + ", NULL)"); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
+			//if (stmt.execute("INSERT INTO MOVES VALUES(," + playerID + ", " + pvpID + ", " + row + ", "+ col + ", " + dat + ", NULL)"))
+		}
+		catch (SQLException e){
+		    System.out.println("SQLException: " + e.getMessage());
+		    System.out.println("SQLState: " + e.getSQLState());
+		    System.out.println("VendorError: " + e.getErrorCode());
+		    return false;
+		}
+		return true;
 	}
 	
 	void SQLNewGame(){
