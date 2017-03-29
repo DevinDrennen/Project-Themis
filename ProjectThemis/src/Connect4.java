@@ -2,8 +2,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener; 
+import java.io.File;
+
 import javax.swing.*;
 
 public class Connect4 extends JFrame {
@@ -18,6 +21,7 @@ public class Connect4 extends JFrame {
 	int numRows;
 	int numCols;
 
+	
 	static int currentRow;
 
 	static Turn turn;
@@ -41,6 +45,7 @@ public class Connect4 extends JFrame {
 				display[r][c] = new JButton();
 				display[r][c].setFont(new Font(null,1,40));
 				display[r][c].setFocusPainted(false);
+				display[r][c].setBorder(null);
 				display[r][c].addActionListener(new MoveListener(r,c));
 				boardpanel.add(display[r][c]);
 				board[r][c] = ' ';
@@ -80,8 +85,9 @@ public class Connect4 extends JFrame {
 		while (i>=0){
 			if (board[i][col]==' '){
 				board[i][col]=turn.symbol;
-				display[i][col].setBackground(turn.color);
-				display[i][col].setText(""+turn.symbol);
+				//display[i][col].setBackground(turn.color);
+				//display[i][col].setText(""+turn.symbol);
+				display[i][col].setIcon(turn.icon);
 				currentRow=i;
 				return true;
 			}
@@ -133,6 +139,7 @@ public class Connect4 extends JFrame {
 			for (int rowStart = 0; rowStart < numRows - 3; rowStart++) {
 				//only goes to numRows-3 because there's not 4 in diagonal direction below that
 				int r,c;
+				count = 0;
 				for (r = rowStart, c = 0; r < numRows && c < numCols; r++, c++ ) {
 					if (board[r][c] == player)
 						count++;
@@ -145,11 +152,12 @@ public class Connect4 extends JFrame {
 				}
 			}
 			count = 0;
-			
+
 			//down diagonal check of columns
 			for (int colStart = 1; colStart < numRows - 3; colStart++) {
 				//starts at 1 because 0 was already checked in rows loop
 				int r,c;
+				count = 0;
 				for (r = 0, c = colStart; r < numRows && c < numCols; r++, c++ ) {
 					if (board[r][c] == player)
 						count++;
@@ -162,10 +170,11 @@ public class Connect4 extends JFrame {
 				}
 			}
 			count = 0;
-			
+
 			//up diagonal check of rows
 			for (int rowStart = numRows-1; rowStart > numRows - 3; rowStart--) {
 				int r,c;
+				count = 0;
 				for (r = rowStart, c = 0; r > 0 && c < numCols; r--, c++) {
 					if (board[r][c] == player)
 						count++;
@@ -178,10 +187,11 @@ public class Connect4 extends JFrame {
 				}
 			}
 			count = 0;
-			
+
 			//up diagonal check of columns
 			for (int colStart = 1; colStart < numCols - 3; colStart++) {
 				int r,c;
+				count = 0;
 				for (r = numRows - 1, c = colStart; r > 0 && c < numCols; r--, c++) {
 					if (board[r][c] == player)
 						count++;
@@ -199,7 +209,7 @@ public class Connect4 extends JFrame {
 
 	public void winnerMessage() {
 		JOptionPane window = new JOptionPane();
-		JOptionPane.showMessageDialog(window, turn.name + "(" + turn.symbol + ")" + " wins!");
+		JOptionPane.showMessageDialog(window, turn.name + " wins!");
 	}
 
 	public static void main(String[] args) {
