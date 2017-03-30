@@ -185,9 +185,11 @@ public class TicTacToeClient extends JFrame {
     }
     
     public void processInput(String[] inputs){
+    	System.out.println("Processing inputs!");
     	switch (inputs[1]){
     	case "MOVE":
     		markMove(Integer.parseInt(inputs[2]), Integer.parseInt(inputs[3]), Integer.parseInt(inputs[4]));
+    		System.out.println("Move recieved!");
     	}
     }
     

@@ -138,6 +138,7 @@ class ServerThread extends Thread {
 			break;
 			
 		case "GETID": //The GetID class will handle logins etc. The client should send this FIRST.
+			clientID = Integer.parseInt(inputs[1]);
 			
 		case "TICTACTOE": //The TicTacToe prompt means we'll be handling the TicTacToe game's commands. 
 			if(inputs[1].equals("NEW")){

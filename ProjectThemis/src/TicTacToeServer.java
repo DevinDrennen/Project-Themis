@@ -34,8 +34,8 @@ public class TicTacToeServer {
 	
 	public TicTacToeServer(BufferedReader inputStream, PrintWriter outputStream, int PID){
 		
-		playerID = 1;
-		pvpID = 1;
+		playerID = PID;
+		pvpID = 2;
 		running = true;
 		
 		is = inputStream;
@@ -91,6 +91,9 @@ public class TicTacToeServer {
 			//sendMoves(markMoves());
 		}
 	*/
+		
+		TicTacToeListener listener = new TicTacToeListener(pvpID, os);
+		listener.start();
 	}
 	
 	void processInput(String[] inputs){
@@ -192,13 +195,13 @@ class TicTacToeListener extends Thread {
 	TicTacToeListener(int pvpID, PrintWriter os){
 		this.pvpID = pvpID;
 		this.os = os;
-		listen();
+		System.out.println("TicTacToeListener initialized!");
 	}
 	
-	public void listen(){
+	public void run(){
 		while(true){
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

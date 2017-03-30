@@ -9,7 +9,7 @@ public class ProjectThemisClient {
 	
 	
 	//Here's some fun stuff:
-	TicTacToeClient tttc;
+	static TicTacToeClient tttc;
 	
 	public static void main(String[] args) throws IOException{
         String hostName = "10.1.73.58";
@@ -37,12 +37,17 @@ public class ProjectThemisClient {
         ) {
         	
         	String line;
-        	os.println("GETID " + user + " " + pass);
+        	//os.println("GETID " + user + " " + pass);
+        	os.println("GETID " + 1);
         	os.println("TICTACTOE NEW");
         	
         	
-        	new TicTacToeClient(3, is, os);         
+        	tttc = new TicTacToeClient(3, is, os);         
         	line=is.readLine();
+        	while(line.compareTo("QUIT") != 0){
+        		processInput(line);
+        		line = is.readLine();
+        	}
         	
           
         } catch (UnknownHostException e) {
@@ -54,13 +59,15 @@ public class ProjectThemisClient {
             System.exit(1);
         } 
 	}
-	private void processInput(String inputLine) {
+	private static void processInput(String inputLine) {
 		String[] inputs = inputLine.split(" ");
-
+		System.out.println("Processing Inputs (Client)!");
 		switch (inputs[0]) {
 		case "TICTACTOE":
 			if(tttc != null)
 				tttc.processInput(inputs);
 		}
+		
+		System.out.println("Processed Inputs (Client)!");
 	}
 }
