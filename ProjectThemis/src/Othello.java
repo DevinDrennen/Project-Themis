@@ -1,3 +1,4 @@
+package ProjectThemisClient;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,6 +42,10 @@ public class Othello extends JFrame {
 		display[4][4].setBackground(Color.BLACK);
 		display[4][3].setBackground(Color.WHITE);
 		display[3][4].setBackground(Color.WHITE);
+		board[3][3] = 'B';
+		board[4][4] = 'B';
+		board[4][3] = 'W';
+		board[3][4] = 'W';
 		add(boardpanel,BorderLayout.CENTER);
 		add(playerTurn,BorderLayout.NORTH);
 		playerTurn.setHorizontalAlignment(JLabel.CENTER);
@@ -56,121 +61,252 @@ public class Othello extends JFrame {
 		int r,c;
 		boolean bTurn = false;
 		boolean wTurn = true;
+		boolean[][] array = new boolean[8][8];
 		public MoveListener(int row,int col) {
 			r = row;
 			c = col;
 		}
 		public void actionPerformed(ActionEvent e) {
 			if (!gameOver) {
-				if (bTurn && board[r][c] == ' ' && checkArea(r,c,'B')) {
+				if (bTurn && board[r][c] != 'B' && board[r][c] != 'W' && checkArea(r,c,'B')) {
 					board[r][c] = 'B';
 					display[r][c].setBackground(Color.BLACK);
-					flipTilesB(r,c);
+					flipTilesB();
 					moveCount++;
 					playerTurn.setText("It is W's Turn!");
+					bTurn = !bTurn;
+					wTurn = !wTurn;
 				}
-				else if (wTurn && board[r][c] == ' ') {
+				else if (wTurn && board[r][c] != 'B' && board[r][c] != 'W' && checkArea(r,c,'W')) {
 					board[r][c] = 'W';
 					display[r][c].setBackground(Color.WHITE);
-					flipTilesW(r,c);
+					flipTilesW();
 					moveCount++;
 					playerTurn.setText("It is B's Turn!");
+					bTurn = !bTurn;
+					wTurn = !wTurn;
 				}
+				
+				for(int i = 0; i < 8; ++i)
+					for(int j = 0; j < 8; ++j)
+						array[i][j] = false;
 
-				bTurn = !bTurn;
-				wTurn = !wTurn;
 				if(moveCount == 60)
 					winCheck(whiteScore, blackScore);
 			}
+		}
+
+		private void flipTilesB() {
+			for(int i = 0; i < 8; ++i)
+				for(int j = 0; j < 8; ++j)
+					if(array[i][j])
+					{
+						board[i][j] = 'B';
+						display[i][j].setBackground(Color.BLACK);
+					}
+		}
+		
+		private void flipTilesW() {
+			for(int i = 0; i < 8; ++i)
+				for(int j = 0; j < 8; ++j)
+					if(array[i][j])
+					{
+						board[i][j] = 'W';
+						display[i][j].setBackground(Color.WHITE);
+					}
 		}
 		
 		public boolean checkArea(int r, int c, char player)
 		{
 			boolean validMove = false;
-			for(int i = r-1; i < r+1; i++)
-				for(int j = c-1; j < c+1; j++)
-					if(board[i][j] == 'W' || board[i][j] == 'B' && board[i][j] != player)
-						validMove = true;
+			if(player == 'B')
+				for(int i = r-1; i <= r+1; i++)
+					for(int j = c-1; j <= c+1; j++)
+						if(board[i][j] == 'W')
+						{
+							validMove = checkLineB(r,c,i,j,player);
+						}
+			if(player == 'W')
+				for(int i = r-1; i <= r+1; i++)
+					for(int j = c-1; j <= c+1; j++)
+						if(board[i][j] == 'B')
+						{
+							validMove = checkLineW(r,c,i,j,player);
+						}
 			return validMove;
-			
 		}
 
-		public void flipTilesW(int r, int c)
+		public boolean checkLineW(int realR, int realC, int r, int c, char player)
 		{
-			int i, j;
-
-			i = r+1;
-			j = c+1;
-			for(; j < 8 && board[r][j] != 'W'; j++)
+			if(realR == r - 1 && realC == c - 1)//check diagonally down right
 			{
-				if(board[r][j] == 'B')
-					blackScore--;
-				board[r][j] = 'W';
-				display[r][c].setBackground(Color.WHITE);
-				whiteScore++;
+				if(board[r+1][c+1] == 'B')
+				{
+					checkLineW(realR + 1, realC + 1, r + 1, c + 1, player);
+					array[r+1][c+1] = true;
+				}
+				else if(board[r+1][c+1] == player)
+					return true;
 			}
-
-			i = r+1;
-			j = c+1;
-			for(; i < 8 && board[i][c] != 'W'; i++)
+			else if(realR == r - 1 && realC == c)//check directly down
 			{
-				if(board[i][c] == 'B')
-					blackScore--;
-				board[i][c] = 'W';
-				display[r][c].setBackground(Color.WHITE);
-				whiteScore++;
+				if(board[r+1][c] == 'B')
+				{
+					checkLineW(realR + 1, realC, r + 1, c, player);
+					array[r-1][c] = true;
+				}
+				else if(board[r+1][c] == player)
+					return true;
 			}
-
-			i = r+1;
-			j = c+1;
-			for(; i < 8 && board[i][j] != 'W'; i++, j++)
+			else if(realR == r + 1 && realC == c + 1)//check diagonally down left
 			{
-				if(board[i][j] == 'B')
-					blackScore--;
-				board[i][j] = 'W';
-				display[r][c].setBackground(Color.WHITE);
-				whiteScore++;
+				if(board[r-1][c-1] == 'B')
+				{
+					checkLineW(realR - 1, realC - 1, r - 1, c - 1, player);
+					array[r-1][c-1] = true;
+				}
+				else if(board[r-1][c-1] == player)
+					return true;
 			}
-
+			else if(realR == r && realC == c + 1)//check left
+			{
+				if(board[r][c-1] == 'B')
+				{
+					checkLineW(realR, realC - 1, r, c - 1, player);
+					array[r][c-1] = true;
+				}
+				else if(board[r][c-1] == player)
+					return true;
+			}
+			else if(realR == r + 1 && realC == c + 1)//check diagonally up left
+			{
+				if(board[r-1][c-1] == 'B')
+				{
+					checkLineW(realR - 1, realC - 1, r - 1, c - 1, player);
+					array[r-1][c-1] = true;
+				}
+				else if(board[r-1][c-1] == player)
+					return true;
+			}
+			else if(realR == r + 1 && realC == c)//check directly up
+			{
+				if(board[r-1][c] == 'B')
+				{
+					checkLineW(realR - 1, realC, r - 1, c, player);
+					array[r-1][c] = true;
+				}
+				else if(board[r-1][c] == player)
+					return true;
+			}
+			else if(realR == r + 1 && realC == c - 1)//check diagonally up right
+			{
+				if(board[r-1][c+1] == 'B')
+				{
+					checkLineW(realR - 1, realC + 1, r - 1, c + 1, player);
+					array[r-1][c+1] = true;
+				}
+				else if(board[r-1][c+1] == player)
+					return true;
+			}
+			else if(realR == r && realC == c - 1)//check directly right
+			{
+				if(board[r][c+1] == 'B')
+				{
+					checkLineW(realR, realC + 1, r, c + 1, player);
+					array[r][c+1] = true;
+				}
+				else if(board[r][c+1] == player)
+					return true;
+			}
+			for(int i = 0; i < 8; ++i)
+				for(int j = 0; j < 8; ++j)
+					array[i][j] = false;
+			return false;
 		}
 
-		public void flipTilesB(int r, int c)
+		public boolean checkLineB(int realR, int realC, int r, int c, char player)
 		{
-			int i, j;
-
-			i = r+1;
-			j = c+1;
-			for(; j < 8 && board[r][j] != 'B'; j++)
+			if(realR == r - 1 && realC == c - 1)//check diagonally down right
 			{
-				if(board[r][j] == 'w')
-					whiteScore--;
-				board[r][j] = 'B';
-				display[r][c].setBackground(Color.BLACK);
-				blackScore++;
+				if(board[r+1][c+1] == 'W')
+				{
+					checkLineB(realR + 1, realC + 1, r + 1, c + 1, player);
+					array[r+1][c+1] = true;
+				}
+				else if(board[r+1][c+1] == player)
+					return true;
 			}
-
-			i = r+1;
-			j = c+1;
-			for(; i < 8 && board[i][c] != 'B'; i++)
+			else if(realR == r + 1 && realC == c)//check directly down
 			{
-				if(board[i][c] == 'w')
-					whiteScore--;
-				board[i][c] = 'B';
-				display[r][c].setBackground(Color.BLACK);
-				blackScore++;
+				if(board[r-1][c] == 'W')
+				{
+					checkLineB(realR - 1, realC, r - 1, c, player);
+					array[r-1][c] = true;
+				}
+				else if(board[r-1][c] == player)
+					return true;
 			}
-
-			i = r+1;
-			j = c+1;
-			for(; i < 8 && board[i][j] != 'B'; i++, j++)
+			else if(realR == r + 1 && realC == c + 1)//check diagonally down left
 			{
-				if(board[i][j] == 'w')
-					whiteScore--;
-				board[i][j] = 'B';
-				display[r][c].setBackground(Color.BLACK);
-				blackScore++;
+				if(board[r-1][c-1] == 'W')
+				{
+					checkLineB(realR - 1, realC - 1, r - 1, c - 1, player);
+					array[r-1][c-1] = true;
+				}
+				else if(board[r-1][c-1] == player)
+					return true;
 			}
-
+			else if(realR == r && realC == c + 1)//check left
+			{
+				if(board[r][c-1] == 'W')
+				{
+					checkLineB(realR, realC - 1, r, c - 1, player);
+					array[r][c-1] = true;
+				}
+				else if(board[r][c-1] == player)
+					return true;
+			}
+			else if(realR == r + 1 && realC == c + 1)//check diagonally up left
+			{
+				if(board[r-1][c-1] == 'W')
+				{
+					checkLineB(realR - 1, realC - 1, r - 1, c - 1, player);
+					array[r-1][c-1] = true;
+				}
+				else if(board[r-1][c-1] == player)
+					return true;
+			}
+			else if(realR == r + 1 && realC == c)//check directly up
+			{
+				if(board[r-1][c] == 'W')
+				{
+					checkLineB(realR - 1, realC, r - 1, c, player);
+					array[r-1][c] = true;
+				}
+				else if(board[r-1][c] == player)
+					return true;
+			}
+			else if(realR == r + 1 && realC == c - 1)//check diagonally up right
+			{
+				if(board[r-1][c+1] == 'W')
+				{
+					checkLineB(realR - 1, realC + 1, r - 1, c + 1, player);
+					array[r-1][c+1] = true;
+				}
+				else if(board[r-1][c+1] == player)
+					return true;
+			}
+			else if(realR == r && realC == c - 1)//check directly right
+			{
+				if(board[r][c+1] == 'W')
+				{
+					checkLineB(realR, realC + 1, r, c + 1, player);
+					array[r][c+1] = true;
+				}
+				else if(board[r][c+1] == player)
+					return true;
+			}
+			return false;
 		}
 
 		public void winCheck(int whiteScore, int blackScore)
