@@ -156,10 +156,10 @@ public class TicTacToeClient extends JFrame {
     	}
     }
     
-    private void markY(int r, int c){
-    	if(board[r][c] != 'Y'){
-    		board[r][c] = 'Y';
-    		display[r][c].setText("Y");
+    private void markO(int r, int c){
+    	if(board[r][c] != 'O'){
+    		board[r][c] = 'O';
+    		display[r][c].setText("O");
     		moveCount++;
     	}
     }
@@ -168,7 +168,7 @@ public class TicTacToeClient extends JFrame {
     	if(data == 1)
     		markX(r, c);
     	else if (data == 2)
-    		markY(r, c);
+    		markO(r, c);
     	else 
     		return false; // For future error checking.
    
