@@ -88,18 +88,25 @@ public class TicTacToeServer {
 				e.printStackTrace();
 			}
 			
-			sendMoves(markMoves());
+			//sendMoves(markMoves());
 		}
 	}
 	
 	void processInput(String[] inputs){
+		
+		System.out.println("Inputs Being Processed...");
+		
 		switch (inputs[1]) {
 			case "NEWGAME": //The Client is trying to start a new game.
 				SQLNewGame();
 				break;
 			case "MOVE":
 				markMove(inputs[2], inputs[3], inputs[4]);
+				break;
+				
 		}
+		
+		System.out.println("Inputs Procesed!");
 	}
 	
 	//Mark a new move. Return true if it succeeds.

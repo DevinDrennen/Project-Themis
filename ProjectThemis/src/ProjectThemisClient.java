@@ -38,6 +38,7 @@ public class ProjectThemisClient {
         	
         	String line;
         	os.println("GETID " + user + " " + pass);
+        	os.println("TICTACTOE NEW");
         	
         	
         	new TicTacToeClient(3, is, os);         

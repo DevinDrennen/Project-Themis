@@ -128,6 +128,8 @@ class ServerThread extends Thread {
 	private void processInput(String inputLine) {
 		String[] inputs = inputLine.split(" ");
 
+		System.out.println("Inputs: " + inputs[0] + " " + inputs[1]);
+		
 		switch (inputs[0]) {
 		case "ECHO": //When the ECHO command is given, repeat the previously given command.
 			os.println(inputs[1]);
@@ -138,13 +140,16 @@ class ServerThread extends Thread {
 		case "GETID": //The GetID class will handle logins etc. The client should send this FIRST.
 			
 		case "TICTACTOE": //The TicTacToe prompt means we'll be handling the TicTacToe game's commands. 
-			if(inputs[1] == "NEW")
+			if(inputs[1].equals("NEW")){
 				ttts = new TicTacToeServer(is, os, clientID); //Create new TTT game if the second chunk of data is "NEW".
-			else if(ttts != null)
-				if(inputs[1] == "QUIT") //Terminate the TTT game if the second chunk of data is "QUIT"
+				System.out.println("Created new TicTacToeServer instance");
+			}
+			else if(ttts != null){
+				if(inputs[1].equals("QUIT")) //Terminate the TTT game if the second chunk of data is "QUIT"
 					ttts = null;
 				else //In all other cases, let ttts handle the inputs as it's a game function. Yay!
 					ttts.processInput(inputs);
+			}
 		}
 	}
 }
