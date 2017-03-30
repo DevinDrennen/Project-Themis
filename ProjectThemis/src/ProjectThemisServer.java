@@ -26,7 +26,7 @@ public class ProjectThemisServer {
 			System.exit(0);
 		}
 		
-		//Use the args tofill out the USER and PASS for MySQL. This will be passed to all the child servers.
+		//Use the args to fill out the USER and PASS for MySQL.
 		USER = args[0];
 		PASS = args[1];
 		
@@ -139,7 +139,7 @@ class ServerThread extends Thread {
 			
 		case "TICTACTOE": //The TicTacToe prompt means we'll be handling the TicTacToe game's commands. 
 			if(inputs[1] == "NEW")
-				ttts = new TicTacToeServer(is, os, clientID, ProjectThemisServer.USER, ProjectThemisServer.PASS); //Create new TTT game if the second chunk of data is "NEW".
+				ttts = new TicTacToeServer(is, os, clientID); //Create new TTT game if the second chunk of data is "NEW".
 			else if(ttts != null)
 				if(inputs[1] == "QUIT") //Terminate the TTT game if the second chunk of data is "QUIT"
 					ttts = null;

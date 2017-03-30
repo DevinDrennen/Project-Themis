@@ -21,8 +21,8 @@ public class TicTacToeServer {
 	Statement stmt = null;
 	ResultSet rs = null;
 	final String DB_URL = "jdbc:mysql://localhost:3306/project_themis_test?useSSL=false";
-	String USER = "root";
-	String PASS = "123456";
+	String USER = ProjectThemisServer.USER;
+	String PASS = ProjectThemisServer.PASS;
 	
 	int playerID;
 	int pvpID;
@@ -32,9 +32,10 @@ public class TicTacToeServer {
 	BufferedReader is;
 	PrintWriter os;
 	
-	public TicTacToeServer(BufferedReader inputStream, PrintWriter outputStream, int PID, String USER, String PASS){
+	public TicTacToeServer(BufferedReader inputStream, PrintWriter outputStream, int PID){
 		
 		playerID = 1;
+		pvpID = 1;
 		running = true;
 		
 		is = inputStream;
@@ -121,7 +122,7 @@ public class TicTacToeServer {
 			//Execute the preparedstatement
 			stmt.execute();
 			
-			
+			System.out.println("Executed MySQL write");
 			//rs = stmt.executeQuery("INSERT INTO MOVES VALUES(," + playerID + ", " + pvpID + ", " + row + ", " + col + ", " + dat + ", NULL)"); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
 			//if (stmt.execute("INSERT INTO MOVES VALUES(," + playerID + ", " + pvpID + ", " + row + ", "+ col + ", " + dat + ", NULL)"))
 		}

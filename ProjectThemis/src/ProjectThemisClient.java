@@ -12,7 +12,7 @@ public class ProjectThemisClient {
 	TicTacToeClient tttc;
 	
 	public static void main(String[] args) throws IOException{
-        String hostName = "localhost";
+        String hostName = "10.1.72.108";
         int portNumber = 4445;
 
         if(args.length >= 2){
