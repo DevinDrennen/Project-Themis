@@ -81,14 +81,14 @@ public class TicTacToeClient extends JFrame {
                     display[r][c].setText("X");
                     moveCount++;
                     playerTurn.setText("It is O's Turn!");
-                    os.println("TICTACTOE MOVE + " + r + " " + c + " " + 1);
+                    os.println("TICTACTOE MOVE " + r + " " + c + " " + 1);
                 }
                 else if (oTurn && board[r][c] == ' ' && (moveCount % 2 == 1)) {
                     board[r][c] = 'O';
                     display[r][c].setText("O");
                     moveCount++;
                     playerTurn.setText("It is X's Turn!");
-                    os.println("TICTACTOE MOVE + " + r + " " + c + " " + 2);
+                    os.println("TICTACTOE MOVE " + r + " " + c + " " + 2);
                 }
  
                 xTurn = !xTurn;

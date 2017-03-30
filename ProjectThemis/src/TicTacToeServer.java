@@ -106,7 +106,7 @@ public class TicTacToeServer {
 				
 		}
 		
-		System.out.println("Inputs Procesed!");
+		System.out.println("Inputs processed!");
 	}
 	
 	//Mark a new move. Return true if it succeeds.
@@ -121,7 +121,7 @@ public class TicTacToeServer {
 			//Create an insert PreparedStatement,and insert out values.
 			PreparedStatement stmt = conn.prepareStatement(query);
 			stmt.setInt(1, playerID);
-			stmt.setInt(2,  pvpID);
+			stmt.setInt(2, pvpID);
 			stmt.setInt(3, Integer.parseInt(row));
 			stmt.setInt(4, Integer.parseInt(col));
 			stmt.setInt(5, Integer.parseInt(dat));
