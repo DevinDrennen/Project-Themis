@@ -8,6 +8,9 @@ import java.sql.SQLException;
 
 public class ProjectThemisServer {
 
+	static String USER;
+	static String PASS;
+	
 	public static void main(String[] args) {
 
 		/*
@@ -17,6 +20,17 @@ public class ProjectThemisServer {
 		 * int portNumber = Integer.parseInt(args[0]);
 		 */
 
+		//Check if the correct number of args are being used. If not, abort it like I should've been.
+		if(args.length < 2){
+			System.out.println("Incorrect Args Format. Correct is ProjectThemisServer MySqlUSER MySqlPASS");
+			System.exit(0);
+		}
+		
+		//Use the args tofill out the USER and PASS for MySQL. This will be passed to all the child servers.
+		USER = args[0];
+		PASS = args[1];
+		
+		
 		Socket s = null;
 		ServerSocket ss2 = null;
 		System.out.println("Server Listening......");
@@ -125,7 +139,7 @@ class ServerThread extends Thread {
 			
 		case "TICTACTOE": //The TicTacToe prompt means we'll be handling the TicTacToe game's commands. 
 			if(inputs[1] == "NEW")
-				ttts = new TicTacToeServer(is, os, clientID); //Create new TTT game if the second chunk of data is "NEW".
+				ttts = new TicTacToeServer(is, os, clientID, ProjectThemisServer.USER, ProjectThemisServer.PASS); //Create new TTT game if the second chunk of data is "NEW".
 			else if(ttts != null)
 				if(inputs[1] == "QUIT") //Terminate the TTT game if the second chunk of data is "QUIT"
 					ttts = null;

@@ -8,6 +8,7 @@
 import java.net.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -19,9 +20,9 @@ public class TicTacToeServer {
 	Connection conn = null;
 	Statement stmt = null;
 	ResultSet rs = null;
-	final String DB_URL = "jdbc:mysql://localhost:3306/PT?useSSL=false";
-	final String USER = "root";
-	final String PASS = "123456";
+	final String DB_URL = "jdbc:mysql://localhost:3306/project_themis_test?useSSL=false";
+	String USER = "root";
+	String PASS = "123456";
 	
 	int playerID;
 	int pvpID;
@@ -31,9 +32,9 @@ public class TicTacToeServer {
 	BufferedReader is;
 	PrintWriter os;
 	
-	public TicTacToeServer(BufferedReader inputStream, PrintWriter outputStream, int PID){
+	public TicTacToeServer(BufferedReader inputStream, PrintWriter outputStream, int PID, String USER, String PASS){
 		
-		playerID = PID;
+		playerID = 1;
 		running = true;
 		
 		is = inputStream;
@@ -105,7 +106,23 @@ public class TicTacToeServer {
 		try{
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
-			rs = stmt.executeQuery("INSERT INTO MOVES VALUES(," + playerID + ", " + pvpID + ", " + row + ", " + col + ", " + dat + ", NULL)"); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
+			
+			String query = " insert into MOVES (MOVE_PLAYER_ID, MOVE_PVP_ID, MOVE_ROW, MOVE_COL, MOVE_D1) " +
+					"values(?, ?, ?, ?, ?)";
+			
+			//Create an insert PreparedStatement,and insert out values.
+			PreparedStatement stmt = conn.prepareStatement(query);
+			stmt.setInt(1, playerID);
+			stmt.setInt(2,  pvpID);
+			stmt.setInt(3, Integer.parseInt(row));
+			stmt.setInt(4, Integer.parseInt(col));
+			stmt.setInt(5, Integer.parseInt(dat));
+			
+			//Execute the preparedstatement
+			stmt.execute();
+			
+			
+			//rs = stmt.executeQuery("INSERT INTO MOVES VALUES(," + playerID + ", " + pvpID + ", " + row + ", " + col + ", " + dat + ", NULL)"); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
 			//if (stmt.execute("INSERT INTO MOVES VALUES(," + playerID + ", " + pvpID + ", " + row + ", "+ col + ", " + dat + ", NULL)"))
 		}
 		catch (SQLException e){
