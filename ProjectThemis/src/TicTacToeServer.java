@@ -109,6 +109,7 @@ public class TicTacToeServer {
 		
 		switch (inputs[1]) {
 			case "NEWGAME": //The Client is trying to start a new game.
+				closeCurrentGame();
 				SQLNewGame();
 				break;
 			case "MOVE": //The client has sent new moves that should be written to the MySQL Database.
@@ -164,6 +165,30 @@ public class TicTacToeServer {
 		return true;
 	}
 	
+	//Set the current game to inactive.
+	void closeCurrentGame(){
+		try{
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+			
+			stmt.execute("UPDATE PVP SET PVP_ACTIVE = 0 WHERE PVP_ID = " + pvpID +";");
+		}
+		catch (SQLException e){
+		    System.out.println("SQLException: " + e.getMessage());
+		    System.out.println("SQLState: " + e.getSQLState());
+		    System.out.println("VendorError: " + e.getErrorCode());
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+	}
+	
+	//Make a new game - set up the DB for it and find the pvpID.
 	void SQLNewGame(){
 		try{
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
@@ -180,11 +205,18 @@ public class TicTacToeServer {
 			        stmt.execute("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
 			    }
 			    else{
-			    	stmt.execute("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
-			    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + ";")){
+			    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P1 = " + pvpID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
 			    		rs = stmt.getResultSet();
-			    		rs.next();
+			    	if(rs.next()){ //Make sure we can look at the next thinger first...
 			    		pvpID = rs.getInt(1);
+			    	}
+			    	else{ //If we can't look at the next thing, there must not be an active game, so make a new one!
+				    	stmt.execute("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
+				    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + ";")){
+				    		rs = stmt.getResultSet();
+				    		rs.next();
+				    		pvpID = rs.getInt(1);
+				    	}
 			    	}
 			    }
 			    listener.updatePVPID(pvpID);

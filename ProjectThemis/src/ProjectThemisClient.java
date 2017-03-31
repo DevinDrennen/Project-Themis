@@ -31,7 +31,7 @@ public class ProjectThemisClient {
         else if(args.length == 2){
         	user = args[0];
         	pass = args[1];
-        	hostName = "10.1.73.58";
+        	hostName = "themis.servegame.com";
         }
         else if(args.length == 3){
         	hostName = args[0];
@@ -39,7 +39,7 @@ public class ProjectThemisClient {
         	pass = args[2];
         }
         else{ //Remove this before deployment.
-        	hostName = "10.1.72.130";
+        	hostName = "themis.servegame.com";
         	user = "user";
         	pass = "pass";
         }
