@@ -30,6 +30,7 @@ public class TicTacToeServer {
 	int pvpID;
 	
 	PrintWriter os;
+	TicTacToeListener listener;
 	
 	public TicTacToeServer( PrintWriter outputStream, int PID){
 		
@@ -97,7 +98,7 @@ public class TicTacToeServer {
 		}
 	*/
 		
-		TicTacToeListener listener = new TicTacToeListener(pvpID, os); //Starts the listener thread which will watch for moves being added to the database.
+		listener = new TicTacToeListener(pvpID, os); //Starts the listener thread which will watch for moves being added to the database.
 		listener.start(); //Start the listener.
 	}
 	
@@ -168,23 +169,24 @@ public class TicTacToeServer {
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
 			//rs = stmt.executeQuery("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL;"); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
-			if (stmt.execute("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL;")) {
+			if (stmt.execute("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + ";")) {
 				rs = stmt.getResultSet();
 				}
 			    
 			    ResultSetMetaData rsmd = rs.getMetaData();
 			    int columnsNumber = rsmd.getColumnCount();
 			    if (rs.next()) {
-			    	pvpID = rs.getInt(0);
-			        stmt.execute("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID);
+			    	pvpID = rs.getInt(1);
+			        stmt.execute("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
 			    }
 			    else{
-			    	stmt.execute("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1");
+			    	stmt.execute("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
 			    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + ";")){
 			    		rs = stmt.getResultSet();
-			    		pvpID = rs.getInt(0);
+			    		pvpID = rs.getInt(1);
 			    	}
 			    }
+			    listener.updatePVPID(pvpID);
 		}
 		catch (SQLException e){
 		    System.out.println("SQLException: " + e.getMessage());
@@ -252,8 +254,8 @@ class TicTacToeListener extends Thread {
 		try{
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
-			rs = stmt.executeQuery("SELECT MOVE_ROW, MOVE_COL, MOVE_D1 FROM MOVES WHERE MOVE_PVP_ID = " + pvpID); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
-			if (stmt.execute("SELECT MOVE_ROW, MOVE_COL, MOVE_D1 FROM MOVES WHERE MOVE_PVP_ID = " + pvpID)) {
+			rs = stmt.executeQuery("SELECT MOVE_ROW, MOVE_COL, MOVE_D1 FROM MOVES WHERE MOVE_PVP_ID = " + pvpID + ";"); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
+			if (stmt.execute("SELECT MOVE_ROW, MOVE_COL, MOVE_D1 FROM MOVES WHERE MOVE_PVP_ID = " + pvpID + ";")) {
 				rs = stmt.getResultSet();
 				}
 		    
@@ -294,8 +296,13 @@ class TicTacToeListener extends Thread {
 	
 	//Send the moves over to ProjectThemisClient.
 	void sendMoves(int[][] moves){
-		for(int i = 0; i < moves.length; i++){
-			os.println("TICTACTOE MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
+		if(moves != null)
+			for(int i = 0; i < moves.length; i++){
+				os.println("TICTACTOE MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
 		}
+	}
+	
+	void updatePVPID(int pvpID){
+		this.pvpID = pvpID;
 	}
 }

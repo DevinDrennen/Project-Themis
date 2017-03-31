@@ -39,11 +39,13 @@ public class ProjectThemisClient {
         	pass = args[2];
         }
         else{ //Remove this before deployment.
-        	hostName = "10.1.73.58";
+        	hostName = "10.1.72.130";
         	user = "user";
         	pass = "pass";
         }
         
+        
+        playerID = 1;
         int portNumber = 4445; //Don't forget to set this - this might join the command line parser in the future.
         //Todo: Find smart way to let the user decide the order of commands.
         
@@ -59,8 +61,8 @@ public class ProjectThemisClient {
         	//os.println("GETID " + user + " " + pass); //GETID will instead send our username and HASHED/SALTED password to the server.
         	//line=is.readLine(); //Afterwards, it'll get back the player's ID.
         	
-        	os.println("GETID " + 1); //This is just for testing,
-        	os.println("TICTACTOE NEWSERVER"); //Right now we just have TicTacToe and no menu, so it'll always create TicTacToe.
+        	os.println("GETID " + playerID); //This is just for testing,
+        	os.println("TICTACTOE NEW"); //Right now we just have TicTacToe and no menu, so it'll always create TicTacToe.
         	os.println("TICTACTOE NEWGAME");
         	
         	
