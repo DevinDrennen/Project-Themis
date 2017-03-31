@@ -29,7 +29,7 @@ public class TicTacToeServer {
 	int playerID; //The player's ID. This should be passed in from the server when created.
 	int pvpID;
 	
-	PrintWriter os;
+	static PrintWriter os;
 	TicTacToeListener listener;
 	
 	public TicTacToeServer( PrintWriter outputStream, int PID){
@@ -183,6 +183,7 @@ public class TicTacToeServer {
 			    	stmt.execute("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
 			    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + ";")){
 			    		rs = stmt.getResultSet();
+			    		rs.next();
 			    		pvpID = rs.getInt(1);
 			    	}
 			    }
@@ -203,7 +204,7 @@ public class TicTacToeServer {
 		}
 	}
 	
-	void sendMoves(int[][] moves){
+	static void sendMoves(int[][] moves){
 		for(int i = 0; i < moves.length; i++){
 			os.println("TICTACTOE MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
 		}
@@ -240,7 +241,7 @@ class TicTacToeListener extends Thread {
 				e.printStackTrace();
 			}
 			
-			sendMoves(findMoves()); //Check for moves, then send them.
+			TicTacToeServer.sendMoves(findMoves()); //Check for moves, then send them.
 		}
 	}
 	
@@ -292,14 +293,6 @@ class TicTacToeListener extends Thread {
 		}
 		
 		return moves;
-	}
-	
-	//Send the moves over to ProjectThemisClient.
-	void sendMoves(int[][] moves){
-		if(moves != null)
-			for(int i = 0; i < moves.length; i++){
-				os.println("TICTACTOE MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
-		}
 	}
 	
 	void updatePVPID(int pvpID){
