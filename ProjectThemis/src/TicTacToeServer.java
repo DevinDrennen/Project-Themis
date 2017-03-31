@@ -15,33 +15,30 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.io.*;
 
+//A helper class for ProjectThemisServerThread. 
 public class TicTacToeServer {
 	
-	Connection conn = null;
-	Statement stmt = null;
-	ResultSet rs = null;
-	final String DB_URL = "jdbc:mysql://localhost:3306/project_themis_test?useSSL=false";
-	String USER = ProjectThemisServer.USER;
+	Connection conn = null; //A connection to the MySQL Database.
+	Statement stmt = null; //A statement to be executed on the database.
+	ResultSet rs = null; //The results from a query.
+	final String DB_URL = "jdbc:mysql://localhost:3306/project_themis_test?useSSL=false"; //Database location and name.
+	
+	String USER = ProjectThemisServer.USER; //Grab the username and passwordfrom the ProjectThemisServer..
 	String PASS = ProjectThemisServer.PASS;
 	
-	int playerID;
+	int playerID; //The player's ID. This should be passed in from the server when created.
 	int pvpID;
 	
-	boolean running = false;
-	
-	BufferedReader is;
 	PrintWriter os;
 	
-	public TicTacToeServer(BufferedReader inputStream, PrintWriter outputStream, int PID){
+	public TicTacToeServer( PrintWriter outputStream, int PID){
 		
 		playerID = PID;
-		pvpID = 2;
-		running = true;
+		pvpID = 2; //DEBUGGING
 		
-		is = inputStream;
 		os = outputStream;
 		
-		final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+		final String JDBC_DRIVER = "com.mysql.jdbc.Driver"; //The driver it's used for JDBC.
 		try{
 			Class.forName(JDBC_DRIVER);
 
@@ -50,7 +47,7 @@ public class TicTacToeServer {
 			e.printStackTrace();
 		}
 
-		try{
+		try{ //DEBUGGING - Pretty sure this chunk can be deleted.
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
 			
@@ -100,10 +97,11 @@ public class TicTacToeServer {
 		}
 	*/
 		
-		TicTacToeListener listener = new TicTacToeListener(pvpID, os);
-		listener.start();
+		TicTacToeListener listener = new TicTacToeListener(pvpID, os); //Starts the listener thread which will watch for moves being added to the database.
+		listener.start(); //Start the listener.
 	}
 	
+	//Processes the inputs received from ProjectThemisServerThread. 
 	void processInput(String[] inputs){
 		
 		System.out.println("Inputs Being Processed...");
@@ -205,6 +203,7 @@ public class TicTacToeServer {
 
 class TicTacToeListener extends Thread {
 	
+	//See TicTacToeServer for  an explanation of all this.
 	Connection conn = null;
 	Statement stmt = null;
 	ResultSet rs = null;
@@ -216,27 +215,33 @@ class TicTacToeListener extends Thread {
 	
 	PrintWriter os;
 	
-	
+	//Constructor method. 
 	TicTacToeListener(int pvpID, PrintWriter os){
 		this.pvpID = pvpID;
 		this.os = os;
 		System.out.println("TicTacToeListener initialized!");
 	}
 	
+	//This is called when you start a thread. Vital.
 	public void run(){
 		while(true){
 			try {
-				Thread.sleep(100);
+				Thread.sleep(500); //Wait a half second.
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 			
-			sendMoves(markMoves());
+			sendMoves(findMoves()); //Check for moves, then send them.
 		}
 	}
 	
-	int[][] markMoves(){
-		int[][] moves = new int[81][3]; //Maximum needed for TTT
+	//Find any moves in the database for the game. Ideally, we should be storing old ones so we don't keep sending them.  #Goals
+	int[][] findMoves(){
+		
+		int[][] moves = null; //The new moves will go here.
+	
+		//int[][] moves = new int[81][3]; //Maximum needed for TTT - lol jk
+	
 		try{
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
@@ -244,25 +249,31 @@ class TicTacToeListener extends Thread {
 			if (stmt.execute("SELECT MOVE_ROW, MOVE_COL, MOVE_D1 FROM MOVES WHERE MOVE_PVP_ID = " + pvpID)) {
 				rs = stmt.getResultSet();
 				}
-			    
-			    ResultSetMetaData rsmd = rs.getMetaData();
-			    int columnsNumber = rsmd.getColumnCount();
-			    int i = 0;
-			    while (rs.next()) {
+		    
+			
+			
+			if(rs.last()) {
+				moves = new int[rs.getRow()][3]; //To determine the size, jump to the end of the results, and get the row.
+				rs.beforeFirst(); //Return the cursor to BEFORE the start so next goes to the first one.
+				int i = 0; //An int, for counting
+			    while (rs.next()) { //While there are more lines from our SELECT query above, keep parsing it into an array.
 			    	moves[i][0] = rs.getInt(1);
 			    	moves[i][1] = rs.getInt(2);
 			    	moves[i][2] = rs.getInt(3);
 			    	i++;
 			    }    
-			    
-			    return moves;
+			    //return moves;
+			}	
+		    //ResultSetMetaData rsmd = rs.getMetaData(); //Is this needed?
+		    //int columnsNumber = rsmd.getColumnCount(); //Same with this.
+		    
 		}
 		catch (SQLException e){
 		    System.out.println("SQLException: " + e.getMessage());
 		    System.out.println("SQLState: " + e.getSQLState());
 		    System.out.println("VendorError: " + e.getErrorCode());
 		}
-		finally{
+		finally{ //Make sure we close the connection.
 			if(conn!=null)
 				try {
 					conn.close();
@@ -271,9 +282,10 @@ class TicTacToeListener extends Thread {
 				}
 		}
 		
-		return null;
+		return moves;
 	}
 	
+	//Send the moves over to ProjectThemisClient.
 	void sendMoves(int[][] moves){
 		for(int i = 0; i < moves.length; i++){
 			os.println("TICTACTOE MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);

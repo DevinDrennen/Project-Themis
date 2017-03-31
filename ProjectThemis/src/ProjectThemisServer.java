@@ -48,7 +48,7 @@ public class ProjectThemisServer {
 			try {
 				s = ss2.accept();
 				System.out.println("connection Established");
-				ServerThread st = new ServerThread(s);
+				ProjectThemisServerThread st = new ProjectThemisServerThread(s);
 				st.start();
 
 			}
@@ -62,24 +62,24 @@ public class ProjectThemisServer {
 	}
 }
 
-class ServerThread extends Thread {
+class ProjectThemisServerThread extends Thread {
 
 	String line = null;
 	BufferedReader is = null;
 	PrintWriter os = null;
-	Socket s = null;
+	Socket socket = null;
 	int clientID;
 	
 	TicTacToeServer ttts;
 
-	public ServerThread(Socket s) {
-		this.s = s;
+	public ProjectThemisServerThread(Socket s) {
+		this.socket = s;
 	}
 
 	public void run() {
 		try {
-			is = new BufferedReader(new InputStreamReader(s.getInputStream()));
-			os = new PrintWriter(s.getOutputStream());
+			is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			os = new PrintWriter(socket.getOutputStream());
 
 		} catch (IOException e) {
 			System.out.println("IO error in server thread");
@@ -114,8 +114,8 @@ class ServerThread extends Thread {
 					os.close();
 					System.out.println("Socket Out Closed");
 				}
-				if (s != null) {
-					s.close();
+				if (socket != null) {
+					socket.close();
 					System.out.println("Socket Closed");
 				}
 
@@ -134,7 +134,7 @@ class ServerThread extends Thread {
 		case "ECHO": //When the ECHO command is given, repeat the previously given command.
 			os.println(inputs[1]);
 			os.flush();
-			System.out.println("Response to Client " + s.getRemoteSocketAddress() + "  :  " + inputs[1]);
+			System.out.println("Response to Client " + socket.getRemoteSocketAddress() + "  :  " + inputs[1]);
 			break;
 			
 		case "GETID": //The GetID class will handle logins etc. The client should send this FIRST.
@@ -142,7 +142,7 @@ class ServerThread extends Thread {
 			
 		case "TICTACTOE": //The TicTacToe prompt means we'll be handling the TicTacToe game's commands. 
 			if(inputs[1].equals("NEW")){
-				ttts = new TicTacToeServer(is, os, clientID); //Create new TTT game if the second chunk of data is "NEW".
+				ttts = new TicTacToeServer(os, clientID); //Create new TTT game if the second chunk of data is "NEW".
 				System.out.println("Created new TicTacToeServer instance");
 			}
 			else if(ttts != null){
