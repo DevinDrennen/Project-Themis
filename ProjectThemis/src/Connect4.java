@@ -2,16 +2,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener; 
-import java.io.File;
-
 import javax.swing.*;
 
 public class Connect4 extends JFrame {
-
-
 	static char[][] board;
 	static JButton[][] display;
 	JPanel boardpanel;
@@ -21,9 +16,7 @@ public class Connect4 extends JFrame {
 	int numRows;
 	int numCols;
 
-	
 	static int currentRow;
-
 	static Turn turn;
 
 	public Connect4(int n) {
@@ -50,16 +43,20 @@ public class Connect4 extends JFrame {
 				boardpanel.add(display[r][c]);
 				board[r][c] = ' ';
 			}
+		for (c = 0; c < numCols; c++)
+			for (r = 0; r < numRows; r++) {
+				if (c % 2 == 0)
+					display[r][c].setBackground(Color.lightGray);
+				else
+					display[r][c].setBackground(Color.gray);
+			}
 		add(boardpanel,BorderLayout.CENTER);
 		add(playerTurn,BorderLayout.NORTH);
 		playerTurn.setHorizontalAlignment(JLabel.CENTER);
 		playerTurn.setFont(new Font(null,1,24));
 		setLocationRelativeTo(null);
 		setVisible(true);
-
 	}
-
-
 
 	private class MoveListener implements ActionListener {
 		int r,c;
@@ -94,15 +91,14 @@ public class Connect4 extends JFrame {
 			i--;
 		}
 		return false;
-
 	}
 
 	//checks for win or tie ***NEEDS FINE TUNING OF DIAGONAL CHECKS***
 	public void winCheck(char player, int moveCount, int row, int col) {
 		int count = 0;
+		char[][] winMarker = new char[numRows][numCols];
 
 		if (moveCount >= 42 && !gameOver) {
-			playerTurn.setText("Out of moves, no one wins!");
 			gameOver = true;
 			JOptionPane tieMessage = new JOptionPane();
 			JOptionPane.showMessageDialog(tieMessage, "No winner, it's a tie!");
@@ -111,26 +107,34 @@ public class Connect4 extends JFrame {
 		if (moveCount >= 7 && !gameOver) {
 			//horizontal check
 			for (int c=0;c<numCols;c++) {
-				if (board[row][c] == player)
+				if (board[row][c] == player) {
 					count++;
-				else 
+					winMarker[row][c] = turn.symbol;
+				}
+				else {
 					count = 0;
+					clearWinMarker(winMarker);
+				}
 				if (count >= 4) {
 					gameOver = true;
-					winnerMessage();
+					winnerMessage(winMarker);
 				}
 			}
 			count = 0;
 
 			//vertical check
 			for (int r=0;r<numRows;r++) {
-				if (board[r][col] == player)
+				if (board[r][col] == player) {
 					count++;
-				else
+					winMarker[r][col] = turn.symbol;
+				}
+				else {
 					count = 0;
+					clearWinMarker(winMarker);
+				}
 				if (count >= 4) {
 					gameOver = true;
-					winnerMessage();
+					winnerMessage(winMarker);
 				}
 			}
 			count = 0;
@@ -141,13 +145,17 @@ public class Connect4 extends JFrame {
 				int r,c;
 				count = 0;
 				for (r = rowStart, c = 0; r < numRows && c < numCols; r++, c++ ) {
-					if (board[r][c] == player)
+					if (board[r][c] == player) {
 						count++;
-					else
+						winMarker[r][c] = turn.symbol;
+					}
+					else {
 						count = 0;
+						clearWinMarker(winMarker);
+					}
 					if (count >= 4) {
 						gameOver = true;
-						winnerMessage();
+						winnerMessage(winMarker);
 					}
 				}
 			}
@@ -159,13 +167,17 @@ public class Connect4 extends JFrame {
 				int r,c;
 				count = 0;
 				for (r = 0, c = colStart; r < numRows && c < numCols; r++, c++ ) {
-					if (board[r][c] == player)
+					if (board[r][c] == player) {
 						count++;
-					else
+						winMarker[r][c] = turn.symbol;
+					}
+					else {
 						count = 0;
+						clearWinMarker(winMarker);
+					}
 					if (count >= 4) {
 						gameOver = true;
-						winnerMessage();
+						winnerMessage(winMarker);
 					}
 				}
 			}
@@ -176,13 +188,17 @@ public class Connect4 extends JFrame {
 				int r,c;
 				count = 0;
 				for (r = rowStart, c = 0; r > 0 && c < numCols; r--, c++) {
-					if (board[r][c] == player)
+					if (board[r][c] == player) {
 						count++;
-					else
+						winMarker[r][c] = turn.symbol;
+					}
+					else {
 						count = 0;
+						clearWinMarker(winMarker);
+					}
 					if (count >= 4) {
 						gameOver = true;
-						winnerMessage();
+						winnerMessage(winMarker);
 					}
 				}
 			}
@@ -193,21 +209,34 @@ public class Connect4 extends JFrame {
 				int r,c;
 				count = 0;
 				for (r = numRows - 1, c = colStart; r > 0 && c < numCols; r--, c++) {
-					if (board[r][c] == player)
+					if (board[r][c] == player) {
 						count++;
-					else
+						winMarker[r][c] = turn.symbol;
+					}
+					else {
 						count = 0;
+						clearWinMarker(winMarker);
+					}
 					if (count >= 4) {
 						gameOver = true;
-						winnerMessage();
+						winnerMessage(winMarker);
 					}
 				}
 			}
 			count = 0;
 		}
 	}
+	public void clearWinMarker(char[][] winMarker) {
+		for (int r = 0; r < numRows; r++)
+			for (int c = 0; c < numCols; c++)
+				winMarker[r][c] = ' ';
+	}
 
-	public void winnerMessage() {
+	public void winnerMessage(char[][] winningBoard) {
+		for (int r = 0; r < numRows; r++)
+			for (int c = 0; c < numCols; c++)
+				if (winningBoard[r][c] == turn.symbol)
+					display[r][c].setBackground(Color.YELLOW);
 		JOptionPane window = new JOptionPane();
 		JOptionPane.showMessageDialog(window, turn.name + " wins!");
 	}
