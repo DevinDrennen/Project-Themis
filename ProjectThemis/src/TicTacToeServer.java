@@ -207,7 +207,9 @@ public class TicTacToeServer {
 	void sendMoves(int[][] moves){
 		if(moves != null)
 			for(int i = 0; i < moves.length; i++){
+				os.flush();
 				os.println("TICTACTOE MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
+				os.flush();
 		}
 	}
 }
@@ -277,7 +279,7 @@ class TicTacToeListener extends Thread {
 			}	
 		    //ResultSetMetaData rsmd = rs.getMetaData(); //Is this needed?
 		    //int columnsNumber = rsmd.getColumnCount(); //Same with this.
-		    
+		     
 		}
 		catch (SQLException e){
 		    System.out.println("SQLException: " + e.getMessage());
@@ -299,7 +301,9 @@ class TicTacToeListener extends Thread {
 	void sendMoves(int[][] moves){
 		if(moves != null)
 			for(int i = 0; i < moves.length; i++){
+				os.flush();
 				os.println("TICTACTOE MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
+				os.flush();
 		}
 	}
 	
