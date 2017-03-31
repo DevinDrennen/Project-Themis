@@ -26,6 +26,7 @@ public class TicTacToeClient extends JFrame {
     boolean xTurn = true;
     boolean oTurn = false;
     int gameID;
+    int playerID;
     
     BufferedReader is;
     PrintWriter os;
@@ -35,7 +36,7 @@ public class TicTacToeClient extends JFrame {
  
         is = inputStream;
         os = outputStream;
-        
+        playerID = ProjectThemisClient.playerID;
         
         setTitle("Tic Tac Toe");
         setSize(500,500);
@@ -76,14 +77,14 @@ public class TicTacToeClient extends JFrame {
         }
         public void actionPerformed(ActionEvent e) {
             if (!gameOver) {
-                if (board[r][c] == ' ' && (moveCount % 2 == 0)) {
+                if (board[r][c] == ' ' && (moveCount % 2 == 0) && playerID == 1) {
                     board[r][c] = 'X';
                     display[r][c].setText("X");
                     moveCount++;
                     playerTurn.setText("It is O's Turn!");
                     os.println("TICTACTOE MOVE " + r + " " + c + " " + 1);
                 }
-                else if (board[r][c] == ' ' && (moveCount % 2 == 1)) {
+                else if (board[r][c] == ' ' && (moveCount % 2 == 1) && playerID == 2) {
                     board[r][c] = 'O';
                     display[r][c].setText("O");
                     moveCount++;
@@ -114,6 +115,7 @@ public class TicTacToeClient extends JFrame {
                     oTurn = false;
                     gameOver = false;
                 }
+            os.println("TICTACTOE NEWGAME");
         }
     }
  

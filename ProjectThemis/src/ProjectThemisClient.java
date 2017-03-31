@@ -11,7 +11,7 @@ public class ProjectThemisClient {
 	static String pass = null;
 	
 	//The player ID - this is stored on the MySQL Database.
-	static int id;
+	static int playerID;
 	
 	static String hostName;
 	static int portNumber;
@@ -60,7 +60,8 @@ public class ProjectThemisClient {
         	//line=is.readLine(); //Afterwards, it'll get back the player's ID.
         	
         	os.println("GETID " + 1); //This is just for testing,
-        	os.println("TICTACTOE NEW"); //Right now we just have TicTacToe and no menu, so it'll always create TicTacToe.
+        	os.println("TICTACTOE NEWSERVER"); //Right now we just have TicTacToe and no menu, so it'll always create TicTacToe.
+        	os.println("TICTACTOE NEWGAME");
         	
         	
         	tttc = new TicTacToeClient(3, is, os); //Creates the clientside game.      
