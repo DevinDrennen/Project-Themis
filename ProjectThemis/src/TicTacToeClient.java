@@ -52,6 +52,7 @@ public class TicTacToeClient extends JFrame {
                 display[i][j].setFont(new Font(null,1,125));
                 display[i][j].setFocusPainted(false);
                 display[i][j].addActionListener(new MoveListener(i,j));
+                display[i][j].setBackground(Color.WHITE);
                 boardpanel.add(display[i][j]);
                 board[i][j] = ' ';
             }
