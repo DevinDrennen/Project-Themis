@@ -29,7 +29,7 @@ public class TicTacToeServer {
 	int playerID; //The player's ID. This should be passed in from the server when created.
 	int pvpID;
 	
-	static PrintWriter os;
+	PrintWriter os;
 	TicTacToeListener listener;
 	
 	public TicTacToeServer( PrintWriter outputStream, int PID){
@@ -204,9 +204,10 @@ public class TicTacToeServer {
 		}
 	}
 	
-	static void sendMoves(int[][] moves){
-		for(int i = 0; i < moves.length; i++){
-			os.println("TICTACTOE MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
+	void sendMoves(int[][] moves){
+		if(moves != null)
+			for(int i = 0; i < moves.length; i++){
+				os.println("TICTACTOE MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
 		}
 	}
 }
@@ -241,7 +242,7 @@ class TicTacToeListener extends Thread {
 				e.printStackTrace();
 			}
 			
-			TicTacToeServer.sendMoves(findMoves()); //Check for moves, then send them.
+			sendMoves(findMoves()); //Check for moves, then send them.
 		}
 	}
 	
@@ -293,6 +294,13 @@ class TicTacToeListener extends Thread {
 		}
 		
 		return moves;
+	}
+	
+	void sendMoves(int[][] moves){
+		if(moves != null)
+			for(int i = 0; i < moves.length; i++){
+				os.println("TICTACTOE MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
+		}
 	}
 	
 	void updatePVPID(int pvpID){
