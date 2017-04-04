@@ -138,10 +138,15 @@ class ProjectThemisServerThread extends Thread {
 			break;
 			
 		case "GETID": //The GetID class will handle logins etc. The client should send this FIRST.
-			clientID = Integer.parseInt(inputs[1]);
+			//MAGIC
+			break;
+			
+		case "NEWID":
+			//MORE MAGIC
+			break;
 			
 		case "TICTACTOE": //The TicTacToe prompt means we'll be handling the TicTacToe game's commands. 
-			if(inputs[1].equals("NEW")){
+			if(inputs[1].equals("START")){
 				ttts = new TicTacToeServer(os, clientID); //Create new TTT game if the second chunk of data is "NEW".
 				System.out.println("Created new TicTacToeServer instance");
 			}

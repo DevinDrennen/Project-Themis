@@ -26,6 +26,8 @@ public class Menu extends JFrame {
 	Box box;
 	JOptionPane message;
 	
+	Boolean authen = false;
+	
 	Color darkestRed = new Color(71, 0, 15);
 	Color darkRed = new Color(110, 5, 28);
 	Color mediumRed = new Color(146, 28, 54);
@@ -97,17 +99,32 @@ public class Menu extends JFrame {
 						JOptionPane.showMessageDialog(loginMessage, "Enter your username and password");
 						String username = JOptionPane.showInputDialog("Enter your username");
 						String password = JOptionPane.showInputDialog("Enter your password");
-						System.out.println("check username and password against database");
+						
+						ProjectThemisClient.setUser(username);
+						ProjectThemisClient.setPass(password);
+
+						if(ProjectThemisClient.login()){
+							JOptionPane.showMessageDialog(message, "Login succeded!");
+							authen = true;
+						}
+						else{
+							JOptionPane.showMessageDialog(message, "Login failed!");
+							authen = false;
+						}
+						
 						break;
 				case "Create an account": 
 						message = new JOptionPane();
 						JOptionPane.showMessageDialog(message, "Create an account");
 						String newusername = JOptionPane.showInputDialog("Enter a username");
+						String newpassword = JOptionPane.showInputDialog("Enter a password");
+						
+						ProjectThemisClient.newAccount(newusername, newpassword);
 						break;
 				case "Connect 4" :// new Connect4(6);
 						break;
 				case "Tic Tac Toe": //new TicTacToeClient(3);
-						System.out.println("Tic Tac Toe Client");
+						ProjectThemisClient.launchTicTacToe();
 						break;
 				case "Othello" : System.out.println("Othello Client");
 						break;

@@ -16,6 +16,9 @@ public class ProjectThemisClient {
 	static String hostName;
 	static int portNumber;
 	
+	static BufferedReader is = null;
+	static PrintWriter os = null;
+	
 	//The client classes for games/utils. 
 	static TicTacToeClient tttc;
 	
@@ -50,23 +53,19 @@ public class ProjectThemisClient {
         //Todo: Find smart way to let the user decide the order of commands.
         
         //Sets up communications with server.
-        try (
-            Socket socket = new Socket(hostName, portNumber); //The socket is the channel it uses to communicate with the server.
-            PrintWriter os = new PrintWriter(socket.getOutputStream(), true); //Output stream - things are sent from here.
-            BufferedReader is = new BufferedReader( new InputStreamReader(socket.getInputStream())); //Input stream - things come in here.
-            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in)) //TBH idk what this is for.
-        ) {
+        try {
+        	Socket socket = new Socket(hostName, portNumber); //The socket is the channel it uses to communicate with the server.
+            os = new PrintWriter(socket.getOutputStream(), true); //Output stream - things are sent from here.
+            is = new BufferedReader( new InputStreamReader(socket.getInputStream())); //Input stream - things come in here.
+            BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in)); //TBH idk what this is for.
         	
         	String line; //Line is where incoming messages are temporarily stored.
         	//os.println("GETID " + user + " " + pass); //GETID will instead send our username and HASHED/SALTED password to the server.
         	//line=is.readLine(); //Afterwards, it'll get back the player's ID.
         	
         	os.println("GETID " + playerID); //This is just for testing,
-        	os.println("TICTACTOE NEW"); //Right now we just have TicTacToe and no menu, so it'll always create TicTacToe.
-        	os.println("TICTACTOE NEWGAME");
-        	
-        	
-        	tttc = new TicTacToeClient(3, is, os); //Creates the clientside game.      
+
+        	Menu menu = new Menu();
         	line=is.readLine();
         	while(line.compareTo("QUIT") != 0){ //Until it is told to QUIT by the sertver, keep reading new lines and processing them.
         		processInput(line);
@@ -99,5 +98,49 @@ public class ProjectThemisClient {
 		}
 		
 		System.out.println("Processed Inputs (Client)!"); //DEBUGGING
+	}
+	
+	public static void launchTicTacToe(){
+		
+		os.println("TICTACTOE START"); //These are two wildly different commands actually.
+    	os.println("TICTACTOE NEWGAME"); //Newgame resets the board state, while start opens the whole client thinger up.
+		tttc = new TicTacToeClient(3, is, os);
+		
+	}
+	
+	public static void setUser(String username){
+		user = username;
+	}
+	
+	public static void setPass(String password){
+		pass = password;
+	}
+	
+	public static boolean login(){
+		PasswordAuthentication encrypt = new PasswordAuthentication();
+		os.println("GETID " + user + " " + encrypt.hash(pass.toCharArray()));
+		try{
+			
+			String[] inputs = (is.readLine()).split(" "); //Read a line, break it into an array plz
+			if(inputs[0] != null && inputs[0].equals("GETID")){
+				if(inputs[1] != null && !inputs[0].equals("-1")){
+					playerID = Integer.parseInt(inputs[1]);
+					return true;
+				}
+			}
+			
+			
+		}
+		catch (IOException e) {
+	        System.err.println("Couldn't get I/O for the connection to " +
+	            hostName);
+	        System.exit(1);
+		} 
+		return false;
+	}
+	
+	public static void newAccount(String username, String password){
+		PasswordAuthentication encrypt = new PasswordAuthentication();
+		os.println("NEWID " + user + " " + encrypt.hash(pass.toCharArray()));
 	}
 }
