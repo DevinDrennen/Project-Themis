@@ -28,6 +28,7 @@ public class Login {
 	    panel.add(controls, BorderLayout.CENTER);
 
 	    JOptionPane.showMessageDialog(frame, panel, "login", JOptionPane.QUESTION_MESSAGE);
+	    JOptionPane.showMessageDialog(frame, panel, "register", JOptionPane.QUESTION_MESSAGE);
 
 	    PasswordAuthentication encrypt = new PasswordAuthentication();
 	    
