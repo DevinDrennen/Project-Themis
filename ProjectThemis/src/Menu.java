@@ -104,7 +104,7 @@ public class Menu extends JFrame {
 						JOptionPane.showMessageDialog(message, "Create an account");
 						String newusername = JOptionPane.showInputDialog("Enter a username");
 						break;
-				case "Connect 4" : new Connect4(6);
+				case "Connect 4" :// new Connect4(6);
 						break;
 				case "Tic Tac Toe": //new TicTacToeClient(3);
 						System.out.println("Tic Tac Toe Client");

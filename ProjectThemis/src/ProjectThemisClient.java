@@ -6,8 +6,7 @@ public class ProjectThemisClient {
 	static String user = null;
 	static String pass = null;
 	static int id;
-	//For 2/24 someone needs to make a PW salting and hashing program to encrypt passwords.
-	
+
 	public static void main(String[] args) throws IOException{
         String hostName = "localhost";
         int portNumber = 4445;
@@ -35,7 +34,7 @@ public class ProjectThemisClient {
         	
         	String line;
         	os.println("GETID " + user + " " + pass);
-        	new TicTacToeClient(3, is, os);         
+//        	new TicTacToeClient(3, is, os);         
         	line=is.readLine();
         	
           
