@@ -5,21 +5,6 @@ import java.net.*;
 //Will create client classes for each game.
 public class ProjectThemisClient {
 
-<<<<<<< HEAD
-	static String user = null;
-	static String pass = null;
-	static int id;
-
-	public static void main(String[] args) throws IOException{
-        String hostName = "localhost";
-        int portNumber = 4445;
-
-        if(args.length >= 2){
-        	user = args[0];
-        	pass = args[1];
-        }
-        else{ //Remove this before deployment.
-=======
 	//User and pass will store a plaintext version of the user's username and password. 
 	//Both are only stored while the client is running, and the password will not leave the client's machine.
 	static String user = null;
@@ -55,20 +40,16 @@ public class ProjectThemisClient {
         }
         else{ //Remove this before deployment.
         	hostName = "themis.servegame.com";
->>>>>>> TicTacToe
         	user = "user";
         	pass = "pass";
         }
         
-<<<<<<< HEAD
-=======
         
         playerID = 1;
         int portNumber = 4445; //Don't forget to set this - this might join the command line parser in the future.
         //Todo: Find smart way to let the user decide the order of commands.
         
         //Sets up communications with server.
->>>>>>> TicTacToe
         try (
             Socket socket = new Socket(hostName, portNumber); //The socket is the channel it uses to communicate with the server.
             PrintWriter os = new PrintWriter(socket.getOutputStream(), true); //Output stream - things are sent from here.
@@ -76,12 +57,6 @@ public class ProjectThemisClient {
             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in)) //TBH idk what this is for.
         ) {
         	
-<<<<<<< HEAD
-        	String line;
-        	os.println("GETID " + user + " " + pass);
-//        	new TicTacToeClient(3, is, os);         
-        	line=is.readLine();
-=======
         	String line; //Line is where incoming messages are temporarily stored.
         	//os.println("GETID " + user + " " + pass); //GETID will instead send our username and HASHED/SALTED password to the server.
         	//line=is.readLine(); //Afterwards, it'll get back the player's ID.
@@ -97,7 +72,6 @@ public class ProjectThemisClient {
         		processInput(line);
         		line = is.readLine();
         	}
->>>>>>> TicTacToe
         	
           
         } catch (UnknownHostException e) {
@@ -109,14 +83,6 @@ public class ProjectThemisClient {
             System.exit(1);
         } 
 	}
-<<<<<<< HEAD
-	private void processInput(String inputLine) {
-		String[] inputs = inputLine.split(" ");
-
-		switch (inputs[0]) {
-
-		}
-=======
 	
 	//Processes our inputs and ensures the right classes get their messages.
 	//String inputLine: A string made up of multiple words/characters seperated by spaces.
@@ -133,6 +99,5 @@ public class ProjectThemisClient {
 		}
 		
 		System.out.println("Processed Inputs (Client)!"); //DEBUGGING
->>>>>>> TicTacToe
 	}
 }
