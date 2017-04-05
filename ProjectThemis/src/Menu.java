@@ -135,7 +135,9 @@ public class Menu extends JFrame {
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent e) { }
+			public void mouseEntered(MouseEvent e) { 
+				button.setForeground(lightestRed);
+			}
 
 			@Override
 			public void mousePressed(MouseEvent e) { }
