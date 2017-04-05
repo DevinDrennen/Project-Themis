@@ -15,11 +15,11 @@ public class Turn {
 	
 
 	static Image img = redC.getImage() ;  
-	static Image newimg = img.getScaledInstance(50,50,Image.SCALE_DEFAULT);
+	static Image newimg = img.getScaledInstance(80,80,Image.SCALE_SMOOTH);
 	static ImageIcon redCircle = new ImageIcon( newimg );
 	
 	static Image img2 = blackC.getImage() ;  
-	static Image newimg2 = img2.getScaledInstance(50,50,Image.SCALE_DEFAULT);
+	static Image newimg2 = img2.getScaledInstance(80,80,Image.SCALE_SMOOTH);
 	static ImageIcon blackCircle = new ImageIcon( newimg2 );
 	
 	void red() {
