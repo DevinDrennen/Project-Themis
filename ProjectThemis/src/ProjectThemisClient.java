@@ -123,7 +123,7 @@ public class ProjectThemisClient {
 			
 			String[] inputs = (is.readLine()).split(" "); //Read a line, break it into an array plz
 			if(inputs[0] != null && inputs[0].equals("GETID")){
-				if(inputs[1] != null && !inputs[0].equals("-1")){
+				if(inputs[1] != null && !inputs[1].equals("-1")){
 					playerID = Integer.parseInt(inputs[1]);
 					return true;
 				}

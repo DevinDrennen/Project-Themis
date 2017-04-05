@@ -138,11 +138,21 @@ class ProjectThemisServerThread extends Thread {
 			break;
 			
 		case "GETID": //The GetID class will handle logins etc. The client should send this FIRST.
-			//MAGIC
+			int i = -1;
+			i = LoginServer.tryLogin(inputs[0],  inputs[2]);
+			if(i != -1){
+				clientID = i;
+				os.println("GETID " + clientID);
+			}
+			else {
+				os.println("GETID -1");
+			}
+			
 			break;
 			
 		case "NEWID":
-			//MORE MAGIC
+			if(!LoginServer.checkPlayer(inputs[1]))
+				LoginServer.addPlayer(inputs[1], inputs[2]);
 			break;
 			
 		case "TICTACTOE": //The TicTacToe prompt means we'll be handling the TicTacToe game's commands. 
