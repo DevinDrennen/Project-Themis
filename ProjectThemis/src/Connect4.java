@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener; 
 import javax.swing.*;
@@ -18,6 +19,13 @@ public class Connect4 extends JFrame {
 
 	static int currentRow;
 	static Turn turn;
+	
+	static ImageIcon whiteC = new ImageIcon("white_circle.png");
+	
+	static Image img = whiteC.getImage() ;  
+	static Image newimg = img.getScaledInstance(65,65,Image.SCALE_SMOOTH);
+	static ImageIcon whiteCircle = new ImageIcon( newimg );
+	
 
 	public Connect4(int n) {
 		int r,c;
@@ -39,16 +47,11 @@ public class Connect4 extends JFrame {
 				display[r][c].setFont(new Font(null,1,40));
 				display[r][c].setFocusPainted(false);
 				display[r][c].setBorder(null);
+				display[r][c].setBackground(Color.YELLOW);
+				display[r][c].setIcon(whiteCircle);
 				display[r][c].addActionListener(new MoveListener(r,c));
 				boardpanel.add(display[r][c]);
 				board[r][c] = ' ';
-			}
-		for (c = 0; c < numCols; c++)
-			for (r = 0; r < numRows; r++) {
-				if (c % 2 == 0)
-					display[r][c].setBackground(Color.lightGray);
-				else
-					display[r][c].setBackground(Color.gray);
 			}
 		add(boardpanel,BorderLayout.CENTER);
 		add(playerTurn,BorderLayout.NORTH);
@@ -144,6 +147,7 @@ public class Connect4 extends JFrame {
 				//only goes to numRows-3 because there's not 4 in diagonal direction below that
 				int r,c;
 				count = 0;
+				clearWinMarker(winMarker);
 				for (r = rowStart, c = 0; r < numRows && c < numCols; r++, c++ ) {
 					if (board[r][c] == player) {
 						count++;
@@ -166,6 +170,7 @@ public class Connect4 extends JFrame {
 				//starts at 1 because 0 was already checked in rows loop
 				int r,c;
 				count = 0;
+				clearWinMarker(winMarker);
 				for (r = 0, c = colStart; r < numRows && c < numCols; r++, c++ ) {
 					if (board[r][c] == player) {
 						count++;
@@ -187,6 +192,7 @@ public class Connect4 extends JFrame {
 			for (int rowStart = numRows-1; rowStart > numRows - 3; rowStart--) {
 				int r,c;
 				count = 0;
+				clearWinMarker(winMarker);
 				for (r = rowStart, c = 0; r > 0 && c < numCols; r--, c++) {
 					if (board[r][c] == player) {
 						count++;
@@ -208,6 +214,7 @@ public class Connect4 extends JFrame {
 			for (int colStart = 1; colStart < numCols - 3; colStart++) {
 				int r,c;
 				count = 0;
+				clearWinMarker(winMarker);
 				for (r = numRows - 1, c = colStart; r > 0 && c < numCols; r--, c++) {
 					if (board[r][c] == player) {
 						count++;
@@ -236,7 +243,7 @@ public class Connect4 extends JFrame {
 		for (int r = 0; r < numRows; r++)
 			for (int c = 0; c < numCols; c++)
 				if (winningBoard[r][c] == turn.symbol)
-					display[r][c].setBackground(Color.YELLOW);
+					display[r][c].setBackground(Color.blue);
 		JOptionPane window = new JOptionPane();
 		JOptionPane.showMessageDialog(window, turn.name + " wins!");
 	}
