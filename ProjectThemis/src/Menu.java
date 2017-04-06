@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.UIManager;
 
 import java.awt.Container;
@@ -25,8 +26,6 @@ public class Menu extends JFrame {
 	BoxLayout layout;
 	Box box;
 	JOptionPane message;
-	
-	Boolean authen = false;
 	
 	Color darkestRed = new Color(71, 0, 15);
 	Color darkRed = new Color(110, 5, 28);
@@ -95,36 +94,30 @@ public class Menu extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				switch (name) {
-				case "Login": JOptionPane loginMessage= new JOptionPane();
-						JOptionPane.showMessageDialog(loginMessage, "Enter your username and password");
+				case "Login": message= new JOptionPane();
+						JOptionPane.showMessageDialog(message, "Enter your username and password");
 						String username = JOptionPane.showInputDialog("Enter your username");
-						String password = JOptionPane.showInputDialog("Enter your password");
+						Box pwBox = Box.createHorizontalBox();
+						pwBox.add(new JLabel("Password: "));
+						JPasswordField passwordField = new JPasswordField(24);
+						pwBox.add(passwordField);
+						message.add(pwBox);
+						passwordField.requestFocusInWindow(); //this line does not have any effect. >:(
+						message.showConfirmDialog(null, pwBox, "Enter your password", JOptionPane.OK_CANCEL_OPTION);
+						String password = new String(passwordField.getPassword());
 						
-						ProjectThemisClient.setUser(username);
-						ProjectThemisClient.setPass(password);
-
-						if(ProjectThemisClient.login()){
-							JOptionPane.showMessageDialog(message, "Login succeded!");
-							authen = true;
-						}
-						else{
-							JOptionPane.showMessageDialog(message, "Login failed!");
-							authen = false;
-						}
-						
+						System.out.println("check username and password against database");
+						System.out.println("pass:"+password);
 						break;
 				case "Create an account": 
 						message = new JOptionPane();
 						JOptionPane.showMessageDialog(message, "Create an account");
 						String newusername = JOptionPane.showInputDialog("Enter a username");
-						String newpassword = JOptionPane.showInputDialog("Enter a password");
-						
-						ProjectThemisClient.newAccount(newusername, newpassword);
 						break;
-				case "Connect 4" :// new Connect4(6);
+				case "Connect 4" : new Connect4(6);
 						break;
 				case "Tic Tac Toe": //new TicTacToeClient(3);
-						ProjectThemisClient.launchTicTacToe();
+						System.out.println("Tic Tac Toe Client");
 						break;
 				case "Othello" : System.out.println("Othello Client");
 						break;
@@ -135,10 +128,10 @@ public class Menu extends JFrame {
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent e) { 
+			public void mouseEntered(MouseEvent e) {
 				button.setForeground(lightestRed);
 			}
-
+				
 			@Override
 			public void mousePressed(MouseEvent e) { }
 
