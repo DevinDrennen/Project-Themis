@@ -151,6 +151,9 @@ public class TicTacToeClient extends JFrame {
  
         if (count > 8 && gameOver == false) 
             playerTurn.setText("Out of moves, no one wins!");
+        
+        if(gameOver)
+        	gameOver();
     }
     
     private void markX(int r, int c){
@@ -209,7 +212,15 @@ public class TicTacToeClient extends JFrame {
     	case "PLAYER":
     		setPlayer(Integer.parseInt(inputs[2]));
     		break;
+    	case "ENDGAME":
+    		gameOver();
+    		break;
     	}
+    }
+    
+    private void gameOver(){
+    	os.println("TICTACTOE ENDGAME");
+    	os.flush();
     }
     
 }

@@ -108,6 +108,9 @@ public class TicTacToeServer {
 		System.out.println("Inputs Being Processed...");
 		
 		switch (inputs[1]) {
+			case "ENDGAME":
+				closeCurrentGame();
+				break;
 			case "NEWGAME": //The Client is trying to start a new game.
 				closeCurrentGame();
 				SQLNewGame();
@@ -186,6 +189,10 @@ public class TicTacToeServer {
 					e.printStackTrace();
 				}
 		}
+		
+		listener.setActive(false);
+		os.println("TICTACTOE ENDGAME");
+		os.flush();
 	}
 	
 	//Make a new game - set up the DB for it and find the pvpID.
@@ -235,6 +242,7 @@ public class TicTacToeServer {
 			    	}
 			    }
 			    listener.updatePVPID(pvpID);
+			    listener.setActive(true);
 		}
 		catch (SQLException e){
 		    System.out.println("SQLException: " + e.getMessage());
@@ -271,6 +279,8 @@ class TicTacToeListener extends Thread {
 	String USER = ProjectThemisServer.USER;
 	String PASS = ProjectThemisServer.PASS;
 	
+	boolean active = false; //Only send moves if active.
+	
 	int pvpID;
 	
 	PrintWriter os;
@@ -290,9 +300,14 @@ class TicTacToeListener extends Thread {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
-			sendMoves(findMoves()); //Check for moves, then send them.
+			if(active){
+				sendMoves(findMoves()); //Check for moves, then send them.
+			}
 		}
+	}
+	
+	public void setActive(boolean active){
+		this.active = active;
 	}
 	
 	//Find any moves in the database for the game. Ideally, we should be storing old ones so we don't keep sending them.  #Goals
