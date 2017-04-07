@@ -40,6 +40,7 @@ public class LoginServer {
 			}
 			
 			PasswordAuthentication authen = new PasswordAuthentication();
+			
 			if(authen.authenticate(password.toCharArray(), token))
 				good = true;
 			

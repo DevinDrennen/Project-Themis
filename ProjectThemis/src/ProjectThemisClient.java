@@ -23,6 +23,8 @@ public class ProjectThemisClient {
 	static TicTacToeClient tttc;
 	static Menu menu;
 	
+	static PasswordAuthentication encrypt;
+	
 	//Start with: ProjectThemisClient [HOSTNAME] [USER] [PASS]
 	public static void main(String[] args) throws IOException{
 		
@@ -48,6 +50,8 @@ public class ProjectThemisClient {
         	pass = "pass";
         }
         
+        
+        encrypt = new PasswordAuthentication();
         
         playerID = 1;
         int portNumber = 4445; //Don't forget to set this - this might join the command line parser in the future.
@@ -136,7 +140,6 @@ public class ProjectThemisClient {
 	}
 	
 	public static void newAccount(String username, String password){
-		PasswordAuthentication encrypt = new PasswordAuthentication();
 		os.println("NEWID " + username + " " + encrypt.hash(password.toCharArray()));
 	}
 }
