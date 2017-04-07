@@ -67,9 +67,9 @@ public class ProjectThemisClient {
         	menu = new Menu();
         	System.out.println("Do I need to thead the menu?");
         	line=is.readLine();
-        	while(line.compareTo("QUIT") != 0){ //Until it is told to QUIT by the sertver, keep reading new lines and processing them.
-        		System.out.println("Got somethin'");
-        		processInput(line);
+        	while(true){ //Until it is told to QUIT by the sertver, keep reading new lines and processing them.
+        		if(line != null)
+        			processInput(line);
         		line = is.readLine();
         	}
         	
@@ -130,6 +130,8 @@ public class ProjectThemisClient {
 	}
 	
 	public static void login(){
+		System.out.println(user);
+		System.out.println(pass);
 		os.println("GETID " + user + " " + pass);
 	}
 	

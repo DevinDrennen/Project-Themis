@@ -204,6 +204,7 @@ public class TicTacToeServer {
 			    	pvpID = rs.getInt(1);
 			        stmt.execute("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
 			        os.println("TICTACTOE PLAYER 2");
+			        os.flush();
 			    }
 			    else{
 			    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P1 = " + pvpID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
@@ -211,6 +212,7 @@ public class TicTacToeServer {
 			    	if(rs.next()){ //Make sure we can look at the next thinger first...
 			    		pvpID = rs.getInt(1);
 			    		os.println("TICTACTOE PLAYER 1");
+			    		os.flush();
 			    	}
 			    	else{
 			    		if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 = " + pvpID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
@@ -218,6 +220,7 @@ public class TicTacToeServer {
 				    	if(rs.next()){ //Make sure we can look at the next thinger first...
 				    		pvpID = rs.getInt(1);
 				    		os.println("TICTACTOE PLAYER 2");
+				    		os.flush();
 				    	}
 				    	else{ //If we can't look at the next thing, there must not be an active game, so make a new one!
 					    	stmt.execute("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
@@ -226,6 +229,7 @@ public class TicTacToeServer {
 					    		rs.next();
 					    		pvpID = rs.getInt(1);
 					    		os.println("TICTACTOE PLAYER 1");
+					    		os.flush();
 					    	}
 				    	}
 			    	}
