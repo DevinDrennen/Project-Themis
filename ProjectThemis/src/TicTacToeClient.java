@@ -25,6 +25,8 @@ public class TicTacToeClient extends JFrame {
     boolean gameOver = false;
     boolean xTurn = true;
     boolean oTurn = false;
+    boolean isX = false;
+    boolean isO = false;
     int gameID;
     int playerID;
     
@@ -78,14 +80,14 @@ public class TicTacToeClient extends JFrame {
         }
         public void actionPerformed(ActionEvent e) {
             if (!gameOver) {
-                if (board[r][c] == ' ' && (moveCount % 2 == 0) && playerID == 1) {
+                if (board[r][c] == ' ' && (moveCount % 2 == 0) && isX) {
                     board[r][c] = 'X';
                     display[r][c].setText("X");
                     moveCount++;
                     playerTurn.setText("It is O's Turn!");
                     os.println("TICTACTOE MOVE " + r + " " + c + " " + 1);
                 }
-                else if (board[r][c] == ' ' && (moveCount % 2 == 1) && playerID == 2) {
+                else if (board[r][c] == ' ' && (moveCount % 2 == 1) && isO) {
                     board[r][c] = 'O';
                     display[r][c].setText("O");
                     moveCount++;
@@ -187,12 +189,26 @@ public class TicTacToeClient extends JFrame {
     	
     }
     
+    //Passes an int to say if the user is player 1 (x) or player 2 (o).
+    private void setPlayer(int player){
+    	isX = false;
+    	isO = false;
+    	if(player == 1)
+    		isX = true;
+    	else if(player == 2)
+    		isO = true;
+    }
+    
     public void processInput(String[] inputs){
     	System.out.println("Processing inputs!");
     	switch (inputs[1]){
     	case "MOVE":
     		markMove(Integer.parseInt(inputs[2]), Integer.parseInt(inputs[3]), Integer.parseInt(inputs[4]));
     		System.out.println("Move recieved!");
+    		break;
+    	case "PLAYER":
+    		setPlayer(Integer.parseInt(inputs[2]));
+    		break;
     	}
     }
     

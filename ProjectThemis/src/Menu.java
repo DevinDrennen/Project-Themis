@@ -109,17 +109,14 @@ public class Menu extends JFrame {
 						String password = new String(passwordField.getPassword());
 
 
+						System.out.println(password);
+						
 						ProjectThemisClient.setUser(username);
 						ProjectThemisClient.setPass(password);
 
-						if(ProjectThemisClient.login()){
-							JOptionPane.showMessageDialog(message, "Login succeded!");
-							authen = true;
-						}
-						else{
-							JOptionPane.showMessageDialog(message, "Login failed!");
-							authen = false;
-						}
+						ProjectThemisClient.login();
+						JOptionPane.showMessageDialog(message, "Logging in...");
+						
 						
 						break;
 						
@@ -127,6 +124,9 @@ public class Menu extends JFrame {
 						message = new JOptionPane();
 						JOptionPane.showMessageDialog(message, "Create an account");
 						String newusername = JOptionPane.showInputDialog("Enter a username");
+						String newpassword = JOptionPane.showInputDialog("Enter a password");
+						
+						ProjectThemisClient.newAccount(newusername, newpassword);
 						break;
 				case "Connect 4" : //new Connect4(6);
 						break;
@@ -154,6 +154,17 @@ public class Menu extends JFrame {
 			
 		});
 		return button;
+	}
+	
+	public void login(boolean auth){
+		if(auth){
+			JOptionPane.showMessageDialog(message, "Login succeded!");
+			authen = true;
+		}
+		else{
+			JOptionPane.showMessageDialog(message, "Login failed!");
+			authen = false;
+		}
 	}
 	
 	public static void main(String[] args) {

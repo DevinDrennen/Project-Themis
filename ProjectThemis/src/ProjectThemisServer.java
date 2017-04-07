@@ -139,13 +139,15 @@ class ProjectThemisServerThread extends Thread {
 			
 		case "GETID": //The GetID class will handle logins etc. The client should send this FIRST.
 			int i = -1;
-			i = LoginServer.tryLogin(inputs[0],  inputs[2]);
+			i = LoginServer.tryLogin(inputs[1],  inputs[2]);
 			if(i != -1){
 				clientID = i;
 				os.println("GETID " + clientID);
+				os.flush();
 			}
 			else {
 				os.println("GETID -1");
+				os.flush();
 			}
 			
 			break;
