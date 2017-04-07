@@ -104,10 +104,10 @@ public class TicTacToeServer {
 	
 	//Processes the inputs received from ProjectThemisServerThread. 
 	void processInput(String[] inputs){
-		
-		System.out.println("Inputs Being Processed...");
-		
 		switch (inputs[1]) {
+			case "ENDGAME":
+				closeCurrentGame();
+				break;
 			case "NEWGAME": //The Client is trying to start a new game.
 				closeCurrentGame();
 				SQLNewGame();
@@ -186,6 +186,10 @@ public class TicTacToeServer {
 					e.printStackTrace();
 				}
 		}
+		
+		listener.setActive(false);
+		os.println("TICTACTOE ENDGAME");
+		os.flush();
 	}
 	
 	//Make a new game - set up the DB for it and find the pvpID.
@@ -193,48 +197,14 @@ public class TicTacToeServer {
 		try{
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
-			//rs = stmt.executeQuery("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL;"); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
-			if (stmt.execute("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + ";")) {
-				rs = stmt.getResultSet();
-				}
-			    
-			    ResultSetMetaData rsmd = rs.getMetaData();
-			    int columnsNumber = rsmd.getColumnCount();
-			    if (rs.next()) {
-			    	pvpID = rs.getInt(1);
-			        stmt.execute("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
-			        os.println("TICTACTOE PLAYER 2");
-			        os.flush();
-			    }
-			    else{
-			    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P1 = " + pvpID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
-			    		rs = stmt.getResultSet();
-			    	if(rs.next()){ //Make sure we can look at the next thinger first...
-			    		pvpID = rs.getInt(1);
-			    		os.println("TICTACTOE PLAYER 1");
-			    		os.flush();
-			    	}
-			    	else{
-			    		if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 = " + pvpID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
-			    			rs = stmt.getResultSet();
-				    	if(rs.next()){ //Make sure we can look at the next thinger first...
-				    		pvpID = rs.getInt(1);
-				    		os.println("TICTACTOE PLAYER 2");
-				    		os.flush();
-				    	}
-				    	else{ //If we can't look at the next thing, there must not be an active game, so make a new one!
-					    	stmt.execute("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
-					    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + ";")){
-					    		rs = stmt.getResultSet();
-					    		rs.next();
-					    		pvpID = rs.getInt(1);
-					    		os.println("TICTACTOE PLAYER 1");
-					    		os.flush();
-					    	}
-				    	}
-			    	}
-			    }
-			    listener.updatePVPID(pvpID);
+			
+			if(!rejoinPVP()) //First, try to rejoin a running game.
+				if(!joinPVP()) //If you can't find a game with only one player and join it.
+					newPVP(); //If you can't do that, make your own game.
+			
+			
+		    listener.updatePVPID(pvpID);
+		    listener.setActive(true);
 		}
 		catch (SQLException e){
 		    System.out.println("SQLException: " + e.getMessage());
@@ -249,6 +219,8 @@ public class TicTacToeServer {
 					e.printStackTrace();
 				}
 		}
+		os.println("TICTACTOE NEWGAME");
+		os.flush();
 	}
 	
 	void sendMoves(int[][] moves){
@@ -259,7 +231,123 @@ public class TicTacToeServer {
 				os.flush();
 		}
 	}
+	
+	private boolean joinPVP(){
+		boolean success = false;
+		try{
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+			if (stmt.execute("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + " AND PVP_ACTIVE = 1;")) {
+				rs = stmt.getResultSet();
+				}
+			    
+			    ResultSetMetaData rsmd = rs.getMetaData();
+			    int columnsNumber = rsmd.getColumnCount();
+			    if (rs.next()) {
+			    	pvpID = rs.getInt(1);
+			        stmt.execute("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
+			        os.println("TICTACTOE PLAYER 2");
+			        os.flush();
+			        success = true;
+			    }	
+		}
+		catch (SQLException e){
+		    System.out.println("SQLException: " + e.getMessage());
+		    System.out.println("SQLState: " + e.getSQLState());
+		    System.out.println("VendorError: " + e.getErrorCode());
+		    return false;
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+		return success;
+	}
+	
+	private boolean rejoinPVP(){
+		boolean success = false;
+		try{ 
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+			if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
+	    		rs = stmt.getResultSet();
+	    	if(rs.next()){ //Make sure we can look at the next thinger first...
+	    		pvpID = rs.getInt(1);
+	    		os.println("TICTACTOE PLAYER 1");
+	    		os.flush();
+	    		success = true;
+	    	}
+	    	else{ //If they aren't in slot 1, check slot 2!
+	    		if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 = " + playerID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
+					rs = stmt.getResultSet();
+		    	if(rs.next()){ //Make sure we can look at the next thinger first...
+		    		pvpID = rs.getInt(1);
+		    		os.println("TICTACTOE PLAYER 2");
+		    		os.flush();
+		    		success = true;
+		    	}
+	    	}
+		}
+		catch (SQLException e){
+		    System.out.println("SQLException: " + e.getMessage());
+		    System.out.println("SQLState: " + e.getSQLState());
+		    System.out.println("VendorError: " + e.getErrorCode());
+		    return false;
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+		return success;
+		
+	}
+	
+	private boolean newPVP(){
+		boolean success = false;
+		try{
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+	    	stmt.execute("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
+	    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;")){
+	    		rs = stmt.getResultSet();
+	    		rs.next();
+	    		pvpID = rs.getInt(1);
+	    		os.println("TICTACTOE PLAYER 1");
+	    		os.flush();
+	    		success = true;
+	    	}
+		}
+		catch (SQLException e){
+		    System.out.println("SQLException: " + e.getMessage());
+		    System.out.println("SQLState: " + e.getSQLState());
+		    System.out.println("VendorError: " + e.getErrorCode());
+		    return false;
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+		return success;
+	}	
 }
+
+
+
+
+
+
 
 class TicTacToeListener extends Thread {
 	
@@ -270,6 +358,8 @@ class TicTacToeListener extends Thread {
 	final String DB_URL = "jdbc:mysql://localhost:3306/project_themis_test?useSSL=false";
 	String USER = ProjectThemisServer.USER;
 	String PASS = ProjectThemisServer.PASS;
+	
+	boolean active = false; //Only send moves if active.
 	
 	int pvpID;
 	
@@ -290,9 +380,14 @@ class TicTacToeListener extends Thread {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
-			sendMoves(findMoves()); //Check for moves, then send them.
+			if(active){
+				sendMoves(findMoves()); //Check for moves, then send them.
+			}
 		}
+	}
+	
+	public void setActive(boolean active){
+		this.active = active;
 	}
 	
 	//Find any moves in the database for the game. Ideally, we should be storing old ones so we don't keep sending them.  #Goals
@@ -357,4 +452,5 @@ class TicTacToeListener extends Thread {
 	void updatePVPID(int pvpID){
 		this.pvpID = pvpID;
 	}
+
 }

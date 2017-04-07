@@ -151,6 +151,9 @@ public class TicTacToeClient extends JFrame {
  
         if (count > 8 && gameOver == false) 
             playerTurn.setText("Out of moves, no one wins!");
+        
+        if(gameOver)
+        	gameOver();
     }
     
     private void markX(int r, int c){
@@ -158,6 +161,7 @@ public class TicTacToeClient extends JFrame {
     		board[r][c] = 'X';
         	display[r][c].setText("X");
         	moveCount++;
+        	winCheck('X', moveCount);
     	}
     }
     
@@ -166,6 +170,7 @@ public class TicTacToeClient extends JFrame {
     		board[r][c] = 'O';
     		display[r][c].setText("O");
     		moveCount++;
+        	winCheck('O', moveCount);
     	}
     }
     
@@ -179,11 +184,13 @@ public class TicTacToeClient extends JFrame {
    
     	// After placing a move or breaking out if there were no valid moves, check how many moves have been made.
     	// An odd number of moves means it's O's turn, even number means it's X's.
-    	if(moveCount % 2 == 0)
-    		playerTurn.setText("It is X's Turn!");
-    	else
-    		playerTurn.setText("It is O's Turn!");
-    
+    	if(!gameOver)
+    		if(moveCount % 2 == 0)
+    			playerTurn.setText("It is X's Turn!");
+    		else
+    			playerTurn.setText("It is O's Turn!");
+  
+    	
     	// For future error checking, return true if this method ran successfully.
     	return true;
     	
@@ -197,6 +204,8 @@ public class TicTacToeClient extends JFrame {
     		isX = true;
     	else if(player == 2)
     		isO = true;
+    	
+    	System.out.println(isX);
     }
     
     public void processInput(String[] inputs){
@@ -208,8 +217,24 @@ public class TicTacToeClient extends JFrame {
     		break;
     	case "PLAYER":
     		setPlayer(Integer.parseInt(inputs[2]));
+    		System.out.println(inputs[2]);
+    		break;
+    	case "ENDGAME":
+    		gameOver = true;
+    		break;
+    	case "NEWGAME":
+    		startGame();
     		break;
     	}
+    }
+    
+    private void gameOver(){
+    	os.println("TICTACTOE ENDGAME");
+    	os.flush();
+    }
+    
+    private void startGame(){
+    	gameOver = false;
     }
     
 }
