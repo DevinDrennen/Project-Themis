@@ -118,7 +118,7 @@ public class ProjectThemisClient {
 	
 	public static boolean login(){
 		PasswordAuthentication encrypt = new PasswordAuthentication();
-		os.println("GETID " + user + " " + encrypt.hash(pass.toCharArray()));
+		os.println("GETID " + user + " " + pass);
 		try{
 			
 			String[] inputs = (is.readLine()).split(" "); //Read a line, break it into an array plz

@@ -21,20 +21,27 @@ public class LoginServer {
 	}
 	
 	//Username is the Player_Name to check for, Hashword is the Player_Password to check for. Hashword because it's hashed, get it?
-	public static int tryLogin(String username, String hashword){ //Laugh.
+	public static int tryLogin(String username, String password){ //Laugh.
 		
-		int pid = -1;
+		int pid = -1; //Player ID
+		String token = null; //The authentication token we store
+		boolean good = false; //Is the password good? That is, does it match?
 		
 		try{
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
 			
-			if(stmt.execute("SELECT PLAYER_ID FROM PLAYER WHERE PLAYER_NAME = " + username + " AND PLAYER_PASSWORD = " + hashword + ";"))
+			if(stmt.execute("SELECT PLAYER_ID, PLAYER_PASSWORD FROM PLAYER WHERE PLAYER_NAME = '" + username + "';"))
 				rs = stmt.getResultSet();
 			
 			if(rs.next()){
 				pid = rs.getInt(1);
+				token = rs.getString(2);
 			}
+			
+			PasswordAuthentication authen = new PasswordAuthentication();
+			if(authen.authenticate(password.toCharArray(), token))
+				good = true;
 			
 		}
 		catch (SQLException e){
@@ -50,8 +57,10 @@ public class LoginServer {
 					e.printStackTrace();
 				}
 		}
-		
-		return pid;
+		if(good)
+			return pid;
+		else
+			return -1;
 	}
 	
 	public static boolean checkPlayer(String username){
@@ -62,7 +71,7 @@ public class LoginServer {
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
 			
-			if(stmt.execute("SELECT PLAYER_ID FROM PLAYER WHERE PLAYER_NAME = " + username + ";"))
+			if(stmt.execute("SELECT PLAYER_ID FROM PLAYER WHERE PLAYER_NAME = '" + username + "';"))
 				rs = stmt.getResultSet();
 			
 			if(rs.next()){
