@@ -104,9 +104,6 @@ public class TicTacToeServer {
 	
 	//Processes the inputs received from ProjectThemisServerThread. 
 	void processInput(String[] inputs){
-		
-		System.out.println("Inputs Being Processed...");
-		
 		switch (inputs[1]) {
 			case "ENDGAME":
 				closeCurrentGame();
@@ -274,7 +271,7 @@ public class TicTacToeServer {
 		try{ 
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
-			if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P1 = " + pvpID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
+			if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
 	    		rs = stmt.getResultSet();
 	    	if(rs.next()){ //Make sure we can look at the next thinger first...
 	    		pvpID = rs.getInt(1);
@@ -283,7 +280,7 @@ public class TicTacToeServer {
 	    		success = true;
 	    	}
 	    	else{ //If they aren't in slot 1, check slot 2!
-	    		if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 = " + pvpID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
+	    		if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 = " + playerID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
 					rs = stmt.getResultSet();
 		    	if(rs.next()){ //Make sure we can look at the next thinger first...
 		    		pvpID = rs.getInt(1);
@@ -317,7 +314,7 @@ public class TicTacToeServer {
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
 	    	stmt.execute("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
-	    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + ";")){
+	    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;")){
 	    		rs = stmt.getResultSet();
 	    		rs.next();
 	    		pvpID = rs.getInt(1);
