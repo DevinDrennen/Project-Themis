@@ -213,7 +213,7 @@ public class TicTacToeClient extends JFrame {
     		setPlayer(Integer.parseInt(inputs[2]));
     		break;
     	case "ENDGAME":
-    		gameOver();
+    		gameOver = true;
     		break;
     	}
     }

@@ -200,49 +200,14 @@ public class TicTacToeServer {
 		try{
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
-			//rs = stmt.executeQuery("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL;"); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
-			if (stmt.execute("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + ";")) {
-				rs = stmt.getResultSet();
-				}
-			    
-			    ResultSetMetaData rsmd = rs.getMetaData();
-			    int columnsNumber = rsmd.getColumnCount();
-			    if (rs.next()) {
-			    	pvpID = rs.getInt(1);
-			        stmt.execute("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
-			        os.println("TICTACTOE PLAYER 2");
-			        os.flush();
-			    }
-			    else{
-			    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P1 = " + pvpID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
-			    		rs = stmt.getResultSet();
-			    	if(rs.next()){ //Make sure we can look at the next thinger first...
-			    		pvpID = rs.getInt(1);
-			    		os.println("TICTACTOE PLAYER 1");
-			    		os.flush();
-			    	}
-			    	else{
-			    		if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 = " + pvpID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
-			    			rs = stmt.getResultSet();
-				    	if(rs.next()){ //Make sure we can look at the next thinger first...
-				    		pvpID = rs.getInt(1);
-				    		os.println("TICTACTOE PLAYER 2");
-				    		os.flush();
-				    	}
-				    	else{ //If we can't look at the next thing, there must not be an active game, so make a new one!
-					    	stmt.execute("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
-					    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + ";")){
-					    		rs = stmt.getResultSet();
-					    		rs.next();
-					    		pvpID = rs.getInt(1);
-					    		os.println("TICTACTOE PLAYER 1");
-					    		os.flush();
-					    	}
-				    	}
-			    	}
-			    }
-			    listener.updatePVPID(pvpID);
-			    listener.setActive(true);
+			
+			if(!rejoinPVP()) //First, try to rejoin a running game.
+				if(!joinPVP()) //If you can't find a game with only one player and join it.
+					newPVP(); //If you can't do that, make your own game.
+			
+			
+		    listener.updatePVPID(pvpID);
+		    listener.setActive(true);
 		}
 		catch (SQLException e){
 		    System.out.println("SQLException: " + e.getMessage());
@@ -267,7 +232,123 @@ public class TicTacToeServer {
 				os.flush();
 		}
 	}
+	
+	private boolean joinPVP(){
+		boolean success = false;
+		try{
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+			if (stmt.execute("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + " AND PVP_ACTIVE = 1;")) {
+				rs = stmt.getResultSet();
+				}
+			    
+			    ResultSetMetaData rsmd = rs.getMetaData();
+			    int columnsNumber = rsmd.getColumnCount();
+			    if (rs.next()) {
+			    	pvpID = rs.getInt(1);
+			        stmt.execute("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
+			        os.println("TICTACTOE PLAYER 2");
+			        os.flush();
+			        success = true;
+			    }	
+		}
+		catch (SQLException e){
+		    System.out.println("SQLException: " + e.getMessage());
+		    System.out.println("SQLState: " + e.getSQLState());
+		    System.out.println("VendorError: " + e.getErrorCode());
+		    return false;
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+		return success;
+	}
+	
+	private boolean rejoinPVP(){
+		boolean success = false;
+		try{ 
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+			if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P1 = " + pvpID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
+	    		rs = stmt.getResultSet();
+	    	if(rs.next()){ //Make sure we can look at the next thinger first...
+	    		pvpID = rs.getInt(1);
+	    		os.println("TICTACTOE PLAYER 1");
+	    		os.flush();
+	    		success = true;
+	    	}
+	    	else{ //If they aren't in slot 1, check slot 2!
+	    		if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 = " + pvpID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
+					rs = stmt.getResultSet();
+		    	if(rs.next()){ //Make sure we can look at the next thinger first...
+		    		pvpID = rs.getInt(1);
+		    		os.println("TICTACTOE PLAYER 2");
+		    		os.flush();
+		    		success = true;
+		    	}
+	    	}
+		}
+		catch (SQLException e){
+		    System.out.println("SQLException: " + e.getMessage());
+		    System.out.println("SQLState: " + e.getSQLState());
+		    System.out.println("VendorError: " + e.getErrorCode());
+		    return false;
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+		return success;
+		
+	}
+	
+	private boolean newPVP(){
+		boolean success = false;
+		try{
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+	    	stmt.execute("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
+	    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + ";")){
+	    		rs = stmt.getResultSet();
+	    		rs.next();
+	    		pvpID = rs.getInt(1);
+	    		os.println("TICTACTOE PLAYER 1");
+	    		os.flush();
+	    		success = true;
+	    	}
+		}
+		catch (SQLException e){
+		    System.out.println("SQLException: " + e.getMessage());
+		    System.out.println("SQLState: " + e.getSQLState());
+		    System.out.println("VendorError: " + e.getErrorCode());
+		    return false;
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+		return success;
+	}	
 }
+
+
+
+
+
+
 
 class TicTacToeListener extends Thread {
 	
@@ -372,4 +453,5 @@ class TicTacToeListener extends Thread {
 	void updatePVPID(int pvpID){
 		this.pvpID = pvpID;
 	}
+
 }
