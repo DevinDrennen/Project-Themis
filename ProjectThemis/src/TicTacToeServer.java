@@ -219,6 +219,8 @@ public class TicTacToeServer {
 					e.printStackTrace();
 				}
 		}
+		os.println("TICTACTOE NEWGAME");
+		os.flush();
 	}
 	
 	void sendMoves(int[][] moves){

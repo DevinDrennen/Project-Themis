@@ -200,6 +200,8 @@ public class TicTacToeClient extends JFrame {
     		isX = true;
     	else if(player == 2)
     		isO = true;
+    	
+    	System.out.println(isX);
     }
     
     public void processInput(String[] inputs){
@@ -211,9 +213,13 @@ public class TicTacToeClient extends JFrame {
     		break;
     	case "PLAYER":
     		setPlayer(Integer.parseInt(inputs[2]));
+    		System.out.println(inputs[2]);
     		break;
     	case "ENDGAME":
     		gameOver = true;
+    		break;
+    	case "NEWGAME":
+    		startGame();
     		break;
     	}
     }
@@ -221,6 +227,10 @@ public class TicTacToeClient extends JFrame {
     private void gameOver(){
     	os.println("TICTACTOE ENDGAME");
     	os.flush();
+    }
+    
+    private void startGame(){
+    	gameOver = false;
     }
     
 }
