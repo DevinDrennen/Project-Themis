@@ -21,8 +21,8 @@ public class TicTacToeServer {
 	Connection conn = null; //A connection to the MySQL Database.
 	Statement stmt = null; //A statement to be executed on the database.
 	ResultSet rs = null; //The results from a query.
-	final String DB_URL = "jdbc:mysql://localhost:3306/project_themis_test?useSSL=false"; //Database location and name.
 	
+	final String DB_URL = ProjectThemisServer.DB_URL; //Database location and name.
 	String USER = ProjectThemisServer.USER; //Grab the username and passwordfrom the ProjectThemisServer..
 	String PASS = ProjectThemisServer.PASS;
 	
@@ -43,60 +43,12 @@ public class TicTacToeServer {
 		try{
 			Class.forName(JDBC_DRIVER);
 
-		}catch(ClassNotFoundException e){
+		}
+		catch(ClassNotFoundException e){
 			System.out.println("Cannot find the driver class!");
 			e.printStackTrace();
 		}
 
-		try{ //DEBUGGING - Pretty sure this chunk can be deleted.
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-			stmt = conn.createStatement();
-			
-			/*
-			rs = stmt.executeQuery("SELECT EMP_ID, EMP_ADDR_CITY FROM EMPLOYEE WHERE EMP_ADDR_CITY = \"Elizabethtown\"");
-			if (stmt.execute("SELECT EMP_ID, EMP_ADDR_CITY FROM EMPLOYEE WHERE EMP_ADDR_CITY = \"Elizabethtown\"")) {
-				rs = stmt.getResultSet();
-				}
-			    
-			    ResultSetMetaData rsmd = rs.getMetaData();
-			    int columnsNumber = rsmd.getColumnCount();
-			    while (rs.next()) {
-			        for (int i = 1; i <= columnsNumber; i++) {
-			            if (i > 1) System.out.print(",  ");
-			            String columnValue = rs.getString(i);
-			            System.out.print(columnValue + " " + rsmd.getColumnName(i));
-			        }
-			        System.out.println("");
-
-			    }
-			    
-			    */
-			
-		}
-		catch (SQLException e){
-		    System.out.println("SQLException: " + e.getMessage());
-		    System.out.println("SQLState: " + e.getSQLState());
-		    System.out.println("VendorError: " + e.getErrorCode());
-		}
-		finally{
-			if(conn!=null)
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-		}
-	/*	
-		while(running){
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-			//sendMoves(markMoves());
-		}
-	*/
 		
 		listener = new TicTacToeListener(pvpID, os); //Starts the listener thread which will watch for moves being added to the database.
 		listener.start(); //Start the listener.
@@ -167,25 +119,9 @@ public class TicTacToeServer {
 	
 	//Set the current game to inactive.
 	void closeCurrentGame(){
-		try{
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-			stmt = conn.createStatement();
-			
-			stmt.execute("UPDATE PVP SET PVP_ACTIVE = 0 WHERE PVP_ID = " + pvpID +";");
-		}
-		catch (SQLException e){
-		    System.out.println("SQLException: " + e.getMessage());
-		    System.out.println("SQLState: " + e.getSQLState());
-		    System.out.println("VendorError: " + e.getErrorCode());
-		}
-		finally{
-			if(conn!=null)
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-		}
+		MySQLWrapper mysql = new MySQLWrapper();
+		
+		mysql.query("UPDATE PVP SET PVP_ACTIVE = 0 WHERE PVP_ID = " + pvpID +";");
 		
 		listener.setActive(false);
 		os.println("TICTACTOE ENDGAME");
@@ -194,31 +130,14 @@ public class TicTacToeServer {
 	
 	//Make a new game - set up the DB for it and find the pvpID.
 	void SQLNewGame(){
-		try{
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-			stmt = conn.createStatement();
 			
-			if(!rejoinPVP()) //First, try to rejoin a running game.
-				if(!joinPVP()) //If you can't find a game with only one player and join it.
-					newPVP(); //If you can't do that, make your own game.
+		if(!rejoinPVP()) //First, try to rejoin a running game.
+			if(!joinPVP()) //If you can't find a game with only one player and join it.
+				newPVP(); //If you can't do that, make your own game.
 			
-			
-		    listener.updatePVPID(pvpID);
-		    listener.setActive(true);
-		}
-		catch (SQLException e){
-		    System.out.println("SQLException: " + e.getMessage());
-		    System.out.println("SQLState: " + e.getSQLState());
-		    System.out.println("VendorError: " + e.getErrorCode());
-		}
-		finally{
-			if(conn!=null)
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-		}
+	    listener.updatePVPID(pvpID);
+	    listener.setActive(true);
+
 		os.println("TICTACTOE NEWGAME");
 		os.flush();
 	}
@@ -233,113 +152,55 @@ public class TicTacToeServer {
 	}
 	
 	private boolean joinPVP(){
-		boolean success = false;
-		try{
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-			stmt = conn.createStatement();
-			if (stmt.execute("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + " AND PVP_ACTIVE = 1;")) {
-				rs = stmt.getResultSet();
-				}
-			    
-			    ResultSetMetaData rsmd = rs.getMetaData();
-			    int columnsNumber = rsmd.getColumnCount();
-			    if (rs.next()) {
-			    	pvpID = rs.getInt(1);
-			        stmt.execute("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
-			        os.println("TICTACTOE PLAYER 2");
-			        os.flush();
-			        success = true;
-			    }	
+		MySQLWrapper mysql = new MySQLWrapper();
+		
+		int pvpID = mysql.queryInt("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + " AND PVP_ACTIVE = 1;");
+		if(pvpID != Integer.MIN_VALUE){
+			this.pvpID = pvpID;
+			mysql.query("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
+	        os.println("TICTACTOE PLAYER 2");
+	        os.flush();
+	        return true;
 		}
-		catch (SQLException e){
-		    System.out.println("SQLException: " + e.getMessage());
-		    System.out.println("SQLState: " + e.getSQLState());
-		    System.out.println("VendorError: " + e.getErrorCode());
-		    return false;
-		}
-		finally{
-			if(conn!=null)
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-		}
-		return success;
+		return false;
 	}
 	
 	private boolean rejoinPVP(){
-		boolean success = false;
-		try{ 
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-			stmt = conn.createStatement();
-			if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
-	    		rs = stmt.getResultSet();
-	    	if(rs.next()){ //Make sure we can look at the next thinger first...
-	    		pvpID = rs.getInt(1);
-	    		os.println("TICTACTOE PLAYER 1");
-	    		os.flush();
-	    		success = true;
-	    	}
-	    	else{ //If they aren't in slot 1, check slot 2!
-	    		if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 = " + playerID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
-					rs = stmt.getResultSet();
-		    	if(rs.next()){ //Make sure we can look at the next thinger first...
-		    		pvpID = rs.getInt(1);
-		    		os.println("TICTACTOE PLAYER 2");
-		    		os.flush();
-		    		success = true;
-		    	}
-	    	}
-		}
-		catch (SQLException e){
-		    System.out.println("SQLException: " + e.getMessage());
-		    System.out.println("SQLState: " + e.getSQLState());
-		    System.out.println("VendorError: " + e.getErrorCode());
-		    return false;
-		}
-		finally{
-			if(conn!=null)
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-		}
-		return success;
+		MySQLWrapper mysql = new MySQLWrapper();
 		
+		int pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;");
+		if(pvpID != Integer.MIN_VALUE){
+			this.pvpID = pvpID;
+    		os.println("TICTACTOE PLAYER 1");
+    		os.flush();
+    		return true;
+		}
+		else{
+			pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 = " + playerID + " AND PVP_ACTIVE = 1;");
+			if(pvpID != Integer.MIN_VALUE){
+				this.pvpID = pvpID;
+	    		os.println("TICTACTOE PLAYER 2");
+	    		os.flush();
+	    		return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	private boolean newPVP(){
-		boolean success = false;
-		try{
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-			stmt = conn.createStatement();
-	    	stmt.execute("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
-	    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;")){
-	    		rs = stmt.getResultSet();
-	    		rs.next();
-	    		pvpID = rs.getInt(1);
-	    		os.println("TICTACTOE PLAYER 1");
-	    		os.flush();
-	    		success = true;
-	    	}
+		MySQLWrapper mysql = new MySQLWrapper();
+		
+		mysql.query("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
+		int pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;");
+		
+		if(pvpID != Integer.MIN_VALUE){
+    		this.pvpID = pvpID;
+    		os.println("TICTACTOE PLAYER 1");
+    		os.flush();
+    		return true;
 		}
-		catch (SQLException e){
-		    System.out.println("SQLException: " + e.getMessage());
-		    System.out.println("SQLState: " + e.getSQLState());
-		    System.out.println("VendorError: " + e.getErrorCode());
-		    return false;
-		}
-		finally{
-			if(conn!=null)
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-		}
-		return success;
+		return false;
 	}	
 }
 

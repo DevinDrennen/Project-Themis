@@ -36,7 +36,7 @@ public class MySQLWrapper {
 
 	/**
 	 * @param query The query you want executed. Should be a select statement.
-	 * @return The first string result of the query.
+	 * @return The first string result of the query. Returns Integer.MIN_VALUE if rs is null.
 	 */
 	String queryString(String query){
 		String result = null;
@@ -70,7 +70,7 @@ public class MySQLWrapper {
 	
 	/**
 	 * @param query The query you want executed. Should be a select statement.
-	 * @return The first int of the query.
+	 * @return The first int of the query. Returns Integer.MIN_VALUE if rs is null.
 	 */
 	int queryInt(String query){
 		int result = Integer.MIN_VALUE;
@@ -126,6 +126,36 @@ public class MySQLWrapper {
 					e.printStackTrace();
 				}
 		}
+	}
+	
+	
+	/**
+	 * @param query The query you want executed. Should be a query. Also probably won't work right.
+	 * @return The ResultSet object of the result. Could be used for a single string or int as well. 
+	 */
+	ResultSet queryRS(String query){
+		try{
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			stmt = conn.createStatement();
+			rs = null;
+			if(stmt.execute(query)){ //Try to execute the query. We don't want to get the result set if we don't have a result set to get
+				rs = stmt.getResultSet(); //That causes a null pointer error and bad.
+			}
+		}
+		catch (SQLException e){
+		    System.out.println("SQLException: " + e.getMessage());
+		    System.out.println("SQLState: " + e.getSQLState());
+		    System.out.println("VendorError: " + e.getErrorCode());
+		}
+		finally{
+			if(conn!=null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+		return rs;
 	}
 	
 }
