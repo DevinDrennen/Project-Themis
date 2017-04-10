@@ -8,8 +8,10 @@ import java.sql.SQLException;
 
 public class ProjectThemisServer {
 
+	static final String DB_URL = "jdbc:mysql://localhost:3306/project_themis_test?useSSL=false";
 	static String USER;
 	static String PASS;
+	final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	
 	public static void main(String[] args) {
 
