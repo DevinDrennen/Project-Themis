@@ -9,6 +9,7 @@ public class Turn {
 	char symbol;
 	Color color;
 	ImageIcon icon;
+	int playerNo;
 	
 	static ImageIcon redC = new ImageIcon("red_circle.png");
 	static ImageIcon blackC = new ImageIcon("black_circle.png");
@@ -28,6 +29,7 @@ public class Turn {
 		symbol = 'X';
 		color = Color.red;
 		icon = redCircle;
+		playerNo = 1;
 	}
 	
 	void black() {
@@ -36,6 +38,7 @@ public class Turn {
 		symbol = 'O';
 		color = Color.black;
 		icon = blackCircle;
+		playerNo = 2;
 	}
 	
 	void flip() {

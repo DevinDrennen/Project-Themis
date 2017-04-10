@@ -21,6 +21,7 @@ public class ProjectThemisClient {
 	
 	//The client classes for games/utils. 
 	static TicTacToeClient tttc;
+	static Connect4Client c4c;
 	static Menu menu;
 	
 	static PasswordAuthentication encrypt;
@@ -51,8 +52,9 @@ public class ProjectThemisClient {
         }
         
         
+
         encrypt = new PasswordAuthentication();
-        
+
         playerID = 1;
         int portNumber = 4445; //Don't forget to set this - this might join the command line parser in the future.
         //Todo: Find smart way to let the user decide the order of commands.
@@ -67,6 +69,7 @@ public class ProjectThemisClient {
         	String line; //Line is where incoming messages are temporarily stored.
         	//os.println("GETID " + user + " " + pass); //GETID will instead send our username and HASHED/SALTED password to the server.
         	//line=is.readLine(); //Afterwards, it'll get back the player's ID.
+
         	System.out.println(is);
         	menu = new Menu();
         	System.out.println("Do I need to thead the menu?");
@@ -100,7 +103,13 @@ public class ProjectThemisClient {
 		case "TICTACTOE": //If the first String is TICTACTOE, send it to the TicTacToe game
 			if(tttc != null) //Only send it if TTTC has been created.
 				tttc.processInput(inputs);
+      break;
+        
+		case "CONNECT4": //If the first String is TICTACTOE, send it to the TicTacToe game
+			if(c4c != null) //Only send it if TTTC has been created.
+				c4c.processInput(inputs);
 			break;
+        
 		case "GETID":
 			System.out.println(inputs[1]);
 			if(inputs[1] != null && !inputs[1].equals("-1")){
@@ -125,6 +134,14 @@ public class ProjectThemisClient {
 		
 	}
 	
+	public static void launchConnect4(){
+		
+		os.println("CONNECT4 START"); //These are two wildly different commands actually.
+    	os.println("CONNECT4 NEWGAME"); //Newgame resets the board state, while start opens the whole client thinger up.
+		c4c = new Connect4Client(6, is, os);
+		
+	}
+	
 	public static void setUser(String username){
 		user = username;
 	}
@@ -141,5 +158,6 @@ public class ProjectThemisClient {
 	
 	public static void newAccount(String username, String password){
 		os.println("NEWID " + username + " " + encrypt.hash(password.toCharArray()));
+
 	}
 }
