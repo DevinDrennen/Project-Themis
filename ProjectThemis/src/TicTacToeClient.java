@@ -29,6 +29,7 @@ public class TicTacToeClient extends JFrame {
     boolean isO = false;
     int gameID;
     int playerID;
+    String opponentName;
     
     BufferedReader is;
     PrintWriter os;
@@ -84,17 +85,17 @@ public class TicTacToeClient extends JFrame {
                     board[r][c] = 'X';
                     display[r][c].setText("X");
                     moveCount++;
-                    playerTurn.setText("It is O's Turn!");
                     os.println("TICTACTOE MOVE " + r + " " + c + " " + 1);
                 }
                 else if (board[r][c] == ' ' && (moveCount % 2 == 1) && isO) {
                     board[r][c] = 'O';
                     display[r][c].setText("O");
                     moveCount++;
-                    playerTurn.setText("It is X's Turn!");
                     os.println("TICTACTOE MOVE " + r + " " + c + " " + 2);
                 }
- 
+                requestOpName();
+                displayTurn();
+                
                 xTurn = !xTurn;
                 winCheck('X',moveCount);
                 oTurn = !oTurn;
@@ -119,6 +120,7 @@ public class TicTacToeClient extends JFrame {
                     gameOver = false;
                 }
             os.println("TICTACTOE NEWGAME");
+            requestOpName();
         }
     }
  
@@ -225,6 +227,9 @@ public class TicTacToeClient extends JFrame {
     	case "NEWGAME":
     		startGame();
     		break;
+    	case "GETOPPONENT":
+    		opponentName = inputs[2];
+    		break;
     	}
     }
     
@@ -237,4 +242,19 @@ public class TicTacToeClient extends JFrame {
     	gameOver = false;
     }
     
+    private void requestOpName(){
+    	os.println("TICTACTOE GETOPPONENT");
+    	os.flush();
+    }
+    
+    private void displayTurn(){
+    	if(isX && moveCount % 2 == 0)
+    		playerTurn.setText("It is your turn!");
+    	else if(isO && moveCount % 2  == 0)
+    		playerTurn.setText("It is " + opponentName + "'s turn!");
+    	else if(isX && moveCount % 2 == 1)
+    		playerTurn.setText("It is " + opponentName + "'s turn!");
+    	else if(isO && moveCount % 2  == 1)
+    		playerTurn.setText("It is your turn!");
+    }
 }

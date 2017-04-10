@@ -69,7 +69,12 @@ public class TicTacToeServer {
 				break;
 			case "REQUEST": //The client would like to know if there are any new moves from the database. If so, send them!
 				//sendMoves(markMoves());
-				
+				break;
+			case "GETOPPONENT": //The client wants the string of their opponent!
+				os.println(getOpponent());
+				os.flush();
+				break;
+	
 		}
 		
 		System.out.println("Inputs processed!");
@@ -202,6 +207,15 @@ public class TicTacToeServer {
 		}
 		return false;
 	}	
+	
+	private String getOpponent(){
+		MySQLWrapper mysql = new MySQLWrapper();
+		String opponent = mysql.queryString("SELECT PLAYER.PLAYER_NAME FROM PLAYER NATURAL JOIN PVP WHERE PVP.PVP_ID = " + pvpID + " AND PLAYER.PLAYER_ID != " + playerID + ";");
+		if(opponent == null)
+			return "your opponent";
+		else
+			return opponent;
+	}
 }
 
 
@@ -225,6 +239,8 @@ class TicTacToeListener extends Thread {
 	int pvpID;
 	
 	PrintWriter os;
+	
+	int[][] completedMoves = new int[3][3];
 	
 	//Constructor method. 
 	TicTacToeListener(int pvpID, PrintWriter os){
@@ -304,14 +320,18 @@ class TicTacToeListener extends Thread {
 	void sendMoves(int[][] moves){
 		if(moves != null)
 			for(int i = 0; i < moves.length; i++){
-				os.flush();
-				os.println("TICTACTOE MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
-				os.flush();
+				if(completedMoves[moves[i][0]][moves[i][1]] != 0){
+					completedMoves[moves[i][0]][moves[i][1]] = moves[i][2];
+					os.flush();
+					os.println("TICTACTOE MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
+					os.flush();
+				}
 		}
 	}
 	
 	void updatePVPID(int pvpID){
 		this.pvpID = pvpID;
+		completedMoves = new int[3][3];
 	}
 
 }
