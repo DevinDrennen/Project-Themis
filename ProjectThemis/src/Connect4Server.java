@@ -30,7 +30,7 @@ public class Connect4Server {
 	int pvpID;
 	
 	PrintWriter os;
-	TicTacToeListener listener;
+	Connect4Listener listener;
 	
 	public Connect4Server( PrintWriter outputStream, int PID){
 		
@@ -48,55 +48,6 @@ public class Connect4Server {
 			e.printStackTrace();
 		}
 
-		try{ //DEBUGGING - Pretty sure this chunk can be deleted.
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-			stmt = conn.createStatement();
-			
-			/*
-			rs = stmt.executeQuery("SELECT EMP_ID, EMP_ADDR_CITY FROM EMPLOYEE WHERE EMP_ADDR_CITY = \"Elizabethtown\"");
-			if (stmt.execute("SELECT EMP_ID, EMP_ADDR_CITY FROM EMPLOYEE WHERE EMP_ADDR_CITY = \"Elizabethtown\"")) {
-				rs = stmt.getResultSet();
-				}
-			    
-			    ResultSetMetaData rsmd = rs.getMetaData();
-			    int columnsNumber = rsmd.getColumnCount();
-			    while (rs.next()) {
-			        for (int i = 1; i <= columnsNumber; i++) {
-			            if (i > 1) System.out.print(",  ");
-			            String columnValue = rs.getString(i);
-			            System.out.print(columnValue + " " + rsmd.getColumnName(i));
-			        }
-			        System.out.println("");
-
-			    }
-			    
-			    */
-			
-		}
-		catch (SQLException e){
-		    System.out.println("SQLException: " + e.getMessage());
-		    System.out.println("SQLState: " + e.getSQLState());
-		    System.out.println("VendorError: " + e.getErrorCode());
-		}
-		finally{
-			if(conn!=null)
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-		}
-	/*	
-		while(running){
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
-			//sendMoves(markMoves());
-		}
-	*/
 		
 		listener = new Connect4Listener(pvpID, os); //Starts the listener thread which will watch for moves being added to the database.
 		listener.start(); //Start the listener.
@@ -113,8 +64,8 @@ public class Connect4Server {
 				SQLNewGame();
 				break;
 			case "MOVE": //The client has sent new moves that should be written to the MySQL Database.
-				//markMove(inputs[2], inputs[3], inputs[4]);
-				makeMove(inputs[2], inputs[3]);
+				makeMove(inputs[2], inputs[3], inputs[4]);
+				//makeMove(inputs[2], inputs[3]);
 				break;
 			case "REQUEST": //The client would like to know if there are any new moves from the database. If so, send them!
 				//sendMoves(markMoves());
@@ -169,25 +120,13 @@ public class Connect4Server {
 	
 	//Set the current game to inactive.
 	void closeCurrentGame(){
-		try{
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-			stmt = conn.createStatement();
-			
-			stmt.execute("UPDATE PVP SET PVP_ACTIVE = 0 WHERE PVP_ID = " + pvpID +";");
-		}
-		catch (SQLException e){
-		    System.out.println("SQLException: " + e.getMessage());
-		    System.out.println("SQLState: " + e.getSQLState());
-		    System.out.println("VendorError: " + e.getErrorCode());
-		}
-		finally{
-			if(conn!=null)
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-		}
+		MySQLWrapper mysql = new MySQLWrapper();
+		
+		mysql.query("UPDATE PVP SET PVP_ACTIVE = 0 WHERE PVP_ID = " + pvpID +";");
+		
+		listener.setActive(false);
+		os.println("TICTACTOE ENDGAME");
+		os.flush();
 	}
 	
 	//Make a new game - set up the DB for it and find the pvpID.
@@ -195,8 +134,8 @@ public class Connect4Server {
 		try{
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();
-			//rs = stmt.executeQuery("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL;"); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
-			if (stmt.execute("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + ";")) {
+			//rs = stmt.executeQuery("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P2 IS NULL;"); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
+			if (stmt.execute("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + ";")) {
 				rs = stmt.getResultSet();
 				}
 			    
@@ -207,14 +146,14 @@ public class Connect4Server {
 			        stmt.execute("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
 			    }
 			    else{
-			    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P1 = " + pvpID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
+			    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P1 = " + pvpID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
 			    		rs = stmt.getResultSet();
 			    	if(rs.next()){ //Make sure we can look at the next thinger first...
 			    		pvpID = rs.getInt(1);
 			    	}
 			    	else{ //If we can't look at the next thing, there must not be an active game, so make a new one!
 				    	stmt.execute("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
-				    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + ";")){
+				    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + ";")){
 				    		rs = stmt.getResultSet();
 				    		rs.next();
 				    		pvpID = rs.getInt(1);
@@ -258,9 +197,12 @@ class Connect4Listener extends Thread {
 	String USER = ProjectThemisServer.USER;
 	String PASS = ProjectThemisServer.PASS;
 	
+	boolean active = false;
+	
 	int pvpID;
 	
 	PrintWriter os;
+	
 	
 	//Constructor method. 
 	Connect4Listener(int pvpID, PrintWriter os){
@@ -277,9 +219,14 @@ class Connect4Listener extends Thread {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
-			sendMoves(findMoves()); //Check for moves, then send them.
+			if(active){
+				sendMoves(findMoves()); //Check for moves, then send them.
+			}
 		}
+	}
+	
+	public void setActive(boolean active){
+		this.active = active;
 	}
 	
 	//Find any moves in the database for the game. Ideally, we should be storing old ones so we don't keep sending them.  #Goals
