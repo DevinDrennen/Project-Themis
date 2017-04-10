@@ -8,8 +8,11 @@ import java.sql.SQLException;
 
 public class ProjectThemisServer {
 
+
+	static final String DB_URL = "jdbc:mysql://localhost:3306/project_themis_test?useSSL=false";
 	static String USER;
 	static String PASS;
+	final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	
 	public static void main(String[] args) {
 
@@ -72,6 +75,7 @@ class ProjectThemisServerThread extends Thread {
 	
 	TicTacToeServer ttts;
 	Connect4Server c4s;
+
 
 	public ProjectThemisServerThread(Socket s) {
 		this.socket = s;
@@ -140,13 +144,15 @@ class ProjectThemisServerThread extends Thread {
 			
 		case "GETID": //The GetID class will handle logins etc. The client should send this FIRST.
 			int i = -1;
-			i = LoginServer.tryLogin(inputs[0],  inputs[2]);
+			i = LoginServer.tryLogin(inputs[1],  inputs[2]);
 			if(i != -1){
 				clientID = i;
 				os.println("GETID " + clientID);
+				os.flush();
 			}
 			else {
 				os.println("GETID -1");
+				os.flush();
 			}
 			
 			break;
@@ -167,6 +173,8 @@ class ProjectThemisServerThread extends Thread {
 				else //In all other cases, let ttts handle the inputs as it's a game function. Yay!
 					ttts.processInput(inputs);
 			}
+        break;
+
 		case "CONNECT4": //The Connect 4 prompt means we'll be handling the Connect 4 game's commands. 
 			if(inputs[1].equals("START")){
 				c4s = new Connect4Server(os, clientID); //Create new Connect 4 game if the second chunk of data is "NEW".
@@ -177,6 +185,7 @@ class ProjectThemisServerThread extends Thread {
 					c4s = null;
 				else //In all other cases, let c4s handle the inputs as it's a game function. Yay!
 					c4s.processInput(inputs);
+        break;
 			}
 		}
 	}

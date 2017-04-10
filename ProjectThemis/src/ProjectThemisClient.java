@@ -22,6 +22,9 @@ public class ProjectThemisClient {
 	//The client classes for games/utils. 
 	static TicTacToeClient tttc;
 	static Connect4Client c4c;
+	static Menu menu;
+	
+	static PasswordAuthentication encrypt;
 	
 	//Start with: ProjectThemisClient [HOSTNAME] [USER] [PASS]
 	public static void main(String[] args) throws IOException{
@@ -49,6 +52,9 @@ public class ProjectThemisClient {
         }
         
         
+
+        encrypt = new PasswordAuthentication();
+
         playerID = 1;
         int portNumber = 4445; //Don't forget to set this - this might join the command line parser in the future.
         //Todo: Find smart way to let the user decide the order of commands.
@@ -63,13 +69,14 @@ public class ProjectThemisClient {
         	String line; //Line is where incoming messages are temporarily stored.
         	//os.println("GETID " + user + " " + pass); //GETID will instead send our username and HASHED/SALTED password to the server.
         	//line=is.readLine(); //Afterwards, it'll get back the player's ID.
-        	
-        	os.println("GETID " + playerID); //This is just for testing,
 
-        	Menu menu = new Menu();
+        	System.out.println(is);
+        	menu = new Menu();
+        	System.out.println("Do I need to thead the menu?");
         	line=is.readLine();
-        	while(line.compareTo("QUIT") != 0){ //Until it is told to QUIT by the sertver, keep reading new lines and processing them.
-        		processInput(line);
+        	while(true){ //Until it is told to QUIT by the sertver, keep reading new lines and processing them.
+        		if(line != null)
+        			processInput(line);
         		line = is.readLine();
         	}
         	
@@ -96,9 +103,24 @@ public class ProjectThemisClient {
 		case "TICTACTOE": //If the first String is TICTACTOE, send it to the TicTacToe game
 			if(tttc != null) //Only send it if TTTC has been created.
 				tttc.processInput(inputs);
+      break;
+        
 		case "CONNECT4": //If the first String is TICTACTOE, send it to the TicTacToe game
 			if(c4c != null) //Only send it if TTTC has been created.
 				c4c.processInput(inputs);
+			break;
+        
+		case "GETID":
+			System.out.println(inputs[1]);
+			if(inputs[1] != null && !inputs[1].equals("-1")){
+				playerID = Integer.parseInt(inputs[1]);
+				menu.login(true);
+			}
+			else{
+				playerID = -1;
+				menu.login(false);
+			}
+			break;
 		}
 		
 		System.out.println("Processed Inputs (Client)!"); //DEBUGGING
@@ -128,31 +150,14 @@ public class ProjectThemisClient {
 		pass = password;
 	}
 	
-	public static boolean login(){
-		PasswordAuthentication encrypt = new PasswordAuthentication();
-		os.println("GETID " + user + " " + encrypt.hash(pass.toCharArray()));
-		try{
-			
-			String[] inputs = (is.readLine()).split(" "); //Read a line, break it into an array plz
-			if(inputs[0] != null && inputs[0].equals("GETID")){
-				if(inputs[1] != null && !inputs[1].equals("-1")){
-					playerID = Integer.parseInt(inputs[1]);
-					return true;
-				}
-			}
-			
-			
-		}
-		catch (IOException e) {
-	        System.err.println("Couldn't get I/O for the connection to " +
-	            hostName);
-	        System.exit(1);
-		} 
-		return false;
+	public static void login(){
+		System.out.println(user);
+		System.out.println(pass);
+		os.println("GETID " + user + " " + pass);
 	}
 	
 	public static void newAccount(String username, String password){
-		PasswordAuthentication encrypt = new PasswordAuthentication();
-		os.println("NEWID " + user + " " + encrypt.hash(pass.toCharArray()));
+		os.println("NEWID " + username + " " + encrypt.hash(password.toCharArray()));
+
 	}
 }

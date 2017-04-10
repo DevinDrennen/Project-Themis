@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
  
 import javax.swing.*;
 /* Author: Alex Good
@@ -26,10 +27,19 @@ public class TicTacToeClient extends JFrame {
     boolean oTurn = false;
     boolean isX = false;
     boolean isO = false;
+    int gameID;
+    int playerID;
+    
+    BufferedReader is;
+    PrintWriter os;
  
-    public TicTacToeClient(int n) {
+    public TicTacToeClient(int n, BufferedReader inputStream, PrintWriter outputStream) {
         int i,j;
  
+        is = inputStream;
+        os = outputStream;
+        playerID = ProjectThemisClient.playerID;
+        
         setTitle("Tic Tac Toe");
         setSize(500,500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -44,6 +54,7 @@ public class TicTacToeClient extends JFrame {
                 display[i][j].setFont(new Font(null,1,125));
                 display[i][j].setFocusPainted(false);
                 display[i][j].addActionListener(new MoveListener(i,j));
+                display[i][j].setBackground(Color.WHITE);
                 boardpanel.add(display[i][j]);
                 board[i][j] = ' ';
             }
@@ -69,17 +80,19 @@ public class TicTacToeClient extends JFrame {
         }
         public void actionPerformed(ActionEvent e) {
             if (!gameOver) {
-                if (xTurn && board[r][c] == ' ' && isX) {
+                if (board[r][c] == ' ' && (moveCount % 2 == 0) && isX) {
                     board[r][c] = 'X';
                     display[r][c].setText("X");
                     moveCount++;
                     playerTurn.setText("It is O's Turn!");
+                    os.println("TICTACTOE MOVE " + r + " " + c + " " + 1);
                 }
-                else if (oTurn && board[r][c] == ' ' && isO) {
+                else if (board[r][c] == ' ' && (moveCount % 2 == 1) && isO) {
                     board[r][c] = 'O';
                     display[r][c].setText("O");
                     moveCount++;
                     playerTurn.setText("It is X's Turn!");
+                    os.println("TICTACTOE MOVE " + r + " " + c + " " + 2);
                 }
  
                 xTurn = !xTurn;
@@ -105,12 +118,13 @@ public class TicTacToeClient extends JFrame {
                     oTurn = false;
                     gameOver = false;
                 }
+            os.println("TICTACTOE NEWGAME");
         }
     }
  
     //checks for win or tie
      
-    public void winCheck(char h, int count) {
+    private void winCheck(char h, int count) {
         int j,i;
  
         for (i = 0; i < board.length; i++) 
@@ -137,11 +151,90 @@ public class TicTacToeClient extends JFrame {
  
         if (count > 8 && gameOver == false) 
             playerTurn.setText("Out of moves, no one wins!");
+        
+        if(gameOver)
+        	gameOver();
     }
-
-    public static void main(String[] args) {
-        new TicTacToeClient(3);
- 
+    
+    private void markX(int r, int c){
+    	if(board[r][c] != 'X'){
+    		board[r][c] = 'X';
+        	display[r][c].setText("X");
+        	moveCount++;
+        	winCheck('X', moveCount);
+    	}
     }
-
+    
+    private void markO(int r, int c){
+    	if(board[r][c] != 'O'){
+    		board[r][c] = 'O';
+    		display[r][c].setText("O");
+    		moveCount++;
+        	winCheck('O', moveCount);
+    	}
+    }
+    
+    private boolean markMove(int r, int c, int data){
+    	if(data == 1)
+    		markX(r, c);
+    	else if (data == 2)
+    		markO(r, c);
+    	else 
+    		return false; // For future error checking.
+   
+    	// After placing a move or breaking out if there were no valid moves, check how many moves have been made.
+    	// An odd number of moves means it's O's turn, even number means it's X's.
+    	if(!gameOver)
+    		if(moveCount % 2 == 0)
+    			playerTurn.setText("It is X's Turn!");
+    		else
+    			playerTurn.setText("It is O's Turn!");
+  
+    	
+    	// For future error checking, return true if this method ran successfully.
+    	return true;
+    	
+    }
+    
+    //Passes an int to say if the user is player 1 (x) or player 2 (o).
+    private void setPlayer(int player){
+    	isX = false;
+    	isO = false;
+    	if(player == 1)
+    		isX = true;
+    	else if(player == 2)
+    		isO = true;
+    	
+    	System.out.println(isX);
+    }
+    
+    public void processInput(String[] inputs){
+    	System.out.println("Processing inputs!");
+    	switch (inputs[1]){
+    	case "MOVE":
+    		markMove(Integer.parseInt(inputs[2]), Integer.parseInt(inputs[3]), Integer.parseInt(inputs[4]));
+    		System.out.println("Move recieved!");
+    		break;
+    	case "PLAYER":
+    		setPlayer(Integer.parseInt(inputs[2]));
+    		System.out.println(inputs[2]);
+    		break;
+    	case "ENDGAME":
+    		gameOver = true;
+    		break;
+    	case "NEWGAME":
+    		startGame();
+    		break;
+    	}
+    }
+    
+    private void gameOver(){
+    	os.println("TICTACTOE ENDGAME");
+    	os.flush();
+    }
+    
+    private void startGame(){
+    	gameOver = false;
+    }
+    
 }
