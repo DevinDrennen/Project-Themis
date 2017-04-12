@@ -156,7 +156,7 @@ public class OthelloBoard extends JPanel {
              int checkRow = row + checkX;
              int checkCol = col + checkY;
                 if(checkRow >= 0 && checkCol >= 0 && checkRow < 8 && checkCol < 8) {
-                    if(board[checkRow][checkCol] == (piece == Move.DARK ? Move.LIGHT : Move.DARK)) { //checks if the current player matches the piece being looked at
+                    if(board[checkRow][checkCol] == (piece == Move.DARK ? Move.LIGHT : Move.DARK)) { //checks if the current board grid is a player piece or blank using bitwise or
                         for(int i = 0; i < 8; i++) // keep track of the length to be flipped
 						{   
                             int checkRowSub = row + i * checkX;
