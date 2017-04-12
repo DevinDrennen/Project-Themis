@@ -21,7 +21,7 @@ public class Connect4Server {
 	Connection conn = null; //A connection to the MySQL Database.
 	Statement stmt = null; //A statement to be executed on the database.
 	ResultSet rs = null; //The results from a query.
-	final String DB_URL = "jdbc:mysql://localhost:3306/project_themis_test?useSSL=false"; //Database location and name.
+	final String DB_URL = ProjectThemisServer.DB_URL; //Database location and name.
 	
 	String USER = ProjectThemisServer.USER; //Grab the username and passwordfrom the ProjectThemisServer..
 	String PASS = ProjectThemisServer.PASS;
@@ -53,7 +53,7 @@ public class Connect4Server {
 		listener.start(); //Start the listener.
 	}
 	
-	//Processes the inputs received from ProjectThemisServerThread. 
+	//Processes the inputs received from ProjectThemisServerThread and puts in database 
 	void processInput(String[] inputs){
 		
 		System.out.println("Inputs Being Processed...");
@@ -64,20 +64,34 @@ public class Connect4Server {
 				SQLNewGame();
 				break;
 			case "MOVE": //The client has sent new moves that should be written to the MySQL Database.
-				makeMove(inputs[2], inputs[3], inputs[4]);
-				//makeMove(inputs[2], inputs[3]);
+				markMove(inputs[2], inputs[3], inputs[4]);
 				break;
 			case "REQUEST": //The client would like to know if there are any new moves from the database. If so, send them!
 				//sendMoves(markMoves());
+				break;
+			case "GETOPPONENT":
+				os.println(getOpponent());
+				os.flush();
+				
 				
 		}
 		
 		System.out.println("Inputs processed!");
 	}
 	
+	private String getOpponent() {
+		MySQLWrapper mysql = new MySQLWrapper();
+		String opponent = mysql.queryString("SELECT PLAYER.PLAYER_NAME FROM PLAYER NATURAL JOIN PVP WHERE PVP.PVP_ID = " + pvpID + " AND PLAYER.PLAYER_ID != " + playerID + ";");
+		if(opponent == null)
+			return "your opponent";
+		else
+			return opponent;
+	}
+	
+
 	//Mark a new move. Return true if it succeeds.
 	//***do we need to have a third parameter since we already keep track of that
-	boolean makeMove(String row, String col, String dat){
+	boolean markMove(String row, String col, String dat){
 		try{
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			stmt = conn.createStatement();

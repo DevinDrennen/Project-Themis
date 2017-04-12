@@ -9,19 +9,22 @@ public class Turn {
 	char symbol;
 	Color color;
 	ImageIcon icon;
-	int playerNo;
+	static int playerNo;
 	
-	static ImageIcon redC = new ImageIcon("red_circle.png");
-	static ImageIcon blackC = new ImageIcon("black_circle.png");
+	boolean redTurn=true;
+	boolean blackTurn=false;
+	
+	ImageIcon redC = new ImageIcon("red_circle.png");
+	ImageIcon blackC = new ImageIcon("black_circle.png");
 	
 
-	static Image img = redC.getImage() ;  
-	static Image newimg = img.getScaledInstance(80,80,Image.SCALE_SMOOTH);
-	static ImageIcon redCircle = new ImageIcon( newimg );
+	Image img = redC.getImage() ;  
+	Image newimg = img.getScaledInstance(80,80,Image.SCALE_SMOOTH);
+	ImageIcon redCircle = new ImageIcon( newimg );
 	
-	static Image img2 = blackC.getImage() ;  
-	static Image newimg2 = img2.getScaledInstance(80,80,Image.SCALE_SMOOTH);
-	static ImageIcon blackCircle = new ImageIcon( newimg2 );
+	Image img2 = blackC.getImage() ;  
+	Image newimg2 = img2.getScaledInstance(80,80,Image.SCALE_SMOOTH);
+	ImageIcon blackCircle = new ImageIcon( newimg2 );
 	
 	void red() {
 		name = "Red";

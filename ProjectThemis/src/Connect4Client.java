@@ -11,16 +11,17 @@ import java.io.PrintWriter;
 import javax.swing.*;
 
 public class Connect4Client extends JFrame {
-	static char[][] board;
-	static JButton[][] display;
+	char[][] board;
+	JButton[][] display;
 	JPanel boardpanel;
 	JLabel playerTurn = new JLabel("It is Red's Turn!");
 	int moveCount = 0;
 	boolean gameOver = false;
 	int numRows;
 	int numCols;
-	static int currentRow;
-	static Turn turn;
+	int currentRow;
+	Turn turn;
+	String opponentName;
 
     int gameID;
     int playerID;
@@ -86,7 +87,7 @@ public class Connect4Client extends JFrame {
 					winCheck(turn.symbol, moveCount, currentRow, c);
 					turn.flip();  
 					playerTurn.setText("It is " +turn.name+ "'s Turn!");
-					os.println("CONNECT4 MOVE " + r + " " + c + " " + turn.playerNo);
+					
 					//note that we're sending playerNo to the output stream
 					//even though our makeMove method doesn't take it as a parameter
 				}
@@ -94,13 +95,18 @@ public class Connect4Client extends JFrame {
 		}
 	}
 
-	private static boolean makeMove(int row, int col) {
+
+	
+	private boolean makeMove(int row, int col) {
 		int i=5;
 		while (i>=0){
 			if (board[i][col]==' '){
 				board[i][col]=turn.symbol;
 				display[i][col].setIcon(turn.icon);
 				currentRow=i;
+				
+				os.println("CONNECT4 MOVE " + currentRow + " " + col + " " + Turn.playerNo);
+				
 				return true;
 			}
 			i--;
