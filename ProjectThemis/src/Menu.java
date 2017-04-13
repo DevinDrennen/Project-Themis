@@ -129,6 +129,7 @@ public class Menu extends JFrame {
 						ProjectThemisClient.newAccount(newusername, newpassword);
 						break;
 				case "Connect 4" : //new Connect4(6);
+						ProjectThemisClient.launchConnect4();
 						break;
 				case "Tic Tac Toe": //new TicTacToeClient(3);
 						ProjectThemisClient.launchTicTacToe();

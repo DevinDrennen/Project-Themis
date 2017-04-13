@@ -144,52 +144,20 @@ public class Connect4Server {
 	}
 	
 	//Make a new game - set up the DB for it and find the pvpID.
+	//Make a new game - set up the DB for it and find the pvpID.
 	void SQLNewGame(){
-		try{
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-			stmt = conn.createStatement();
-			//rs = stmt.executeQuery("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P2 IS NULL;"); //Get all PVP info, merged with game so we can look for Tic Tac Toe. For now, let's do this.
-			if (stmt.execute("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + ";")) {
-				rs = stmt.getResultSet();
-				}
-			    
-			    ResultSetMetaData rsmd = rs.getMetaData();
-			    int columnsNumber = rsmd.getColumnCount();
-			    if (rs.next()) {
-			    	pvpID = rs.getInt(1);
-			        stmt.execute("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
-			    }
-			    else{
-			    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P1 = " + pvpID + " AND PVP_ACTIVE = 1;")); //Check if there's an active game.
-			    		rs = stmt.getResultSet();
-			    	if(rs.next()){ //Make sure we can look at the next thinger first...
-			    		pvpID = rs.getInt(1);
-			    	}
-			    	else{ //If we can't look at the next thing, there must not be an active game, so make a new one!
-				    	stmt.execute("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
-				    	if(stmt.execute("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + ";")){
-				    		rs = stmt.getResultSet();
-				    		rs.next();
-				    		pvpID = rs.getInt(1);
-				    	}
-			    	}
-			    }
-			    listener.updatePVPID(pvpID);
-		}
-		catch (SQLException e){
-		    System.out.println("SQLException: " + e.getMessage());
-		    System.out.println("SQLState: " + e.getSQLState());
-		    System.out.println("VendorError: " + e.getErrorCode());
-		}
-		finally{
-			if(conn!=null)
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-		}
+			
+		if(!rejoinPVP()) //First, try to rejoin a running game.
+			if(!joinPVP()) //If you can't find a game with only one player and join it.
+				newPVP(); //If you can't do that, make your own game.
+			
+	    listener.updatePVPID(pvpID);
+	    listener.setActive(true);
+
+		os.println("TICTACTOE NEWGAME");
+		os.flush();
 	}
+	
 	
 	void sendMoves(int[][] moves){
 		if(moves != null)
@@ -198,6 +166,58 @@ public class Connect4Server {
 				os.println("CONNECT4 MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
 				os.flush();
 		}
+	}
+	
+	private boolean newPVP(){
+		MySQLWrapper mysql = new MySQLWrapper();
+		
+		mysql.query("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
+		int pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;");
+		
+		if(pvpID != Integer.MIN_VALUE){
+    		this.pvpID = pvpID;
+    		os.println("TICTACTOE PLAYER 1");
+    		os.flush();
+    		return true;
+		}
+		return false;
+	}	
+	
+	private boolean rejoinPVP(){
+		MySQLWrapper mysql = new MySQLWrapper();
+		
+		int pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;");
+		if(pvpID != Integer.MIN_VALUE){
+			this.pvpID = pvpID;
+    		os.println("TICTACTOE PLAYER 1");
+    		os.flush();
+    		return true;
+		}
+		else{
+			pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 = " + playerID + " AND PVP_ACTIVE = 1;");
+			if(pvpID != Integer.MIN_VALUE){
+				this.pvpID = pvpID;
+	    		os.println("TICTACTOE PLAYER 2");
+	    		os.flush();
+	    		return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private boolean joinPVP(){
+		MySQLWrapper mysql = new MySQLWrapper();
+		
+		int pvpID = mysql.queryInt("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + " AND PVP_ACTIVE = 1;");
+		if(pvpID != Integer.MIN_VALUE){
+			this.pvpID = pvpID;
+			mysql.query("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
+	        os.println("TICTACTOE PLAYER 2");
+	        os.flush();
+	        return true;
+		}
+		return false;
 	}
 }
 
@@ -304,5 +324,5 @@ class Connect4Listener extends Thread {
 	
 	void updatePVPID(int pvpID){
 		this.pvpID = pvpID;
-	}
+	}	
 }
