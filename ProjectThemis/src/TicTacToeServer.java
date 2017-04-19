@@ -207,9 +207,15 @@ public class TicTacToeServer {
 		return false;
 	}	
 	
+	/**
+	 * @return A String of the opponent's username.
+	 */
 	private String getOpponent(){
 		MySQLWrapper mysql = new MySQLWrapper();
-		String opponent = mysql.queryString("SELECT PLAYER.PLAYER_NAME FROM PLAYER NATURAL JOIN PVP WHERE PVP.PVP_ID = " + pvpID + " AND PLAYER.PLAYER_ID != " + playerID + ";");
+		String opponent = mysql.queryString("SELECT PLAYER.PLAYER_NAME, PVP.PVP_ID FROM PLAYER " //Isn't this line disgusting?
+				+ "INNER JOIN PVP ON PVP.PVP_PLAYER_P1 = PLAYER.PLAYER_ID OR PVP.PVP_PLAYER_P2 = PLAYER.PLAYER_ID  "
+				+ "WHERE PVP.PVP_ID = " + pvpID +" AND PLAYER.PLAYER_ID != " + playerID + ";");
+
 		System.out.println(opponent);
 		if(opponent == null)
 			return "your opponent";
