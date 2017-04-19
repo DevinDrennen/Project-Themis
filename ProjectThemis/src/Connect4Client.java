@@ -91,10 +91,9 @@ public class Connect4Client extends JFrame {
 						System.out.println("You stupid fam");
 						sendMove(makeMove(c),c);
 						moveCount++;
-						winCheck(turn.symbol, moveCount, findLowestOpen(c)+1, c);
 						turn.flip();  
 						playerTurn.setText("It is " +turn.name+ "'s Turn!");
-						
+						winCheck(turn.symbol, moveCount, findLowestOpen(c)+1, c);
 						//note that we're sending playerNo to the output stream
 						//even though our makeMove method doesn't take it as a parameter
 					}
@@ -108,9 +107,10 @@ public class Connect4Client extends JFrame {
 	 * @return If it's the player's turn, return true.
 	 */
 	private boolean isPlayerTurn(){
+		System.out.println(!turn.isRed);
 		if(playerIsRed && turn.isRed)
 			return true;
-		if(playerIsBlack && !turn.isRed)
+		if(playerIsBlack && !(turn.isRed))
 			return true;
 		return false;
 	}
@@ -179,12 +179,16 @@ public class Connect4Client extends JFrame {
 	 * @return True if the move was new and valid.
 	 */
 	private boolean gotMove(int row, int col) {
-		if(board[row][col] != ' ')
-			return false;
-		if(makeMove(col) != -1){
-			turn.flip();
-			playerTurn.setText("It is " +turn.name+ "'s Turn!");
-			return true;
+		if(!gameOver){
+			if(board[row][col] != ' ')
+				return false;
+			if(makeMove(col) != -1){
+				turn.flip();
+				playerTurn.setText("It is " +turn.name+ "'s Turn!");
+				moveCount++;
+				winCheck(turn.symbol, moveCount, findLowestOpen(col)+1, col);
+				return true;
+			}
 		}
 		return false;
 	}
@@ -349,6 +353,7 @@ public class Connect4Client extends JFrame {
 		if(player == 2){
 			playerIsRed = false;
 			playerIsBlack = true;
+			return true;
 		}
 		
 		playerIsRed = false;
