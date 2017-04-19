@@ -118,6 +118,7 @@ public class TicTacToeClient extends JFrame {
                     oTurn = false;
                     gameOver = false;
                 }
+            os.println("TICTACTOE ENDGAME");
             os.println("TICTACTOE NEWGAME");
             opponentName = null;
             requestOpName();
@@ -248,7 +249,7 @@ public class TicTacToeClient extends JFrame {
     
     private void displayTurn(){
     	String opname;
-    	if(opponentName.isEmpty())
+    	if(opponentName == null || opponentName.isEmpty())
     		opname = "your opponent";
     	else
     		opname = opponentName;

@@ -61,7 +61,6 @@ public class TicTacToeServer {
 				closeCurrentGame();
 				break;
 			case "NEWGAME": //The Client is trying to start a new game.
-				closeCurrentGame();
 				SQLNewGame();
 				break;
 			case "MOVE": //The client has sent new moves that should be written to the MySQL Database.
@@ -71,7 +70,7 @@ public class TicTacToeServer {
 				//sendMoves(markMoves());
 				break;
 			case "GETOPPONENT": //The client wants the string of their opponent!
-				os.println(getOpponent());
+				os.println("TICTACTOE GETOPPONENT " + getOpponent());
 				os.flush();
 				break;
 	
