@@ -121,8 +121,8 @@ public class Menu extends JFrame {
 						ProjectThemisClient.setUser(username);
 						ProjectThemisClient.setPass(password);
 
+						authen = false;
 						ProjectThemisClient.login();
-						JOptionPane.showMessageDialog(message, "Logging in...");
 						
 						
 						break;
@@ -188,11 +188,6 @@ public class Menu extends JFrame {
 			JOptionPane.showMessageDialog(message, "Login failed!");
 			authen = false;
 		}
-	}
-	
-	public static void main(String[] args) {
-		new Menu();
-		
 	}
 
 }
