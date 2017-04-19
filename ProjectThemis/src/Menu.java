@@ -101,7 +101,9 @@ public class Menu extends JFrame {
 				switch (name) {
 				case "Login": message= new JOptionPane();
 						JOptionPane.showMessageDialog(message, "Enter your username and password");
-						String username = JOptionPane.showInputDialog("Enter your username");
+						String username = null;
+						while(username == null || username.length() == 0)
+							username = JOptionPane.showInputDialog("Enter your username");
 						pwBox = Box.createHorizontalBox();
 						pwBox.add(new JLabel("Password: "));
 						passwordField = new JPasswordField(24);
@@ -109,7 +111,9 @@ public class Menu extends JFrame {
 						message.add(pwBox);
 						passwordField.requestFocusInWindow(); //this line does not have any effect. >:(
 						message.showConfirmDialog(null, pwBox, "Enter your password", JOptionPane.OK_CANCEL_OPTION);
-						String password = new String(passwordField.getPassword());
+						String password = null;
+						while(password == null || password.length() == 0)
+							password = passwordField.getPassword().toString();
 
 
 						System.out.println(password);
@@ -126,28 +130,37 @@ public class Menu extends JFrame {
 				case "Create an account": 
 						message = new JOptionPane();
 						JOptionPane.showMessageDialog(message, "Create an account");
-						String newusername = JOptionPane.showInputDialog("Enter a username");
+						String newusername = null;
+						while(newusername == null|| newusername.length() == 0)
+							newusername = JOptionPane.showInputDialog("Enter a username");
 						//String newpassword = JOptionPane.showInputDialog("Enter a password");
 						pwBox = Box.createHorizontalBox();
 						pwBox.add(new JLabel("Password: "));
 						passwordField = new JPasswordField(24);
 						pwBox.add(passwordField);
-						message.add(pwBox);message.showConfirmDialog(null, pwBox, "Enter a password", JOptionPane.OK_CANCEL_OPTION);
-						String newpassword = new String(passwordField.getPassword());
+						message.add(pwBox);
+						message.showConfirmDialog(null, pwBox, "Enter a password", JOptionPane.OK_CANCEL_OPTION);
+						String newpassword = null;
+						while(newpassword == null || newpassword.length() == 0)
+								newpassword = passwordField.getPassword().toString();
 						
 						ProjectThemisClient.newAccount(newusername, newpassword);
-						break;
+					break;
 				case "Connect 4" : //new Connect4(6);
+					if(authen)
 						ProjectThemisClient.launchConnect4();
-						break;
+					break;
 				case "Tic Tac Toe": //new TicTacToeClient(3);
+					if(authen)
 						ProjectThemisClient.launchTicTacToe();
-						break;
-				case "Othello" : System.out.println("Othello Client");
-						break;
+					break;
+				case "Othello" : 
+					if(authen)
+						System.out.println("Othello Client");
+					break;
 				case "Help" : message = new JOptionPane();
 						JOptionPane.showMessageDialog(message, "Make a selection to play a game");
-						break;
+					break;
 				}
 			}
 
