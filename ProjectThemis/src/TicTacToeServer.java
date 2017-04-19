@@ -127,7 +127,7 @@ public class TicTacToeServer {
 		
 		mysql.query("UPDATE PVP SET PVP_ACTIVE = 0 WHERE PVP_ID = " + pvpID +";");
 		
-		listener.setActive(false);
+		listener.active = false;
 		os.println("TICTACTOE ENDGAME");
 		os.flush();
 	}
@@ -140,7 +140,7 @@ public class TicTacToeServer {
 				newPVP(); //If you can't do that, make your own game.
 			
 	    listener.updatePVPID(pvpID);
-	    listener.setActive(true);
+	    listener.active = true;
 
 		os.println("TICTACTOE NEWGAME");
 		os.flush();
@@ -240,7 +240,7 @@ class TicTacToeListener extends Thread {
 	String USER = ProjectThemisServer.USER;
 	String PASS = ProjectThemisServer.PASS;
 	
-	boolean active = false; //Only send moves if active.
+	public boolean active = false; //Only send moves if active.
 	
 	int pvpID;
 	
@@ -269,9 +269,9 @@ class TicTacToeListener extends Thread {
 		}
 	}
 	
-	public void setActive(boolean active){
-		this.active = active;
-	}
+	//public void setActive(boolean active){
+	//	this.active = active;
+	//}
 	
 	//Find any moves in the database for the game. Ideally, we should be storing old ones so we don't keep sending them.  #Goals
 	int[][] findMoves(){
