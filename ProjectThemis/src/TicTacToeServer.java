@@ -211,6 +211,7 @@ public class TicTacToeServer {
 	private String getOpponent(){
 		MySQLWrapper mysql = new MySQLWrapper();
 		String opponent = mysql.queryString("SELECT PLAYER.PLAYER_NAME FROM PLAYER NATURAL JOIN PVP WHERE PVP.PVP_ID = " + pvpID + " AND PLAYER.PLAYER_ID != " + playerID + ";");
+		System.out.println(opponent);
 		if(opponent == null)
 			return "your opponent";
 		else

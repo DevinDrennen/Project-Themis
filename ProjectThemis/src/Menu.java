@@ -111,9 +111,7 @@ public class Menu extends JFrame {
 						message.add(pwBox);
 						passwordField.requestFocusInWindow(); //this line does not have any effect. >:(
 						message.showConfirmDialog(null, pwBox, "Enter your password", JOptionPane.OK_CANCEL_OPTION);
-						String password = null;
-						while(password == null || password.length() == 0)
-							password = passwordField.getPassword().toString();
+						String password = new String(passwordField.getPassword());
 
 
 						System.out.println(password);
@@ -140,9 +138,7 @@ public class Menu extends JFrame {
 						pwBox.add(passwordField);
 						message.add(pwBox);
 						message.showConfirmDialog(null, pwBox, "Enter a password", JOptionPane.OK_CANCEL_OPTION);
-						String newpassword = null;
-						while(newpassword == null || newpassword.length() == 0)
-								newpassword = passwordField.getPassword().toString();
+						String newpassword = new String(passwordField.getPassword());
 						
 						ProjectThemisClient.newAccount(newusername, newpassword);
 					break;

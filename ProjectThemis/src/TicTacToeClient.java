@@ -29,7 +29,7 @@ public class TicTacToeClient extends JFrame {
     boolean isO = false;
     int gameID;
     int playerID;
-    String opponentName;
+    String opponentName = null;
     
     BufferedReader is;
     PrintWriter os;
@@ -119,6 +119,7 @@ public class TicTacToeClient extends JFrame {
                     gameOver = false;
                 }
             os.println("TICTACTOE NEWGAME");
+            opponentName = null;
             requestOpName();
             displayTurn();
         }
@@ -226,6 +227,7 @@ public class TicTacToeClient extends JFrame {
     		break;
     	case "GETOPPONENT":
     		opponentName = inputs[2];
+    		displayTurn();
     		break;
     	}
     }
@@ -245,6 +247,11 @@ public class TicTacToeClient extends JFrame {
     }
     
     private void displayTurn(){
+    	String opname;
+    	if(opponentName.isEmpty())
+    		opname = "your opponent";
+    	else
+    		opname = opponentName;
     	if(isX && moveCount % 2 == 0)
     		playerTurn.setText("It is your turn!");
     	else if(isO && moveCount % 2  == 0)
