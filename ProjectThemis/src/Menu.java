@@ -25,7 +25,9 @@ public class Menu extends JFrame {
 	JLabel label;
 	BoxLayout layout;
 	Box box;
+	Box pwBox;
 	JOptionPane message;
+	JPasswordField passwordField;
 	
 	boolean authen = false;
 	
@@ -95,13 +97,14 @@ public class Menu extends JFrame {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				
 				switch (name) {
 				case "Login": message= new JOptionPane();
 						JOptionPane.showMessageDialog(message, "Enter your username and password");
 						String username = JOptionPane.showInputDialog("Enter your username");
-						Box pwBox = Box.createHorizontalBox();
+						pwBox = Box.createHorizontalBox();
 						pwBox.add(new JLabel("Password: "));
-						JPasswordField passwordField = new JPasswordField(24);
+						passwordField = new JPasswordField(24);
 						pwBox.add(passwordField);
 						message.add(pwBox);
 						passwordField.requestFocusInWindow(); //this line does not have any effect. >:(
@@ -124,7 +127,13 @@ public class Menu extends JFrame {
 						message = new JOptionPane();
 						JOptionPane.showMessageDialog(message, "Create an account");
 						String newusername = JOptionPane.showInputDialog("Enter a username");
-						String newpassword = JOptionPane.showInputDialog("Enter a password");
+						//String newpassword = JOptionPane.showInputDialog("Enter a password");
+						pwBox = Box.createHorizontalBox();
+						pwBox.add(new JLabel("Password: "));
+						passwordField = new JPasswordField(24);
+						pwBox.add(passwordField);
+						message.add(pwBox);message.showConfirmDialog(null, pwBox, "Enter a password", JOptionPane.OK_CANCEL_OPTION);
+						String newpassword = new String(passwordField.getPassword());
 						
 						ProjectThemisClient.newAccount(newusername, newpassword);
 						break;
