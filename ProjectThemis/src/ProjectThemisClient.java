@@ -96,7 +96,11 @@ public class ProjectThemisClient {
 	private static void processInput(String inputLine) {
 		String[] inputs = inputLine.split(" "); //Make our String into an array of Strings whenever we see a space.
 		
-		System.out.println("Processing Inputs (Client)!"); //DEBUGGING
+		System.out.print("Inputs: ");
+		for(int i = 0; i < inputs.length; i++){
+			System.out.print(inputs[i] + " ");
+		}
+		System.out.println();
 		
 		//Switch to send messages to the correct location. It checks the first string in the series to determine it's use.
 		switch (inputs[0]) { 
@@ -122,8 +126,6 @@ public class ProjectThemisClient {
 			}
 			break;
 		}
-		
-		System.out.println("Processed Inputs (Client)!"); //DEBUGGING
 	}
 	
 	public static void launchTicTacToe(){
@@ -151,8 +153,6 @@ public class ProjectThemisClient {
 	}
 	
 	public static void login(){
-		System.out.println(user);
-		System.out.println(pass);
 		os.println("GETID " + user + " " + pass);
 	}
 	

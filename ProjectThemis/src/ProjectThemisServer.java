@@ -133,7 +133,11 @@ class ProjectThemisServerThread extends Thread {
 	private void processInput(String inputLine) {
 		String[] inputs = inputLine.split(" ");
 
-		System.out.println("Inputs: " + inputs[0] + " " + inputs[1]);
+		System.out.print("Inputs: ");
+		for(int i = 0; i < inputs.length; i++){
+			System.out.print(inputs[i] + " ");
+		}
+		System.out.println();
 		
 		switch (inputs[0]) {
 		case "ECHO": //When the ECHO command is given, repeat the previously given command.
