@@ -218,7 +218,7 @@ public class TicTacToeServer {
 
 		System.out.println(opponent);
 		if(opponent == null)
-			return "your opponent";
+			return "RESERVED_NAME";
 		else
 			return opponent;
 	}

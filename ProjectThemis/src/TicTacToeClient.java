@@ -69,6 +69,7 @@ public class TicTacToeClient extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
  
+        displayTurn();
     }
  
  
@@ -249,16 +250,16 @@ public class TicTacToeClient extends JFrame {
     
     private void displayTurn(){
     	String opname;
-    	if(opponentName == null || opponentName.isEmpty())
+    	if(opponentName == null || opponentName.isEmpty() || opponentName.equals("RESERVED_NAME"))
     		opname = "your opponent";
     	else
     		opname = opponentName;
     	if(isX && moveCount % 2 == 0)
     		playerTurn.setText("It is your turn!");
     	else if(isO && moveCount % 2  == 0)
-    		playerTurn.setText("It is " + opponentName + "'s turn!");
+    		playerTurn.setText("It is " + opname + "'s turn!");
     	else if(isX && moveCount % 2 == 1)
-    		playerTurn.setText("It is " + opponentName + "'s turn!");
+    		playerTurn.setText("It is " + opname + "'s turn!");
     	else if(isO && moveCount % 2  == 1)
     		playerTurn.setText("It is your turn!");
     }
