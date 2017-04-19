@@ -16,8 +16,8 @@ public class Connect4Client extends JFrame {
 	JPanel boardpanel;
 	JLabel playerTurn = new JLabel("It is Red's Turn!");
 	JButton NewGame = new JButton("New Game");
-	int moveCount = 0;
-	boolean gameOver = false;
+	int moveCount = 0; //may not need to give this a value here
+	boolean gameOver = false; //same deal
 	int numRows;
 	int numCols;
 	int currentRow;
@@ -42,7 +42,7 @@ public class Connect4Client extends JFrame {
 		numRows = n;
 		numCols = n+1;
 		turn = new Turn();
-		turn.red();
+		//turn.red();
 		setTitle("Connect Four");
 		setSize(500,500);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -51,23 +51,7 @@ public class Connect4Client extends JFrame {
 		display = new JButton[numRows][numCols];
 		boardpanel = new JPanel();
 		boardpanel.setLayout(new GridLayout(numRows,numCols));
-		for (r=0;r<numRows;r++)
-			for (c=0;c<numCols;c++) {
-				display[r][c] = new JButton();
-				display[r][c].setFont(new Font(null,1,40));
-				display[r][c].setFocusPainted(false);
-				display[r][c].setBorder(null);
-				display[r][c].addActionListener(new MoveListener(r,c));
-				boardpanel.add(display[r][c]);
-				board[r][c] = ' ';
-			}
-		for (c = 0; c < numCols; c++)
-			for (r = 0; r < numRows; r++) {
-				if (c % 2 == 0)
-					display[r][c].setBackground(Color.lightGray);
-				else
-					display[r][c].setBackground(Color.gray);
-			}
+		resetBoard();
 		add(boardpanel,BorderLayout.CENTER);
 		add(NewGame,BorderLayout.SOUTH);
 		add(playerTurn,BorderLayout.NORTH);
@@ -105,32 +89,7 @@ public class Connect4Client extends JFrame {
 
 	private class NewGameListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			//about to make setUpNewBoard a method, because it's been copied twice
-			int r, c;
-			for (r=0;r<numRows;r++)
-				for (c=0;c<numCols;c++) {
-					display[r][c] = new JButton();
-					display[r][c].setFont(new Font(null,1,40));
-					display[r][c].setFocusPainted(false);
-					display[r][c].setBorder(null);
-					display[r][c].addActionListener(new MoveListener(r,c));
-					boardpanel.add(display[r][c]);
-					board[r][c] = ' ';
-					
-				}
-			
-			moveCount = 0;
-			gameOver = false;
-			turn.red();
-			
-			// aesthetic part of board. subject to change 
-			for (c = 0; c < numCols; c++)
-				for (r = 0; r < numRows; r++) {
-					if (c % 2 == 0)
-						display[r][c].setBackground(Color.lightGray);
-					else
-						display[r][c].setBackground(Color.gray);
-				}
+		resetBoard();
 		
 		os.println("CONNECT4 ENDGAME");
 		os.println("CONNECT4 NEWGAME");
@@ -140,6 +99,30 @@ public class Connect4Client extends JFrame {
     	os.flush();
 		//displayTurn();
 		}
+	}
+	
+	private void resetBoard(){
+		int r, c;
+		for (r=0;r<numRows;r++)
+			for (c=0;c<numCols;c++) {
+				display[r][c] = new JButton();
+				display[r][c].setFont(new Font(null,1,40));
+				display[r][c].setFocusPainted(false);
+				display[r][c].setBorder(null);
+				display[r][c].addActionListener(new MoveListener(r,c));
+				boardpanel.add(display[r][c]);
+				board[r][c] = ' ';
+				
+				//aesthetic part of board
+				if (c % 2 == 0)
+					display[r][c].setBackground(Color.lightGray);
+				else
+					display[r][c].setBackground(Color.gray);
+			}
+		
+		moveCount = 0;
+		gameOver = false;
+		turn.red();
 	}
 	
 	
