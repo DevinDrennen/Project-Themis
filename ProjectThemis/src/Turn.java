@@ -16,6 +16,7 @@ public class Turn {
 	
 	ImageIcon redC = new ImageIcon("red_circle.png");
 	ImageIcon blackC = new ImageIcon("black_circle.png");
+	ImageIcon whiteC = new ImageIcon("white_circle.png");
 	
 
 	Image img = redC.getImage() ;  

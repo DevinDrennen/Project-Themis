@@ -84,17 +84,21 @@ public class Connect4Client extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 
 			if (!gameOver) {
-				if(isPlayerTurn())
-					if (makeMove(c)) {
-						sendMove(findLowestOpen(c)-1,c);
+				System.out.println("Game isn't over");
+				if(isPlayerTurn()){
+					System.out.println("And it's your turn...");
+					if (findLowestOpen(c) != -1) {
+						System.out.println("You stupid fam");
+						sendMove(makeMove(c),c);
 						moveCount++;
-						winCheck(turn.symbol, moveCount, findLowestOpen(c)-1, c);
+						winCheck(turn.symbol, moveCount, findLowestOpen(c)+1, c);
 						turn.flip();  
 						playerTurn.setText("It is " +turn.name+ "'s Turn!");
 						
 						//note that we're sending playerNo to the output stream
 						//even though our makeMove method doesn't take it as a parameter
 					}
+				}
 			}
 		}
 	}
@@ -118,18 +122,24 @@ public class Connect4Client extends JFrame {
 	 * @param col The column the piece is being dropped into.
 	 * @return If it's a valid location to drop a piece
 	 */
-	private boolean makeMove(int col) {
+	private int makeMove(int col) {
 		int finalRow = findLowestOpen(col);
-		if(finalRow < 5)
-			return false;
+		System.out.println("Final row is: " + finalRow);
+		if(finalRow == -1)
+			return -1;
 		
+		board[finalRow][col] = turn.symbol;
+		display[finalRow][col].setIcon(turn.icon);
+		
+		/*
 		for(int i = 5; i >= finalRow; i--){
 			if (board[i][col]==' '){
 				board[i][col]=turn.symbol;
 				display[i][col].setIcon(turn.icon);
 			}
 		}
-		return true;
+		*/
+		return finalRow;
 	}
 	
 	/**
@@ -150,15 +160,15 @@ public class Connect4Client extends JFrame {
 	 * This method will return the lowest open slot in a given column.
 	 * 
 	 * @param col The column you want to find the lowest available slot.
-	 * @return The row value. 0 means empty column, 6 means full column.
+	 * @return The row value. 5 means empty column, -1  means full column.
 	 */
 	private int findLowestOpen(int col) {
-		for(int i = 5; i >= 0; i--){
+		for(int i = 0; i < 6; i++){
 			if(board[i][col] != ' '){
-				return ++i; //A return value of 6 means the col is full.
+				return --i; //A return value of 6 means the col is full.
 			}
 		}
-		return 0;
+		return 5;
 	}
 	
 	/**
@@ -171,8 +181,11 @@ public class Connect4Client extends JFrame {
 	private boolean gotMove(int row, int col) {
 		if(board[row][col] != ' ')
 			return false;
-		if(makeMove(col))
+		if(makeMove(col) != -1){
+			turn.flip();
+			playerTurn.setText("It is " +turn.name+ "'s Turn!");
 			return true;
+		}
 		return false;
 	}
 	
@@ -346,7 +359,6 @@ public class Connect4Client extends JFrame {
 	
 	
 	public void processInput(String[] inputs){
-	    System.out.println("Processing inputs!");
 	    switch (inputs[1]){
 	    case "MOVE":
 	    	gotMove(Integer.parseInt(inputs[2]), Integer.parseInt(inputs[3]));
@@ -356,6 +368,8 @@ public class Connect4Client extends JFrame {
 	    	break;
 	    case "PLAYER":
 	    	setPlayer(Integer.parseInt(inputs[2]));
+	    	System.out.println("Player is " + inputs[2]);
+	    	break;
 	    }
 	}
 }

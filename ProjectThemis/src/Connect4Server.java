@@ -172,7 +172,7 @@ public class Connect4Server {
 		MySQLWrapper mysql = new MySQLWrapper();
 		
 		mysql.query("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 2, 1);");
-		int pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;");
+		int pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;");
 		
 		if(pvpID != Integer.MIN_VALUE){
     		this.pvpID = pvpID;
@@ -209,7 +209,7 @@ public class Connect4Server {
 	private boolean joinPVP(){
 		MySQLWrapper mysql = new MySQLWrapper();
 		
-		int pvpID = mysql.queryInt("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + " AND PVP_ACTIVE = 1;");
+		int pvpID = mysql.queryInt("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + " AND PVP_ACTIVE = 1;");
 		if(pvpID != Integer.MIN_VALUE){
 			this.pvpID = pvpID;
 			mysql.query("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
