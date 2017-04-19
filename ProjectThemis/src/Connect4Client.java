@@ -84,16 +84,13 @@ public class Connect4Client extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 
 			if (!gameOver) {
-				System.out.println("Game isn't over");
 				if(isPlayerTurn()){
-					System.out.println("And it's your turn...");
 					if (findLowestOpen(c) != -1) {
-						System.out.println("You stupid fam");
 						sendMove(makeMove(c),c);
 						moveCount++;
 						turn.flip();  
 						playerTurn.setText("It is " +turn.name+ "'s Turn!");
-						winCheck(turn.symbol, moveCount, findLowestOpen(c)+1, c);
+						winCheck(turn.symbol);
 						//note that we're sending playerNo to the output stream
 						//even though our makeMove method doesn't take it as a parameter
 					}
@@ -186,149 +183,212 @@ public class Connect4Client extends JFrame {
 				turn.flip();
 				playerTurn.setText("It is " +turn.name+ "'s Turn!");
 				moveCount++;
-				winCheck(turn.symbol, moveCount, findLowestOpen(col)+1, col);
+				winCheck(turn.symbol);
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	
- 
-
-	//checks for win or tie ***NEEDS FINE TUNING OF DIAGONAL CHECKS***
-	public void winCheck(char player, int moveCount, int row, int col) {
-		int count = 0;
-		char[][] winMarker = new char[numRows][numCols];
-
+	public boolean winCheck(char player){	
+		
+		char[][] winMarker = new char[numRows][numCols]; //Stores winning moves - we want to mark them later!
+		
+		//First, the moves exhausted case
 		if (moveCount >= 42 && !gameOver) {
 			gameOver = true;
 			JOptionPane tieMessage = new JOptionPane();
 			JOptionPane.showMessageDialog(tieMessage, "No winner, it's a tie!");
+			return true;
 		}
-
+		
+		//Now we look for potential wins. You can't win until 7 moves have been made.
 		if (moveCount >= 7 && !gameOver) {
-			//horizontal check
-			for (int c=0;c<numCols;c++) {
-				if (board[row][c] == player) {
-					count++;
-					winMarker[row][c] = turn.symbol;
-				}
-				else {
-					count = 0;
-					clearWinMarker(winMarker);
-				}
-				if (count >= 4) {
-					gameOver = true;
-					winnerMessage(winMarker);
-				}
-			}
-			count = 0;
-
-			//vertical check
-			for (int r=0;r<numRows;r++) {
-				if (board[r][col] == player) {
-					count++;
-					winMarker[r][col] = turn.symbol;
-				}
-				else {
-					count = 0;
-					clearWinMarker(winMarker);
-				}
-				if (count >= 4) {
-					gameOver = true;
-					winnerMessage(winMarker);
-				}
-			}
-			count = 0;
-
-			//down diagonal check of rows
-			for (int rowStart = 0; rowStart < numRows - 3; rowStart++) {
-				//only goes to numRows-3 because there's not 4 in diagonal direction below that
-				int r,c;
-				count = 0;
-				for (r = rowStart, c = 0; r < numRows && c < numCols; r++, c++ ) {
-					if (board[r][c] == player) {
-						count++;
-						winMarker[r][c] = turn.symbol;
-					}
-					else {
-						count = 0;
-						clearWinMarker(winMarker);
-					}
-					if (count >= 4) {
-						gameOver = true;
+			
+			//Start horizontal check
+			for(int r = 0; r < numRows; r++){
+				for(int c = 0; c < numCols; c++){
+					if(checkU(player, r, c, 1) > 4){
+						for(int i = r; i > r-4; --i){
+							winMarker[i][c] = board[i][c];
+						}
 						winnerMessage(winMarker);
-					}
-				}
-			}
-			count = 0;
-
-			//down diagonal check of columns
-			for (int colStart = 1; colStart < numRows - 3; colStart++) {
-				//starts at 1 because 0 was already checked in rows loop
-				int r,c;
-				count = 0;
-				for (r = 0, c = colStart; r < numRows && c < numCols; r++, c++ ) {
-					if (board[r][c] == player) {
-						count++;
-						winMarker[r][c] = turn.symbol;
-					}
-					else {
-						count = 0;
-						clearWinMarker(winMarker);
-					}
-					if (count >= 4) {
 						gameOver = true;
+						return true;
+					}
+					
+					if(checkD(player, r, c, 1) > 4){
+						for(int i = r; i < r+4; ++i){
+							winMarker[i][c] = board[i][c];
+						}
 						winnerMessage(winMarker);
-					}
-				}
-			}
-			count = 0;
-
-			//up diagonal check of rows
-			for (int rowStart = numRows-1; rowStart > numRows - 3; rowStart--) {
-				int r,c;
-				count = 0;
-				for (r = rowStart, c = 0; r > 0 && c < numCols; r--, c++) {
-					if (board[r][c] == player) {
-						count++;
-						winMarker[r][c] = turn.symbol;
-					}
-					else {
-						count = 0;
-						clearWinMarker(winMarker);
-					}
-					if (count >= 4) {
 						gameOver = true;
+						return true;
+					}
+					
+					if(checkR(player, r, c, 1) > 4){
+						for(int i = c; i < c+4; ++i){
+							winMarker[r][i] = board[r][i];
+						}
 						winnerMessage(winMarker);
-					}
-				}
-			}
-			count = 0;
-
-			//up diagonal check of columns
-			for (int colStart = 1; colStart < numCols - 3; colStart++) {
-				int r,c;
-				count = 0;
-				for (r = numRows - 1, c = colStart; r > 0 && c < numCols; r--, c++) {
-					if (board[r][c] == player) {
-						count++;
-						winMarker[r][c] = turn.symbol;
-					}
-					else {
-						count = 0;
-						clearWinMarker(winMarker);
-					}
-					if (count >= 4) {
 						gameOver = true;
-						winnerMessage(winMarker);
+						return true;
 					}
-				}
-			}
-			count = 0;
-		}
+					
+					if(checkL(player, r, c, 1) > 4){
+						for(int i = r; i > c-4; --i){
+							winMarker[r][i] = board[r][i];
+						}
+						winnerMessage(winMarker);
+						gameOver = true;
+						return true;
+					}
+					
+					if(checkUR(player, r, c, 1) > 4){
+						for(int i = 0; i < 4; i++){
+							winMarker[r-i][c+1] = board[r-1][c+1];
+						}
+						winnerMessage(winMarker);
+						gameOver = true;
+						return true;
+					}
+					
+					if(checkDR(player, r, c, 1) > 4){
+						for(int i = 0; i < 4; i++){
+							winMarker[r+i][c+1] = board[r+1][c+1];
+						}
+						winnerMessage(winMarker);
+						gameOver = true;
+						return true;
+					}
+					
+					if(checkUL(player, r, c, 1) > 4){
+						for(int i = 0; i < 4; i++){
+							winMarker[r-i][c-1] = board[r-1][c-1];
+						}
+						winnerMessage(winMarker);
+						gameOver = true;
+						return true;
+					}
+					
+					if(checkDL(player, r, c, 1) > 4){
+						for(int i = 0; i < 4; i++){
+							winMarker[r-i][c-1] = board[r-1][c-1];
+						}
+						winnerMessage(winMarker);
+						gameOver = true;
+						return true;
+					}
+				}	
+			}			
+		}	
+		return false;
 	}
+	
+	//Checks if you won to the vertical up
+	private int checkU(char player, int r, int c, int count){
+		if(count == 0)
+			return 0;
+		if(player == board[r][c]){
+			if(count > 4)
+				return count;
+			if(r-1 > 0)
+				return checkU(player, r-1, c, ++count);
+		}
+		return 0;
+	}
+	
+	//Checks if you won to the vertical down
+	private int checkD(char player, int r, int c, int count){
+		if(count == 0)
+			return 0;
+		if(player == board[r][c]){
+			if(count > 4)
+				return count;
+			if(r+1 < numRows)
+				return checkD(player, r+1, c, ++count);
+		}
+		return 0;
+	}
+	
+	//Checks if you won to the right
+	private int checkR(char player, int r, int c, int count){
+		if(count == 0)
+			return 0;
+		if(player == board[r][c]){
+			if(count > 4)
+				return count;
+			if(c+1 < numCols)
+				return checkR(player, r, c+1, ++count);
+		}
+		return 0;
+	}
+	
+	//Checks if you won to the left
+	private int checkL(char player, int r, int c, int count){
+		if(count == 0)
+			return 0;
+		if(player == board[r][c]){
+			if(count > 4)
+				return count;
+			if(c-1 > 0)
+				return checkL(player, r, c-1, ++count);
+		}
+		return 0;
+	}
+	
+	//Checks if you won to the up and left
+	private int checkUL(char player, int r, int c, int count){
+		if(count == 0)
+			return 0;
+		if(player == board[r][c]){
+			if(count > 4)
+				return count;
+			if(c-1 > 0 && r-1 > 0)
+				return checkUL(player, r-1, c-1, ++count);
+		}
+		return 0;
+	}
+	
+	//Checks if you won to the down and left
+	private int checkDL(char player, int r, int c, int count){
+		if(count == 0)
+			return 0;
+		if(player == board[r][c]){
+			if(count > 4)
+				return count;
+			if(c-1 > 0 && r+1 < numRows)
+				return checkDL(player, r+1, c-1, ++count);
+		}
+		return 0;
+	}
+	
+	//Checks if you won to the down and right
+	private int checkDR(char player, int r, int c, int count){
+		if(count == 0)
+			return 0;
+		if(player == board[r][c]){
+			if(count > 4)
+				return count;
+			if(c+1 < numCols && r+1 < numRows)
+				return checkDR(player, r+1, c+1, ++count);
+		}
+		return 0;
+	}
+	
+	//Checks if you won to the up and right
+	private int checkUR(char player, int r, int c, int count){
+		if(count == 0)
+			return 0;
+		if(player == board[r][c]){
+			if(count > 4)
+				return count;
+			if(c+1 < numCols && r-1 > 0)
+				return checkUR(player, r-1, c+1, ++count);
+		}
+		return 0;
+	}
+
 	public void clearWinMarker(char[][] winMarker) {
 		for (int r = 0; r < numRows; r++)
 			for (int c = 0; c < numCols; c++)
