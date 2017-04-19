@@ -93,10 +93,14 @@ public class Connect4Client extends JFrame {
 		
 		os.println("CONNECT4 ENDGAME");
 		os.println("CONNECT4 NEWGAME");
-		opponentName = null;
+		
+		//started setting this up for opponent name display
+		//before realizing I don't know what I'm doing.
+		
+		//opponentName = null;
 		//requestOpName();
-		os.println("CONNECT4 GETOPPONENT");
-    	os.flush();
+		//os.println("CONNECT4 GETOPPONENT");
+    	//os.flush();
 		//displayTurn();
 		}
 	}
@@ -452,6 +456,12 @@ public class Connect4Client extends JFrame {
 	
 	public void processInput(String[] inputs){
 	    switch (inputs[1]){
+	    case "ENDGAME":
+	    	gameOver = true;
+    		break;
+	    case "NEWGAME":
+	    	resetBoard();
+	    	break;
 	    case "MOVE":
 	    	gotMove(Integer.parseInt(inputs[2]), Integer.parseInt(inputs[3]));
 	    	//we do not have inputs[4] because we keep track of which player's turn it is within the game
@@ -462,6 +472,11 @@ public class Connect4Client extends JFrame {
 	    	setPlayer(Integer.parseInt(inputs[2]));
 	    	System.out.println("Player is " + inputs[2]);
 	    	break;
+	    case "GETOPPONENT":
+	    	// does not do anything right now
+	    	opponentName = inputs[2];
+    		//displayTurn();
+    		break;
 	    }
 	}
 }
