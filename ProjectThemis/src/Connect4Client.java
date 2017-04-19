@@ -24,7 +24,9 @@ public class Connect4Client extends JFrame {
 	String opponentName;
 
     int gameID;
-    int playerID;
+    int playerID; //The specific ID of the player.
+    boolean playerIsRed; //Why both?
+    boolean playerIsBlack; //In case we decide to add a spectating feature,or they manage to view someone else's game.
     
     BufferedReader is;
     PrintWriter os;
@@ -82,37 +84,98 @@ public class Connect4Client extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 
 			if (!gameOver) {
-				if (makeMove(r,c)) {
-					moveCount++;
-					winCheck(turn.symbol, moveCount, currentRow, c);
-					turn.flip();  
-					playerTurn.setText("It is " +turn.name+ "'s Turn!");
-					
-					//note that we're sending playerNo to the output stream
-					//even though our makeMove method doesn't take it as a parameter
-				}
+				if(isPlayerTurn())
+					if (makeMove(c)) {
+						sendMove(findLowestOpen(c)-1,c);
+						moveCount++;
+						winCheck(turn.symbol, moveCount, findLowestOpen(c)-1, c);
+						turn.flip();  
+						playerTurn.setText("It is " +turn.name+ "'s Turn!");
+						
+						//note that we're sending playerNo to the output stream
+						//even though our makeMove method doesn't take it as a parameter
+					}
 			}
 		}
 	}
 
+	/**
+	 * Checks if it's currently the player's turn
+	 * @return If it's the player's turn, return true.
+	 */
+	private boolean isPlayerTurn(){
+		if(playerIsRed && turn.isRed)
+			return true;
+		if(playerIsBlack && !turn.isRed)
+			return true;
+		return false;
+	}
 
 	
-	private boolean makeMove(int row, int col) {
-		int i=5;
-		while (i>=0){
+	/**
+	 * Animates the move/makes it appear on the display
+	 * 
+	 * @param col The column the piece is being dropped into.
+	 * @return If it's a valid location to drop a piece
+	 */
+	private boolean makeMove(int col) {
+		int finalRow = findLowestOpen(col);
+		if(finalRow < 5)
+			return false;
+		
+		for(int i = 5; i >= finalRow; i--){
 			if (board[i][col]==' '){
 				board[i][col]=turn.symbol;
 				display[i][col].setIcon(turn.icon);
-				currentRow=i;
-				
-				os.println("CONNECT4 MOVE " + currentRow + " " + col + " " + Turn.playerNo);
-				
-				return true;
 			}
-			i--;
 		}
+		return true;
+	}
+	
+	/**
+	 * Sends a move to the ProjectThemisServer.
+	 * 
+	 * @param row The row to send to the server
+	 * @param col The column to send to the server
+	 * @return If it successfully was sent.
+	 */
+	private boolean sendMove(int row, int col) {
+		os.println("CONNECT4 MOVE " + row + " " + col + " " + Turn.playerNo);
+		os.flush();
+		return true;
+	}
+	
+	
+	/**
+	 * This method will return the lowest open slot in a given column.
+	 * 
+	 * @param col The column you want to find the lowest available slot.
+	 * @return The row value. 0 means empty column, 6 means full column.
+	 */
+	private int findLowestOpen(int col) {
+		for(int i = 5; i >= 0; i--){
+			if(board[i][col] != ' '){
+				return ++i; //A return value of 6 means the col is full.
+			}
+		}
+		return 0;
+	}
+	
+	/**
+	 * When a move is received from the server, use this method to make sure the move is valid.
+	 * 
+	 * @param row The row of the piece we just got
+	 * @param col The column of the piece we just got
+	 * @return True if the move was new and valid.
+	 */
+	private boolean gotMove(int row, int col) {
+		if(board[row][col] != ' ')
+			return false;
+		if(makeMove(col))
+			return true;
 		return false;
 	}
+	
 	
  
 
@@ -264,15 +327,35 @@ public class Connect4Client extends JFrame {
 		JOptionPane.showMessageDialog(window, turn.name + " wins!");
 	}
 	
+	private boolean setPlayer(int player){
+		if(player == 1){
+			playerIsRed = true;
+			playerIsBlack = false;
+			return true;
+		}
+		if(player == 2){
+			playerIsRed = false;
+			playerIsBlack = true;
+		}
+		
+		playerIsRed = false;
+		playerIsBlack = false;
+		
+		return false;
+	}
+	
 	
 	public void processInput(String[] inputs){
 	    System.out.println("Processing inputs!");
 	    switch (inputs[1]){
 	    case "MOVE":
-	    	makeMove(Integer.parseInt(inputs[2]), Integer.parseInt(inputs[3]));
+	    	gotMove(Integer.parseInt(inputs[2]), Integer.parseInt(inputs[3]));
 	    	//we do not have inputs[4] because we keep track of which player's turn it is within the game
 	    	//if there are issues here, this is why.
 	    	System.out.println("Move recieved!");
+	    	break;
+	    case "PLAYER":
+	    	setPlayer(Integer.parseInt(inputs[2]));
 	    }
 	}
 }

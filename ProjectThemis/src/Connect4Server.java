@@ -139,7 +139,7 @@ public class Connect4Server {
 		mysql.query("UPDATE PVP SET PVP_ACTIVE = 0 WHERE PVP_ID = " + pvpID +";");
 		
 		listener.setActive(false);
-		os.println("TICTACTOE ENDGAME");
+		os.println("CONNECT4 ENDGAME");
 		os.flush();
 	}
 	
@@ -154,7 +154,7 @@ public class Connect4Server {
 	    listener.updatePVPID(pvpID);
 	    listener.setActive(true);
 
-		os.println("TICTACTOE NEWGAME");
+		os.println("CONNECT4 NEWGAME");
 		os.flush();
 	}
 	
@@ -171,12 +171,12 @@ public class Connect4Server {
 	private boolean newPVP(){
 		MySQLWrapper mysql = new MySQLWrapper();
 		
-		mysql.query("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
+		mysql.query("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 2, 1);");
 		int pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;");
 		
 		if(pvpID != Integer.MIN_VALUE){
     		this.pvpID = pvpID;
-    		os.println("TICTACTOE PLAYER 1");
+    		os.println("CONNECT4 PLAYER 1");
     		os.flush();
     		return true;
 		}
@@ -186,18 +186,18 @@ public class Connect4Server {
 	private boolean rejoinPVP(){
 		MySQLWrapper mysql = new MySQLWrapper();
 		
-		int pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;");
+		int pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;");
 		if(pvpID != Integer.MIN_VALUE){
 			this.pvpID = pvpID;
-    		os.println("TICTACTOE PLAYER 1");
+    		os.println("CONNECT4 PLAYER 1");
     		os.flush();
     		return true;
 		}
 		else{
-			pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 = " + playerID + " AND PVP_ACTIVE = 1;");
+			pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P2 = " + playerID + " AND PVP_ACTIVE = 1;");
 			if(pvpID != Integer.MIN_VALUE){
 				this.pvpID = pvpID;
-	    		os.println("TICTACTOE PLAYER 2");
+	    		os.println("CONNECT4 PLAYER 2");
 	    		os.flush();
 	    		return true;
 			}
@@ -213,7 +213,7 @@ public class Connect4Server {
 		if(pvpID != Integer.MIN_VALUE){
 			this.pvpID = pvpID;
 			mysql.query("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
-	        os.println("TICTACTOE PLAYER 2");
+	        os.println("CONNECT4 PLAYER 2");
 	        os.flush();
 	        return true;
 		}
