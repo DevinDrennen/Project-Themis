@@ -15,6 +15,7 @@ public class Connect4Client extends JFrame {
 	JButton[][] display;
 	JPanel boardpanel;
 	JLabel playerTurn = new JLabel("It is Red's Turn!");
+	JButton NewGame = new JButton("New Game");
 	int moveCount = 0;
 	boolean gameOver = false;
 	int numRows;
@@ -68,9 +69,12 @@ public class Connect4Client extends JFrame {
 					display[r][c].setBackground(Color.gray);
 			}
 		add(boardpanel,BorderLayout.CENTER);
+		add(NewGame,BorderLayout.SOUTH);
 		add(playerTurn,BorderLayout.NORTH);
 		playerTurn.setHorizontalAlignment(JLabel.CENTER);
 		playerTurn.setFont(new Font(null,1,24));
+		NewGame.setFont(new Font(null,1,20));
+        NewGame.addActionListener(new NewGameListener());
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
@@ -99,6 +103,46 @@ public class Connect4Client extends JFrame {
 		}
 	}
 
+	private class NewGameListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			//about to make setUpNewBoard a method, because it's been copied twice
+			int r, c;
+			for (r=0;r<numRows;r++)
+				for (c=0;c<numCols;c++) {
+					display[r][c] = new JButton();
+					display[r][c].setFont(new Font(null,1,40));
+					display[r][c].setFocusPainted(false);
+					display[r][c].setBorder(null);
+					display[r][c].addActionListener(new MoveListener(r,c));
+					boardpanel.add(display[r][c]);
+					board[r][c] = ' ';
+					
+				}
+			
+			moveCount = 0;
+			gameOver = false;
+			turn.red();
+			
+			// aesthetic part of board. subject to change 
+			for (c = 0; c < numCols; c++)
+				for (r = 0; r < numRows; r++) {
+					if (c % 2 == 0)
+						display[r][c].setBackground(Color.lightGray);
+					else
+						display[r][c].setBackground(Color.gray);
+				}
+		
+		os.println("CONNECT4 ENDGAME");
+		os.println("CONNECT4 NEWGAME");
+		opponentName = null;
+		//requestOpName();
+		os.println("CONNECT4 GETOPPONENT");
+    	os.flush();
+		//displayTurn();
+		}
+	}
+	
+	
 	/**
 	 * Checks if it's currently the player's turn
 	 * @return If it's the player's turn, return true.

@@ -114,11 +114,12 @@ public class TicTacToeClient extends JFrame {
                 for (c=0;c<board.length;c++) {
                     board[r][c] = ' ';
                     display[r][c].setText(" ");
-                    moveCount = 0;
-                    xTurn = true;
-                    oTurn = false;
-                    gameOver = false;
                 }
+            moveCount = 0;
+            xTurn = true;
+            oTurn = false;
+            gameOver = false;
+            
             os.println("TICTACTOE ENDGAME");
             os.println("TICTACTOE NEWGAME");
             opponentName = null;

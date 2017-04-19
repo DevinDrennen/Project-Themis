@@ -59,8 +59,10 @@ public class Connect4Server {
 		System.out.println("Inputs Being Processed...");
 		
 		switch (inputs[1]) {
-			case "NEWGAME": //The Client is trying to start a new game.
+			case "ENDGAME": 
 				closeCurrentGame();
+				break;
+			case "NEWGAME": //The Client is trying to start a new game.
 				SQLNewGame();
 				break;
 			case "MOVE": //The client has sent new moves that should be written to the MySQL Database.
@@ -72,7 +74,7 @@ public class Connect4Server {
 			case "GETOPPONENT":
 				os.println(getOpponent());
 				os.flush();
-				
+				break;
 				
 		}
 		
