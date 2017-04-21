@@ -47,24 +47,7 @@ public class Connect4Client extends JFrame {
 
 		numRows = n;
 		numCols = n+1;
-		turn = new Turn();
-		//turn.red();
-		setTitle("Connect Four");
-		setSize(500,500);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLayout(new BorderLayout());
-		board = new char[numRows][numCols];
-		display = new JButton[numRows][numCols];
 		resetBoard();
-		add(boardpanel,BorderLayout.CENTER);
-		add(NewGame,BorderLayout.SOUTH);
-		add(playerTurn,BorderLayout.NORTH);
-		playerTurn.setHorizontalAlignment(JLabel.CENTER);
-		playerTurn.setFont(new Font(null,1,24));
-		NewGame.setFont(new Font(null,1,20));
-		NewGame.addActionListener(new NewGameListener());
-		setLocationRelativeTo(null);
-		setVisible(true);
 	}
 
 	private class MoveListener implements ActionListener {
@@ -111,6 +94,15 @@ public class Connect4Client extends JFrame {
 	}
 
 	private void resetBoard(){
+		
+		turn = new Turn();
+		//turn.red();
+		setTitle("Connect Four");
+		setSize(500,500);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLayout(new BorderLayout());
+		board = new char[numRows][numCols];
+		display = new JButton[numRows][numCols];
 		boardpanel = new JPanel();
 		boardpanel.setLayout(new GridLayout(numRows,numCols));
 		int r, c;
@@ -125,12 +117,19 @@ public class Connect4Client extends JFrame {
 				display[r][c].setIcon(whiteCircle);
 				boardpanel.add(display[r][c]);
 				board[r][c] = ' ';
-
 			}
-
 		moveCount = 0;
 		gameOver = false;
 		turn.red();
+		add(boardpanel,BorderLayout.CENTER);
+		add(NewGame,BorderLayout.SOUTH);
+		add(playerTurn,BorderLayout.NORTH);
+		playerTurn.setHorizontalAlignment(JLabel.CENTER);
+		playerTurn.setFont(new Font(null,1,24));
+		NewGame.setFont(new Font(null,1,20));
+		NewGame.addActionListener(new NewGameListener());
+		setLocationRelativeTo(null);
+		setVisible(true);		
 	}
 
 
