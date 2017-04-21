@@ -1,8 +1,8 @@
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -24,21 +24,27 @@ public class Connect4Client extends JFrame {
 	Turn turn;
 	String opponentName;
 
-    int gameID;
-    int playerID; //The specific ID of the player.
-    boolean playerIsRed; //Why both?
-    boolean playerIsBlack; //In case we decide to add a spectating feature,or they manage to view someone else's game.
-    
-    BufferedReader is;
-    PrintWriter os;
-	
+	int gameID;
+	int playerID; //The specific ID of the player.
+	boolean playerIsRed; //Why both?
+	boolean playerIsBlack; //In case we decide to add a spectating feature,or they manage to view someone else's game.
+
+	static ImageIcon whiteC = new ImageIcon("white_circle.png");
+
+	static Image img = whiteC.getImage() ;  
+	static Image newimg = img.getScaledInstance(65,65,Image.SCALE_SMOOTH);
+	static ImageIcon whiteCircle = new ImageIcon( newimg );
+
+	BufferedReader is;
+	PrintWriter os;
+
 	public Connect4Client(int n, BufferedReader inputStream, PrintWriter outputStream) {
 		int r,c;
-		
+
 		is = inputStream;
-        os = outputStream;
-        playerID = ProjectThemisClient.playerID;
-		
+		os = outputStream;
+		playerID = ProjectThemisClient.playerID;
+
 		numRows = n;
 		numCols = n+1;
 		turn = new Turn();
@@ -58,7 +64,7 @@ public class Connect4Client extends JFrame {
 		playerTurn.setHorizontalAlignment(JLabel.CENTER);
 		playerTurn.setFont(new Font(null,1,24));
 		NewGame.setFont(new Font(null,1,20));
-        NewGame.addActionListener(new NewGameListener());
+		NewGame.addActionListener(new NewGameListener());
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
@@ -89,22 +95,22 @@ public class Connect4Client extends JFrame {
 
 	private class NewGameListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-		resetBoard();
-		
-		os.println("CONNECT4 ENDGAME");
-		os.println("CONNECT4 NEWGAME");
-		
-		//started setting this up for opponent name display
-		//before realizing I don't know what I'm doing.
-		
-		//opponentName = null;
-		//requestOpName();
-		//os.println("CONNECT4 GETOPPONENT");
-    	//os.flush();
-		//displayTurn();
+			resetBoard();
+
+			os.println("CONNECT4 ENDGAME");
+			os.println("CONNECT4 NEWGAME");
+
+			//started setting this up for opponent name display
+			//before realizing I don't know what I'm doing.
+
+			//opponentName = null;
+			//requestOpName();
+			//os.println("CONNECT4 GETOPPONENT");
+			//os.flush();
+			//displayTurn();
 		}
 	}
-	
+
 	private void resetBoard(){
 		int r, c;
 		for (r=0;r<numRows;r++)
@@ -114,22 +120,19 @@ public class Connect4Client extends JFrame {
 				display[r][c].setFocusPainted(false);
 				display[r][c].setBorder(null);
 				display[r][c].addActionListener(new MoveListener(r,c));
+				display[r][c].setBackground(Color.yellow);
+				display[r][c].setIcon(whiteCircle);
 				boardpanel.add(display[r][c]);
 				board[r][c] = ' ';
-				
-				//aesthetic part of board
-				if (c % 2 == 0)
-					display[r][c].setBackground(Color.lightGray);
-				else
-					display[r][c].setBackground(Color.gray);
+
 			}
-		
+
 		moveCount = 0;
 		gameOver = false;
 		turn.red();
 	}
-	
-	
+
+
 	/**
 	 * Checks if it's currently the player's turn
 	 * @return If it's the player's turn, return true.
@@ -143,7 +146,7 @@ public class Connect4Client extends JFrame {
 		return false;
 	}
 
-	
+
 	/**
 	 * Animates the move/makes it appear on the display
 	 * 
@@ -155,10 +158,10 @@ public class Connect4Client extends JFrame {
 		System.out.println("Final row is: " + finalRow);
 		if(finalRow == -1)
 			return -1;
-		
+
 		board[finalRow][col] = turn.symbol;
 		display[finalRow][col].setIcon(turn.icon);
-		
+
 		/*
 		for(int i = 5; i >= finalRow; i--){
 			if (board[i][col]==' '){
@@ -166,10 +169,10 @@ public class Connect4Client extends JFrame {
 				display[i][col].setIcon(turn.icon);
 			}
 		}
-		*/
+		 */
 		return finalRow;
 	}
-	
+
 	/**
 	 * Sends a move to the ProjectThemisServer.
 	 * 
@@ -182,8 +185,8 @@ public class Connect4Client extends JFrame {
 		os.flush();
 		return true;
 	}
-	
-	
+
+
 	/**
 	 * This method will return the lowest open slot in a given column.
 	 * 
@@ -198,7 +201,7 @@ public class Connect4Client extends JFrame {
 		}
 		return 5;
 	}
-	
+
 	/**
 	 * When a move is received from the server, use this method to make sure the move is valid.
 	 * 
@@ -220,11 +223,11 @@ public class Connect4Client extends JFrame {
 		}
 		return false;
 	}
-	
+
 	public boolean winCheck(char player){	
-		
+
 		char[][] winMarker = new char[numRows][numCols]; //Stores winning moves - we want to mark them later!
-		
+
 		//First, the moves exhausted case
 		if (moveCount >= 42 && !gameOver) {
 			gameOver = true;
@@ -232,10 +235,10 @@ public class Connect4Client extends JFrame {
 			JOptionPane.showMessageDialog(tieMessage, "No winner, it's a tie!");
 			return true;
 		}
-		
+
 		//Now we look for potential wins. You can't win until 7 moves have been made.
 		if (moveCount >= 7 && !gameOver) {
-			
+
 			//Start horizontal check
 			for(int r = 0; r < numRows; r++){
 				for(int c = 0; c < numCols; c++){
@@ -247,7 +250,7 @@ public class Connect4Client extends JFrame {
 						gameOver = true;
 						return true;
 					}
-					
+
 					if(checkD(player, r, c, 1) > 4){
 						for(int i = r; i < r+4; ++i){
 							winMarker[i][c] = board[i][c];
@@ -256,7 +259,7 @@ public class Connect4Client extends JFrame {
 						gameOver = true;
 						return true;
 					}
-					
+
 					if(checkR(player, r, c, 1) > 4){
 						for(int i = c; i < c+4; ++i){
 							winMarker[r][i] = board[r][i];
@@ -265,7 +268,7 @@ public class Connect4Client extends JFrame {
 						gameOver = true;
 						return true;
 					}
-					
+
 					if(checkL(player, r, c, 1) > 4){
 						for(int i = r; i > c-4; --i){
 							winMarker[r][i] = board[r][i];
@@ -274,7 +277,7 @@ public class Connect4Client extends JFrame {
 						gameOver = true;
 						return true;
 					}
-					
+
 					if(checkUR(player, r, c, 1) > 4){
 						for(int i = 0; i < 4; i++){
 							winMarker[r-i][c+1] = board[r-1][c+1];
@@ -283,7 +286,7 @@ public class Connect4Client extends JFrame {
 						gameOver = true;
 						return true;
 					}
-					
+
 					if(checkDR(player, r, c, 1) > 4){
 						for(int i = 0; i < 4; i++){
 							winMarker[r+i][c+1] = board[r+1][c+1];
@@ -292,7 +295,7 @@ public class Connect4Client extends JFrame {
 						gameOver = true;
 						return true;
 					}
-					
+
 					if(checkUL(player, r, c, 1) > 4){
 						for(int i = 0; i < 4; i++){
 							winMarker[r-i][c-1] = board[r-1][c-1];
@@ -301,7 +304,7 @@ public class Connect4Client extends JFrame {
 						gameOver = true;
 						return true;
 					}
-					
+
 					if(checkDL(player, r, c, 1) > 4){
 						for(int i = 0; i < 4; i++){
 							winMarker[r-i][c-1] = board[r-1][c-1];
@@ -315,7 +318,7 @@ public class Connect4Client extends JFrame {
 		}	
 		return false;
 	}
-	
+
 	//Checks if you won to the vertical up
 	private int checkU(char player, int r, int c, int count){
 		if(count == 0)
@@ -328,7 +331,7 @@ public class Connect4Client extends JFrame {
 		}
 		return 0;
 	}
-	
+
 	//Checks if you won to the vertical down
 	private int checkD(char player, int r, int c, int count){
 		if(count == 0)
@@ -341,7 +344,7 @@ public class Connect4Client extends JFrame {
 		}
 		return 0;
 	}
-	
+
 	//Checks if you won to the right
 	private int checkR(char player, int r, int c, int count){
 		if(count == 0)
@@ -354,7 +357,7 @@ public class Connect4Client extends JFrame {
 		}
 		return 0;
 	}
-	
+
 	//Checks if you won to the left
 	private int checkL(char player, int r, int c, int count){
 		if(count == 0)
@@ -367,7 +370,7 @@ public class Connect4Client extends JFrame {
 		}
 		return 0;
 	}
-	
+
 	//Checks if you won to the up and left
 	private int checkUL(char player, int r, int c, int count){
 		if(count == 0)
@@ -380,7 +383,7 @@ public class Connect4Client extends JFrame {
 		}
 		return 0;
 	}
-	
+
 	//Checks if you won to the down and left
 	private int checkDL(char player, int r, int c, int count){
 		if(count == 0)
@@ -393,7 +396,7 @@ public class Connect4Client extends JFrame {
 		}
 		return 0;
 	}
-	
+
 	//Checks if you won to the down and right
 	private int checkDR(char player, int r, int c, int count){
 		if(count == 0)
@@ -406,7 +409,7 @@ public class Connect4Client extends JFrame {
 		}
 		return 0;
 	}
-	
+
 	//Checks if you won to the up and right
 	private int checkUR(char player, int r, int c, int count){
 		if(count == 0)
@@ -430,11 +433,11 @@ public class Connect4Client extends JFrame {
 		for (int r = 0; r < numRows; r++)
 			for (int c = 0; c < numCols; c++)
 				if (winningBoard[r][c] == turn.symbol)
-					display[r][c].setBackground(Color.YELLOW);
+					display[r][c].setBorderPainted(true);
 		JOptionPane window = new JOptionPane();
 		JOptionPane.showMessageDialog(window, turn.name + " wins!");
 	}
-	
+
 	private boolean setPlayer(int player){
 		if(player == 1){
 			playerIsRed = true;
@@ -446,37 +449,37 @@ public class Connect4Client extends JFrame {
 			playerIsBlack = true;
 			return true;
 		}
-		
+
 		playerIsRed = false;
 		playerIsBlack = false;
-		
+
 		return false;
 	}
-	
-	
+
+
 	public void processInput(String[] inputs){
-	    switch (inputs[1]){
-	    case "ENDGAME":
-	    	gameOver = true;
-    		break;
-	    case "NEWGAME":
-	    	resetBoard();
-	    	break;
-	    case "MOVE":
-	    	gotMove(Integer.parseInt(inputs[2]), Integer.parseInt(inputs[3]));
-	    	//we do not have inputs[4] because we keep track of which player's turn it is within the game
-	    	//if there are issues here, this is why.
-	    	System.out.println("Move recieved!");
-	    	break;
-	    case "PLAYER":
-	    	setPlayer(Integer.parseInt(inputs[2]));
-	    	System.out.println("Player is " + inputs[2]);
-	    	break;
-	    case "GETOPPONENT":
-	    	// does not do anything right now
-	    	opponentName = inputs[2];
-    		//displayTurn();
-    		break;
-	    }
+		switch (inputs[1]){
+		case "ENDGAME":
+			gameOver = true;
+			break;
+		case "NEWGAME":
+			resetBoard();
+			break;
+		case "MOVE":
+			gotMove(Integer.parseInt(inputs[2]), Integer.parseInt(inputs[3]));
+			//we do not have inputs[4] because we keep track of which player's turn it is within the game
+			//if there are issues here, this is why.
+			System.out.println("Move recieved!");
+			break;
+		case "PLAYER":
+			setPlayer(Integer.parseInt(inputs[2]));
+			System.out.println("Player is " + inputs[2]);
+			break;
+		case "GETOPPONENT":
+			// does not do anything right now
+			opponentName = inputs[2];
+			//displayTurn();
+			break;
+		}
 	}
 }
