@@ -55,8 +55,6 @@ public class Connect4Client extends JFrame {
 		setLayout(new BorderLayout());
 		board = new char[numRows][numCols];
 		display = new JButton[numRows][numCols];
-		boardpanel = new JPanel();
-		boardpanel.setLayout(new GridLayout(numRows,numCols));
 		resetBoard();
 		add(boardpanel,BorderLayout.CENTER);
 		add(NewGame,BorderLayout.SOUTH);
@@ -103,7 +101,8 @@ public class Connect4Client extends JFrame {
 			//started setting this up for opponent name display
 			//before realizing I don't know what I'm doing.
 
-			//opponentName = null;
+			//opponen
+ = null;
 			//requestOpName();
 			//os.println("CONNECT4 GETOPPONENT");
 			//os.flush();
@@ -112,6 +111,8 @@ public class Connect4Client extends JFrame {
 	}
 
 	private void resetBoard(){
+		boardpanel = new JPanel();
+		boardpanel.setLayout(new GridLayout(numRows,numCols));
 		int r, c;
 		for (r=0;r<numRows;r++)
 			for (c=0;c<numCols;c++) {
