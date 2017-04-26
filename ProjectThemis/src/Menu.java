@@ -153,10 +153,6 @@ public class Menu extends JFrame {
 					if(authen)
 						ProjectThemisClient.launchTicTacToe();
 					break;
-				case "Othello" : 
-					if(authen)
-						System.out.println("Othello Client");
-					break;
 				case "Help" : message = new JOptionPane();
 						JOptionPane.showMessageDialog(message, "<html> <b>Create an account and login to play a game!</b>" + 
 									     "\n<b>TicTacToe:</b> Your goal is to get three of your pieces in a row. Click to place a piece." +
