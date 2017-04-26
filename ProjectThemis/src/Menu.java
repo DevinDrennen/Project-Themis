@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.UIManager;
 
 import java.awt.Container;
@@ -21,10 +23,16 @@ import java.awt.event.MouseListener;
 
 public class Menu extends JFrame {
 	JFrame boardpanel;
+	JPanel games;
+	JPanel options;
 	JLabel label;
 	BoxLayout layout;
-	Box box;
+	Box gameBox;
+	Box pwBox;
 	JOptionPane message;
+	JPasswordField passwordField;
+	
+	boolean authen = false;
 	
 	Color darkestRed = new Color(71, 0, 15);
 	Color darkRed = new Color(110, 5, 28);
@@ -35,54 +43,57 @@ public class Menu extends JFrame {
 	Color backgroundColor = darkestRed;
 	Color buttonColor = lightRed;
 	Color textColor = darkRed;
-	int fontSize = 30;
 	
 	public Menu() {
 		setTitle("Game Menu");
 		setSize(400,500);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		label = new JLabel("Select an option:");
+		label = new JLabel("Project Themis");
 		label.setLayout(layout);
 		label.setForeground(mediumRed);
 		label.setOpaque(true);
 		label.setBackground(backgroundColor);
 		label.setHorizontalAlignment(JLabel.CENTER);
-		label.setFont(new Font("Courier",1,50));
+		label.setFont(new Font("Mistral", 1, 40));
 		label.setAlignmentX(Component.CENTER_ALIGNMENT);
 		layout = new BoxLayout(label, BoxLayout.Y_AXIS);
 		
-		box = Box.createVerticalBox(); 
-		box.setOpaque(true);
-		box.setBackground(backgroundColor);
-		box.add(label);
-	    box.add(setUpButton("Login"));
-	    box.add(Box.createVerticalStrut(10));
-	    box.add(setUpButton("Create an account"));
-	    box.add(Box.createVerticalStrut(10));
-	    box.add(setUpButton("Tic Tac Toe"));
-	    box.add(Box.createVerticalStrut(10));
-	    box.add(setUpButton("Connect 4"));
-	    box.add(Box.createVerticalStrut(10));
-	    box.add(setUpButton("Othello"));
-	    box.add(Box.createVerticalStrut(10));
-	    box.add(setUpButton("Help"));
+		gameBox = Box.createVerticalBox(); 
+		gameBox.setOpaque(true);
+		gameBox.setBackground(backgroundColor);
+		gameBox.add(label);
+		gameBox.add(Box.createVerticalStrut(25));
+		gameBox.add(setUpButton("Tic Tac Toe", 35));
+	    gameBox.add(Box.createVerticalStrut(15));
+	    gameBox.add(setUpButton("Connect 4", 35));
+	    gameBox.add(Box.createVerticalStrut(15));
+	       
+	    options = new JPanel();
+	    options.setVisible(true);
+	    options.setBackground(backgroundColor);
+	    options.setLayout(new FlowLayout());
+	    options.add(setUpButton("Login", 15));
+	    options.add(setUpButton("Create an account", 15));
+	    options.add(setUpButton("Help", 15));
 	    
 	    boardpanel = new JFrame();
-	    boardpanel.add(box, BorderLayout.CENTER);
-	    boardpanel.setBackground(backgroundColor);
-	    boardpanel.setSize(600, 500);
+	    boardpanel.add(gameBox, BorderLayout.CENTER);
+	    boardpanel.add(options, BorderLayout.SOUTH);
+	    boardpanel.setSize(400, 300);
 	    boardpanel.add(label, BorderLayout.NORTH);
 	    boardpanel.setBackground(backgroundColor);
-	    boardpanel.setVisible(true);		
+	    boardpanel.setVisible(true);
+	    boardpanel.setLocationRelativeTo(null);
 	}
 	
-	private JButton setUpButton(String name) {
+	private JButton setUpButton(String name, int fontSize) {
 		JButton button = new JButton(name);
 		button.setBackground(buttonColor);
-		button.setFont((new Font("Courier", 1, fontSize)));
+		button.setFont((new Font("Franklin Gothic Demi", 1, fontSize)));
 		button.setForeground(textColor);
 		button.setAlignmentX(Component.CENTER_ALIGNMENT);
+		button.setFocusPainted(false);
 		
 		button.addMouseListener(new MouseListener(){
 			@Override
@@ -92,34 +103,70 @@ public class Menu extends JFrame {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				
 				switch (name) {
-				case "Login": JOptionPane loginMessage= new JOptionPane();
-						JOptionPane.showMessageDialog(loginMessage, "Enter your username and password");
-						String username = JOptionPane.showInputDialog("Enter your username");
-						String password = JOptionPane.showInputDialog("Enter your password");
-						System.out.println("check username and password against database");
+				case "Login": message= new JOptionPane();
+						JOptionPane.showMessageDialog(message, "Enter your username and password");
+						String username = null;
+						while(username == null || username.length() == 0)
+							username = JOptionPane.showInputDialog("Enter your username");
+						pwBox = Box.createHorizontalBox();
+						pwBox.add(new JLabel("Password: "));
+						passwordField = new JPasswordField(24);
+						pwBox.add(passwordField);
+						message.add(pwBox);
+						passwordField.requestFocusInWindow(); //this line does not have any effect. >:(
+						message.showConfirmDialog(null, pwBox, "Enter your password", JOptionPane.OK_CANCEL_OPTION);
+						String password = new String(passwordField.getPassword());
+
+
+						System.out.println(password);
+						
+						//ProjectThemisClient.setUser(username);
+						//ProjectThemisClient.setPass(password);
+
+						authen = false;
+						//ProjectThemisClient.login();
+						
+						
 						break;
+						
 				case "Create an account": 
 						message = new JOptionPane();
 						JOptionPane.showMessageDialog(message, "Create an account");
-						String newusername = JOptionPane.showInputDialog("Enter a username");
-						break;
-				case "Connect 4" : new Connect4(6);
-						break;
+						String newusername = null;
+						while(newusername == null|| newusername.length() == 0)
+							newusername = JOptionPane.showInputDialog("Enter a username");
+						//String newpassword = JOptionPane.showInputDialog("Enter a password");
+						pwBox = Box.createHorizontalBox();
+						pwBox.add(new JLabel("Password: "));
+						passwordField = new JPasswordField(24);
+						pwBox.add(passwordField);
+						message.add(pwBox);
+						message.showConfirmDialog(null, pwBox, "Enter a password", JOptionPane.OK_CANCEL_OPTION);
+						String newpassword = new String(passwordField.getPassword());
+						
+						//ProjectThemisClient.newAccount(newusername, newpassword);
+					break;
+				case "Connect 4" : //new Connect4(6);
+					if(authen)
+						//ProjectThemisClient.launchConnect4();
+					break;
 				case "Tic Tac Toe": //new TicTacToeClient(3);
-						System.out.println("Tic Tac Toe Client");
-						break;
-				case "Othello" : System.out.println("Othello Client");
-						break;
+					if(authen)
+						//ProjectThemisClient.launchTicTacToe();
+					break;
 				case "Help" : message = new JOptionPane();
 						JOptionPane.showMessageDialog(message, "Make a selection to play a game");
-						break;
+					break;
 				}
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent e) { }
-
+			public void mouseEntered(MouseEvent e) {
+				button.setForeground(lightestRed);
+			}
+				
 			@Override
 			public void mousePressed(MouseEvent e) { }
 
@@ -130,9 +177,20 @@ public class Menu extends JFrame {
 		return button;
 	}
 	
-	public static void main(String[] args) {
-		new Menu();
-		
+	public void login(boolean auth){
+		if(auth){
+			JOptionPane.showMessageDialog(message, "Login succeded!");
+			authen = true;
+		}
+		else{
+			JOptionPane.showMessageDialog(message, "Login failed!");
+			authen = false;
+		}
 	}
+	
+	//for testing without server running only, need to uncomment out all ProjectThemis client lines
+    public static void main(String[] args) {
+        new Menu();
+    }
 
 }
