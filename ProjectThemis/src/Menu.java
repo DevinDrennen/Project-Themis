@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,10 +23,11 @@ import java.awt.event.MouseListener;
 
 public class Menu extends JFrame {
 	JFrame boardpanel;
+	JPanel games;
+	JPanel options;
 	JLabel label;
 	BoxLayout layout;
-	Box box;
-	Box pwBox;
+	Box box;Box gameBox;Box pwBox;
 	JOptionPane message;
 	JPasswordField passwordField;
 	
@@ -47,47 +49,51 @@ public class Menu extends JFrame {
 		setSize(400,500);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		label = new JLabel("Select an option:");
+		label = new JLabel("Project Themis:");
 		label.setLayout(layout);
 		label.setForeground(mediumRed);
 		label.setOpaque(true);
 		label.setBackground(backgroundColor);
 		label.setHorizontalAlignment(JLabel.CENTER);
-		label.setFont(new Font("Courier",1,50));
+		label.setFont(new Font("Mistral",1,40));
 		label.setAlignmentX(Component.CENTER_ALIGNMENT);
 		layout = new BoxLayout(label, BoxLayout.Y_AXIS);
 		
-		box = Box.createVerticalBox(); 
-		box.setOpaque(true);
-		box.setBackground(backgroundColor);
-		box.add(label);
-	    box.add(setUpButton("Login"));
-	    box.add(Box.createVerticalStrut(10));
-	    box.add(setUpButton("Create an account"));
-	    box.add(Box.createVerticalStrut(10));
-	    box.add(setUpButton("Tic Tac Toe"));
-	    box.add(Box.createVerticalStrut(10));
-	    box.add(setUpButton("Connect 4"));
-	    box.add(Box.createVerticalStrut(10));
-	    box.add(setUpButton("Othello"));
-	    box.add(Box.createVerticalStrut(10));
-	    box.add(setUpButton("Help"));
+		gameBox = Box.createVerticalBox(); 
+		gameBox.setOpaque(true);
+		gameBox.setBackground(backgroundColor);
+		gameBox.add(label);
+		gameBox.add(Box.createVerticalStrut(25));
+		gameBox.add(setUpButton("Tic Tac Toe", 35));
+	    gameBox.add(Box.createVerticalStrut(15));
+	    gameBox.add(setUpButton("Connect 4", 35));
+	    gameBox.add(Box.createVerticalStrut(15));
+	    
+	    options = new JPanel();
+	    options.setVisible(true);
+	    options.setBackground(backgroundColor);
+	    options.setLayout(new FlowLayout());
+	    options.add(setUpButton("Login", 15));
+	    options.add(setUpButton("Create an account", 15));
+	    options.add(setUpButton("Help", 15));
 	    
 	    boardpanel = new JFrame();
-	    boardpanel.add(box, BorderLayout.CENTER);
-	    boardpanel.setBackground(backgroundColor);
-	    boardpanel.setSize(600, 500);
+	    boardpanel.add(gameBox, BorderLayout.CENTER);
+	    boardpanel.add(options, BorderLayout.SOUTH);
+	    boardpanel.setSize(400, 300);
 	    boardpanel.add(label, BorderLayout.NORTH);
 	    boardpanel.setBackground(backgroundColor);
-	    boardpanel.setVisible(true);		
+	    boardpanel.setVisible(true);
+	    boardpanel.setLocationRelativeTo(null);
 	}
 	
-	private JButton setUpButton(String name) {
+	private JButton setUpButton(String name, int fontSize) {
 		JButton button = new JButton(name);
 		button.setBackground(buttonColor);
-		button.setFont((new Font("Courier", 1, fontSize)));
+		button.setFont((new Font("Franklin Gothic Demi", 1, fontSize)));
 		button.setForeground(textColor);
 		button.setAlignmentX(Component.CENTER_ALIGNMENT);
+		button.setFocusPainted(false);
 		
 		button.addMouseListener(new MouseListener(){
 			@Override
@@ -113,7 +119,6 @@ public class Menu extends JFrame {
 						message.showConfirmDialog(null, pwBox, "Enter your password", JOptionPane.OK_CANCEL_OPTION);
 						String password = new String(passwordField.getPassword());
 
-
 						System.out.println(password);
 						
 						ProjectThemisClient.setUser(username);
@@ -121,10 +126,8 @@ public class Menu extends JFrame {
 
 						authen = false;
 						ProjectThemisClient.login();
-						
-						
+												
 						break;
-						
 				case "Create an account": 
 						message = new JOptionPane();
 						JOptionPane.showMessageDialog(message, "Create an account");
@@ -141,7 +144,7 @@ public class Menu extends JFrame {
 						String newpassword = new String(passwordField.getPassword());
 						
 						ProjectThemisClient.newAccount(newusername, newpassword);
-					break;
+						break;
 				case "Connect 4" : //new Connect4(6);
 					if(authen)
 						ProjectThemisClient.launchConnect4();
