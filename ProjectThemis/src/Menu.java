@@ -33,15 +33,18 @@ public class Menu extends JFrame {
 	
 	boolean authen = false;
 	
-	Color darkestRed = new Color(71, 0, 15);
-	Color darkRed = new Color(110, 5, 28);
-	Color mediumRed = new Color(146, 28, 54);
-	Color lightRed = new Color(174, 56, 82);
-	Color lightestRed = new Color(210, 100, 124);
+	Color darkest = new Color(10, 120, 141);
+	Color dark = new Color(37, 140, 159);
+	Color medium = new Color(66, 164, 183);
+	Color light = new Color(104, 191, 207);
+	Color lightest = new Color(155, 218, 230);
 	
-	Color backgroundColor = darkestRed;
-	Color buttonColor = lightRed;
-	Color textColor = darkRed;
+	Color backgroundColor = darkest;	 //menu background
+	Color buttonColor = light;			 //button background
+	Color textColor = dark;				 //button text
+	Color textHighlightColor = lightest; //button text when hovered
+	Color titleTextColor = medium;		 //title text
+	
 	int fontSize = 30;
 	
 	public Menu() {
@@ -51,7 +54,7 @@ public class Menu extends JFrame {
 		
 		label = new JLabel("Project Themis:");
 		label.setLayout(layout);
-		label.setForeground(mediumRed);
+		label.setForeground(titleTextColor);
 		label.setOpaque(true);
 		label.setBackground(backgroundColor);
 		label.setHorizontalAlignment(JLabel.CENTER);
@@ -164,7 +167,7 @@ public class Menu extends JFrame {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				button.setForeground(lightestRed);
+				button.setForeground(textHighlightColor);
 			}
 				
 			@Override
