@@ -8,6 +8,7 @@ import java.sql.SQLException;
 
 public class ProjectThemisServer {
 
+
 	static final String DB_URL = "jdbc:mysql://localhost:3306/project_themis_test?useSSL=false";
 	static String USER;
 	static String PASS;
@@ -73,6 +74,8 @@ class ProjectThemisServerThread extends Thread {
 	int clientID;
 	
 	TicTacToeServer ttts;
+	Connect4Server c4s;
+
 
 	public ProjectThemisServerThread(Socket s) {
 		this.socket = s;
@@ -130,7 +133,11 @@ class ProjectThemisServerThread extends Thread {
 	private void processInput(String inputLine) {
 		String[] inputs = inputLine.split(" ");
 
-		System.out.println("Inputs: " + inputs[0] + " " + inputs[1]);
+		System.out.print("Inputs: ");
+		for(int i = 0; i < inputs.length; i++){
+			System.out.print(inputs[i] + " ");
+		}
+		System.out.println();
 		
 		switch (inputs[0]) {
 		case "ECHO": //When the ECHO command is given, repeat the previously given command.
@@ -169,6 +176,20 @@ class ProjectThemisServerThread extends Thread {
 					ttts = null;
 				else //In all other cases, let ttts handle the inputs as it's a game function. Yay!
 					ttts.processInput(inputs);
+			}
+        break;
+
+		case "CONNECT4": //The Connect 4 prompt means we'll be handling the Connect 4 game's commands. 
+			if(inputs[1].equals("START")){
+				c4s = new Connect4Server(os, clientID); //Create new Connect 4 game if the second chunk of data is "NEW".
+				System.out.println("Created new Connect4Server instance");
+			}
+			else if(c4s != null){
+				if(inputs[1].equals("QUIT")) //Terminate the Connect 4 game if the second chunk of data is "QUIT"
+					c4s = null;
+				else //In all other cases, let c4s handle the inputs as it's a game function. Yay!
+					c4s.processInput(inputs);
+        break;
 			}
 		}
 	}

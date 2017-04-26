@@ -29,6 +29,7 @@ public class TicTacToeClient extends JFrame {
     boolean isO = false;
     int gameID;
     int playerID;
+    String opponentName = null;
     
     BufferedReader is;
     PrintWriter os;
@@ -68,6 +69,7 @@ public class TicTacToeClient extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
  
+        displayTurn();
     }
  
  
@@ -84,17 +86,17 @@ public class TicTacToeClient extends JFrame {
                     board[r][c] = 'X';
                     display[r][c].setText("X");
                     moveCount++;
-                    playerTurn.setText("It is O's Turn!");
                     os.println("TICTACTOE MOVE " + r + " " + c + " " + 1);
                 }
                 else if (board[r][c] == ' ' && (moveCount % 2 == 1) && isO) {
                     board[r][c] = 'O';
                     display[r][c].setText("O");
                     moveCount++;
-                    playerTurn.setText("It is X's Turn!");
                     os.println("TICTACTOE MOVE " + r + " " + c + " " + 2);
                 }
- 
+                requestOpName();
+                displayTurn();
+                
                 xTurn = !xTurn;
                 winCheck('X',moveCount);
                 oTurn = !oTurn;
@@ -112,13 +114,17 @@ public class TicTacToeClient extends JFrame {
                 for (c=0;c<board.length;c++) {
                     board[r][c] = ' ';
                     display[r][c].setText(" ");
-                    playerTurn.setText("It is X's Turn!");
-                    moveCount = 0;
-                    xTurn = true;
-                    oTurn = false;
-                    gameOver = false;
                 }
+            moveCount = 0;
+            xTurn = true;
+            oTurn = false;
+            gameOver = false;
+            
+            os.println("TICTACTOE ENDGAME");
             os.println("TICTACTOE NEWGAME");
+            opponentName = null;
+            requestOpName();
+            displayTurn();
         }
     }
  
@@ -185,10 +191,7 @@ public class TicTacToeClient extends JFrame {
     	// After placing a move or breaking out if there were no valid moves, check how many moves have been made.
     	// An odd number of moves means it's O's turn, even number means it's X's.
     	if(!gameOver)
-    		if(moveCount % 2 == 0)
-    			playerTurn.setText("It is X's Turn!");
-    		else
-    			playerTurn.setText("It is O's Turn!");
+    		displayTurn();
   
     	
     	// For future error checking, return true if this method ran successfully.
@@ -225,6 +228,10 @@ public class TicTacToeClient extends JFrame {
     	case "NEWGAME":
     		startGame();
     		break;
+    	case "GETOPPONENT":
+    		opponentName = inputs[2];
+    		displayTurn();
+    		break;
     	}
     }
     
@@ -237,4 +244,24 @@ public class TicTacToeClient extends JFrame {
     	gameOver = false;
     }
     
+    private void requestOpName(){
+    	os.println("TICTACTOE GETOPPONENT");
+    	os.flush();
+    }
+    
+    private void displayTurn(){
+    	String opname;
+    	if(opponentName == null || opponentName.isEmpty() || opponentName.equals("RESERVED_NAME"))
+    		opname = "your opponent";
+    	else
+    		opname = opponentName;
+    	if(isX && moveCount % 2 == 0)
+    		playerTurn.setText("It is your turn!");
+    	else if(isO && moveCount % 2  == 0)
+    		playerTurn.setText("It is " + opname + "'s turn!");
+    	else if(isX && moveCount % 2 == 1)
+    		playerTurn.setText("It is " + opname + "'s turn!");
+    	else if(isO && moveCount % 2  == 1)
+    		playerTurn.setText("It is your turn!");
+    }
 }
