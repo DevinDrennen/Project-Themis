@@ -154,9 +154,9 @@ public class Menu extends JFrame {
 						ProjectThemisClient.launchTicTacToe();
 					break;
 				case "Help" : message = new JOptionPane();
-						JOptionPane.showMessageDialog(message, "<html> <b>Create an account and login to play a game!</b>" + 
-									     "\n<b>TicTacToe:</b> Your goal is to get three of your pieces in a row. Click to place a piece." +
-									      "\n<b>Connect Four:</b> Your goal is to get 4 of your pieces in a row. Placing a piece by clicking will result in the placed piece falling to the lowest available position in the selected column.</html>");
+						JOptionPane.showMessageDialog(message, "Create an account and login to play a game!" + 
+									     "\nTicTacToe: Your goal is to get three of your pieces in a row. Click to place a piece." +
+									      "\nConnect Four: Your goal is to get 4 of your pieces in a row. Placing a piece by clicking will result in the placed piece falling to the lowest available position in the selected column.");
 					
 					break;
 				}
