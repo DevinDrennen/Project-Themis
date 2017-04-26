@@ -76,7 +76,7 @@ public class Connect4Client extends JFrame {
 
 	private class NewGameListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			initBoard();
+			resetBoard();
 
 			os.println("CONNECT4 ENDGAME");
 			os.flush();
