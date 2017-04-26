@@ -47,7 +47,7 @@ public class Connect4Client extends JFrame {
 
 		numRows = n;
 		numCols = n+1;
-		resetBoard();
+		initBoard();
 	}
 
 	private class MoveListener implements ActionListener {
@@ -76,16 +76,18 @@ public class Connect4Client extends JFrame {
 
 	private class NewGameListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			resetBoard();
+			initBoard();
 
 			os.println("CONNECT4 ENDGAME");
+			os.flush();
 			os.println("CONNECT4 NEWGAME");
+			os.flush();
+
 
 			//started setting this up for opponent name display
 			//before realizing I don't know what I'm doing.
 
-			//opponen
- = null;
+			//opponen = null;
 			//requestOpName();
 			//os.println("CONNECT4 GETOPPONENT");
 			//os.flush();
@@ -93,7 +95,7 @@ public class Connect4Client extends JFrame {
 		}
 	}
 
-	private void resetBoard(){
+	private void initBoard(){
 		
 		turn = new Turn();
 		//turn.red();
@@ -110,13 +112,9 @@ public class Connect4Client extends JFrame {
 			for (c=0;c<numCols;c++) {
 				display[r][c] = new JButton();
 				display[r][c].setFont(new Font(null,1,40));
-				display[r][c].setFocusPainted(false);
-				display[r][c].setBorder(null);
 				display[r][c].addActionListener(new MoveListener(r,c));
-				display[r][c].setBackground(Color.yellow);
-				display[r][c].setIcon(whiteCircle);
+				initButton(r,c);
 				boardpanel.add(display[r][c]);
-				board[r][c] = ' ';
 			}
 		moveCount = 0;
 		gameOver = false;
@@ -130,6 +128,24 @@ public class Connect4Client extends JFrame {
 		NewGame.addActionListener(new NewGameListener());
 		setLocationRelativeTo(null);
 		setVisible(true);		
+	}
+	
+	private void resetBoard(){
+		for (int r=0;r<numRows;r++)
+			for (int c=0;c<numCols;c++) {
+				initButton(r,c);
+			}
+		moveCount = 0;
+		gameOver = false;
+		turn.red();
+	}
+	
+	private void initButton(int r, int c){
+		display[r][c].setFocusPainted(false);
+		display[r][c].setBorder(null);
+		display[r][c].setBackground(Color.yellow);
+		display[r][c].setIcon(whiteCircle);
+		board[r][c] = ' ';
 	}
 
 
@@ -463,7 +479,7 @@ public class Connect4Client extends JFrame {
 			gameOver = true;
 			break;
 		case "NEWGAME":
-			resetBoard();
+			gameOver = false;
 			break;
 		case "MOVE":
 			gotMove(Integer.parseInt(inputs[2]), Integer.parseInt(inputs[3]));
