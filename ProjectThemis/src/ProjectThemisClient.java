@@ -130,17 +130,19 @@ public class ProjectThemisClient {
 	
 	public static void launchTicTacToe(){
 		
+		tttc = new TicTacToeClient(3, is, os);
 		os.println("TICTACTOE START"); //These are two wildly different commands actually.
     	os.println("TICTACTOE NEWGAME"); //Newgame resets the board state, while start opens the whole client thinger up.
-		tttc = new TicTacToeClient(3, is, os);
+
 		
 	}
 	
 	public static void launchConnect4(){
 		
+		c4c = new Connect4Client(6, is, os);
 		os.println("CONNECT4 START"); //These are two wildly different commands actually.
     	os.println("CONNECT4 NEWGAME"); //Newgame resets the board state, while start opens the whole client thinger up.
-		c4c = new Connect4Client(6, is, os);
+		
 		
 	}
 	

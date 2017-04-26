@@ -154,11 +154,12 @@ public class Connect4Client extends JFrame {
 	 * @return If it's the player's turn, return true.
 	 */
 	private boolean isPlayerTurn(){
-		System.out.println(!turn.isRed);
 		if(playerIsRed && turn.isRed)
 			return true;
 		if(playerIsBlack && !(turn.isRed))
 			return true;
+		
+		System.out.println("Player can't go!");
 		return false;
 	}
 
@@ -474,6 +475,7 @@ public class Connect4Client extends JFrame {
 
 
 	public void processInput(String[] inputs){
+		System.out.println(inputs[1]);
 		switch (inputs[1]){
 		case "ENDGAME":
 			gameOver = true;
