@@ -45,20 +45,14 @@ public class Menu extends JFrame {
 	Color textHighlightColor = lightest; //button text when hovered
 	Color titleTextColor = medium;		 //title text
 	
-	int fontSize = 30;
-	
 	public Menu() {
-		setTitle("Game Menu");
-		setSize(400,500);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
 		label = new JLabel("Project Themis:");
 		label.setLayout(layout);
 		label.setForeground(titleTextColor);
 		label.setOpaque(true);
 		label.setBackground(backgroundColor);
 		label.setHorizontalAlignment(JLabel.CENTER);
-		label.setFont(new Font("Mistral",1,40));
+		label.setFont(new Font("Rockwell",1,48));
 		label.setAlignmentX(Component.CENTER_ALIGNMENT);
 		layout = new BoxLayout(label, BoxLayout.Y_AXIS);
 		
@@ -73,7 +67,6 @@ public class Menu extends JFrame {
 	    gameBox.add(Box.createVerticalStrut(15));
 	    
 	    options = new JPanel();
-	    options.setVisible(true);
 	    options.setBackground(backgroundColor);
 	    options.setLayout(new FlowLayout());
 	    options.add(setUpButton("Login", 15));
@@ -87,9 +80,9 @@ public class Menu extends JFrame {
 	    boardpanel.setSize(400, 300);
 	    boardpanel.setResizable(false);
 	    boardpanel.add(label, BorderLayout.NORTH);
-	    boardpanel.setBackground(backgroundColor);
 	    boardpanel.setVisible(true);
 	    boardpanel.setLocationRelativeTo(null);
+	    boardpanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 	private JButton setUpButton(String name, int fontSize) {
