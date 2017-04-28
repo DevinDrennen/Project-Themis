@@ -43,6 +43,7 @@ public class TicTacToeClient extends JFrame {
         
         setTitle("Tic Tac Toe");
         setSize(500,500);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         board = new char[n][n];

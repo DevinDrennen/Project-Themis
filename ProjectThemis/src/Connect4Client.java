@@ -101,6 +101,7 @@ public class Connect4Client extends JFrame {
 		//turn.red();
 		setTitle("Connect Four");
 		setSize(500,500);
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
 		board = new char[numRows][numCols];
