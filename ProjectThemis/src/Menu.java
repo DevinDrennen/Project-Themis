@@ -82,6 +82,7 @@ public class Menu extends JFrame {
 	    
 	    boardpanel = new JFrame();
 	    boardpanel.add(gameBox, BorderLayout.CENTER);
+	    boardpanel.setTitle("Menu");
 	    boardpanel.add(options, BorderLayout.SOUTH);
 	    boardpanel.setSize(400, 300);
 	    boardpanel.setResizable(false);
