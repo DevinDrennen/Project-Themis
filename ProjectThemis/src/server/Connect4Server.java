@@ -1,3 +1,4 @@
+package server;
 /* 
  * This class will be the connection from the server to 
  * each of the given clients. 
@@ -16,13 +17,13 @@ import java.sql.Statement;
 import java.io.*;
 
 //A helper class for ProjectThemisServerThread. 
-public class TicTacToeServer {
+public class Connect4Server {
 	
 	Connection conn = null; //A connection to the MySQL Database.
 	Statement stmt = null; //A statement to be executed on the database.
 	ResultSet rs = null; //The results from a query.
-	
 	final String DB_URL = ProjectThemisServer.DB_URL; //Database location and name.
+	
 	String USER = ProjectThemisServer.USER; //Grab the username and passwordfrom the ProjectThemisServer..
 	String PASS = ProjectThemisServer.PASS;
 	
@@ -30,9 +31,9 @@ public class TicTacToeServer {
 	int pvpID;
 	
 	PrintWriter os;
-	TicTacToeListener listener;
+	Connect4Listener listener;
 	
-	public TicTacToeServer( PrintWriter outputStream, int PID){
+	public Connect4Server( PrintWriter outputStream, int PID){
 		
 		playerID = PID;
 		pvpID = 2; //DEBUGGING
@@ -43,21 +44,23 @@ public class TicTacToeServer {
 		try{
 			Class.forName(JDBC_DRIVER);
 
-		}
-		catch(ClassNotFoundException e){
+		}catch(ClassNotFoundException e){
 			System.out.println("Cannot find the driver class!");
 			e.printStackTrace();
 		}
 
 		
-		listener = new TicTacToeListener(pvpID, os); //Starts the listener thread which will watch for moves being added to the database.
+		listener = new Connect4Listener(pvpID, os); //Starts the listener thread which will watch for moves being added to the database.
 		listener.start(); //Start the listener.
 	}
 	
-	//Processes the inputs received from ProjectThemisServerThread. 
+	//Processes the inputs received from ProjectThemisServerThread and puts in database 
 	void processInput(String[] inputs){
+		
+		System.out.println("Inputs Being Processed...");
+		
 		switch (inputs[1]) {
-			case "ENDGAME":
+			case "ENDGAME": 
 				closeCurrentGame();
 				break;
 			case "NEWGAME": //The Client is trying to start a new game.
@@ -69,17 +72,28 @@ public class TicTacToeServer {
 			case "REQUEST": //The client would like to know if there are any new moves from the database. If so, send them!
 				//sendMoves(markMoves());
 				break;
-			case "GETOPPONENT": //The client wants the string of their opponent!
-				os.println("TICTACTOE GETOPPONENT " + getOpponent());
+			case "GETOPPONENT":
+				os.println(getOpponent());
 				os.flush();
 				break;
-	
+				
 		}
 		
 		System.out.println("Inputs processed!");
 	}
 	
+	private String getOpponent() {
+		MySQLWrapper mysql = new MySQLWrapper();
+		String opponent = mysql.queryString("SELECT PLAYER.PLAYER_NAME FROM PLAYER NATURAL JOIN PVP WHERE PVP.PVP_ID = " + pvpID + " AND PLAYER.PLAYER_ID != " + playerID + ";");
+		if(opponent == null)
+			return "your opponent";
+		else
+			return opponent;
+	}
+	
+
 	//Mark a new move. Return true if it succeeds.
+	//***do we need to have a third parameter since we already keep track of that
 	boolean markMove(String row, String col, String dat){
 		try{
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
@@ -128,10 +142,11 @@ public class TicTacToeServer {
 		mysql.query("UPDATE PVP SET PVP_ACTIVE = 0 WHERE PVP_ID = " + pvpID +";");
 		
 		listener.setActive(false);
-		os.println("TICTACTOE ENDGAME");
+		os.println("CONNECT4 ENDGAME");
 		os.flush();
 	}
 	
+	//Make a new game - set up the DB for it and find the pvpID.
 	//Make a new game - set up the DB for it and find the pvpID.
 	void SQLNewGame(){
 			
@@ -142,48 +157,50 @@ public class TicTacToeServer {
 	    listener.updatePVPID(pvpID);
 	    listener.setActive(true);
 
-		os.println("TICTACTOE NEWGAME");
+		os.println("CONNECT4 NEWGAME");
 		os.flush();
 	}
+	
 	
 	void sendMoves(int[][] moves){
 		if(moves != null)
 			for(int i = 0; i < moves.length; i++){
 				os.flush();
-				os.println("TICTACTOE MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
+				os.println("CONNECT4 MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
 				os.flush();
 		}
 	}
 	
-	private boolean joinPVP(){
+	private boolean newPVP(){
 		MySQLWrapper mysql = new MySQLWrapper();
 		
-		int pvpID = mysql.queryInt("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + " AND PVP_ACTIVE = 1;");
+		mysql.query("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 2, 1);");
+		int pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;");
+		
 		if(pvpID != Integer.MIN_VALUE){
-			this.pvpID = pvpID;
-			mysql.query("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
-	        os.println("TICTACTOE PLAYER 2");
-	        os.flush();
-	        return true;
+    		this.pvpID = pvpID;
+    		os.println("CONNECT4 PLAYER 1");
+    		os.flush();
+    		return true;
 		}
 		return false;
-	}
+	}	
 	
 	private boolean rejoinPVP(){
 		MySQLWrapper mysql = new MySQLWrapper();
 		
-		int pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;");
+		int pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;");
 		if(pvpID != Integer.MIN_VALUE){
 			this.pvpID = pvpID;
-    		os.println("TICTACTOE PLAYER 1");
+    		os.println("CONNECT4 PLAYER 1");
     		os.flush();
     		return true;
 		}
 		else{
-			pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 = " + playerID + " AND PVP_ACTIVE = 1;");
+			pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P2 = " + playerID + " AND PVP_ACTIVE = 1;");
 			if(pvpID != Integer.MIN_VALUE){
 				this.pvpID = pvpID;
-	    		os.println("TICTACTOE PLAYER 2");
+	    		os.println("CONNECT4 PLAYER 2");
 	    		os.flush();
 	    		return true;
 			}
@@ -192,45 +209,22 @@ public class TicTacToeServer {
 		return false;
 	}
 	
-	private boolean newPVP(){
+	private boolean joinPVP(){
 		MySQLWrapper mysql = new MySQLWrapper();
 		
-		mysql.query("INSERT INTO PVP (PVP_PLAYER_P1, PVP_GAME_ID, PVP_ACTIVE) VALUES (" + playerID + ", 1, 1);");
-		int pvpID = mysql.queryInt("SELECT PVP_ID FROM PVP WHERE PVP_GAME_ID = 1 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 = " + playerID + " AND PVP_ACTIVE = 1;");
-		
+		int pvpID = mysql.queryInt("SELECT PVP_ID, PVP_PLAYER_P2, PVP_GAME_ID FROM PVP WHERE PVP_GAME_ID = 2 AND PVP_PLAYER_P2 IS NULL AND PVP_PLAYER_P1 != " + playerID + " AND PVP_ACTIVE = 1;");
 		if(pvpID != Integer.MIN_VALUE){
-    		this.pvpID = pvpID;
-    		os.println("TICTACTOE PLAYER 1");
-    		os.flush();
-    		return true;
+			this.pvpID = pvpID;
+			mysql.query("UPDATE PVP SET PVP_PLAYER_P2 = " + playerID + " WHERE PVP_ID = " + pvpID + ";");
+	        os.println("CONNECT4 PLAYER 2");
+	        os.flush();
+	        return true;
 		}
 		return false;
-	}	
-	
-	/**
-	 * @return A String of the opponent's username.
-	 */
-	private String getOpponent(){
-		MySQLWrapper mysql = new MySQLWrapper();
-		String opponent = mysql.queryString("SELECT PLAYER.PLAYER_NAME, PVP.PVP_ID FROM PLAYER " //Isn't this line disgusting?
-				+ "INNER JOIN PVP ON PVP.PVP_PLAYER_P1 = PLAYER.PLAYER_ID OR PVP.PVP_PLAYER_P2 = PLAYER.PLAYER_ID  "
-				+ "WHERE PVP.PVP_ID = " + pvpID +" AND PLAYER.PLAYER_ID != " + playerID + ";");
-
-		System.out.println(opponent);
-		if(opponent == null)
-			return "RESERVED_NAME";
-		else
-			return opponent;
 	}
 }
 
-
-
-
-
-
-
-class TicTacToeListener extends Thread {
+class Connect4Listener extends Thread {
 	
 	//See TicTacToeServer for  an explanation of all this.
 	Connection conn = null;
@@ -240,19 +234,18 @@ class TicTacToeListener extends Thread {
 	String USER = ProjectThemisServer.USER;
 	String PASS = ProjectThemisServer.PASS;
 	
-	boolean active = false; //Only send moves if active.
+	boolean active = false;
 	
 	int pvpID;
 	
 	PrintWriter os;
 	
-	int[][] completedMoves = new int[3][3];
 	
 	//Constructor method. 
-	TicTacToeListener(int pvpID, PrintWriter os){
+	Connect4Listener(int pvpID, PrintWriter os){
 		this.pvpID = pvpID;
 		this.os = os;
-		System.out.println("TicTacToeListener initialized!");
+		System.out.println("Connect4Listener initialized!");
 	}
 	
 	//This is called when you start a thread. Vital.
@@ -326,18 +319,13 @@ class TicTacToeListener extends Thread {
 	void sendMoves(int[][] moves){
 		if(moves != null)
 			for(int i = 0; i < moves.length; i++){
-				if(completedMoves[moves[i][0]][moves[i][1]] == 0){
-					completedMoves[moves[i][0]][moves[i][1]] = moves[i][2];
-					os.flush();
-					os.println("TICTACTOE MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
-					os.flush();
-				}
+				os.flush();
+				os.println("CONNECT4 MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
+				os.flush();
 		}
 	}
 	
 	void updatePVPID(int pvpID){
 		this.pvpID = pvpID;
-		completedMoves = new int[3][3];
-	}
-
+	}	
 }

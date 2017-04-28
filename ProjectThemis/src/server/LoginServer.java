@@ -1,9 +1,12 @@
+package server;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import shared.PasswordAuthentication;
 
 public class LoginServer {
 	static Connection conn = null; //A connection to the MySQL Database.
