@@ -1,11 +1,4 @@
-package server;
-/* 
- * This class will be the connection from the server to 
- * each of the given clients. 
- * 
- * It will handle a number of basic commands for transmitting data
- * between the two.
- */
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import java.io.*;
 
 //A helper class for ProjectThemisServerThread. 
