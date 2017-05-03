@@ -47,7 +47,7 @@ public class ProjectThemisServer {
 		finally {
 			if(ss2 != null)
 				try {
-					ss2.close();
+					//ss2.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
