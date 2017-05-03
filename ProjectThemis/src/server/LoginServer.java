@@ -8,7 +8,7 @@ import java.sql.Statement;
 
 import shared.PasswordAuthentication;
 
-public class LoginServer {
+ class LoginServer {
 	static Connection conn = null; //A connection to the MySQL Database.
 	static Statement stmt = null; //A statement to be executed on the database.
 	static ResultSet rs = null; //The results from a query.

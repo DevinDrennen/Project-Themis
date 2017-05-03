@@ -117,14 +117,15 @@ public class Menu extends JFrame {
 						passwordField.requestFocusInWindow(); //this line does not have any effect. >:(
 						message.showConfirmDialog(null, pwBox, "Enter your password", JOptionPane.OK_CANCEL_OPTION);
 						String password = new String(passwordField.getPassword());
-
-						System.out.println(password);
 						
 						ProjectThemisClient.setUser(username);
 						ProjectThemisClient.setPass(password);
 
 						authen = false;
-						ProjectThemisClient.login();
+						if(password.contains(" "))
+							JOptionPane.showMessageDialog(message, "Login failed!");
+						else
+							ProjectThemisClient.login();
 												
 						break;
 				case "Create an account": 
@@ -141,8 +142,10 @@ public class Menu extends JFrame {
 						message.add(pwBox);
 						message.showConfirmDialog(null, pwBox, "Enter a password", JOptionPane.OK_CANCEL_OPTION);
 						String newpassword = new String(passwordField.getPassword());
-						
-						ProjectThemisClient.newAccount(newusername, newpassword);
+						if(newpassword.contains(" "))
+							JOptionPane.showMessageDialog(message, "Password does not meet requirements! Password cannot contain any whitespace!");
+						else
+							ProjectThemisClient.newAccount(newusername, newpassword);
 						break;
 				case "Connect 4" : //new Connect4(6);
 					if(authen)
