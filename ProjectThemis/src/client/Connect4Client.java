@@ -77,12 +77,14 @@ public class Connect4Client extends JFrame {
 
 	private class NewGameListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			resetBoard();
-
 			os.println("CONNECT4 ENDGAME");
 			os.flush();
 			os.println("CONNECT4 NEWGAME");
 			os.flush();
+			
+			resetBoard();
+
+			
 
 
 			//started setting this up for opponent name display
