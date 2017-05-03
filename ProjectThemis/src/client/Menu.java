@@ -1,11 +1,9 @@
+package client;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
 import javax.swing.Box;
@@ -16,9 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.UIManager;
-
-import java.awt.Container;
 import java.awt.event.MouseListener;
 
 public class Menu extends JFrame {
@@ -33,29 +28,26 @@ public class Menu extends JFrame {
 	
 	boolean authen = false;
 	
-	Color darkestRed = new Color(71, 0, 15);
-	Color darkRed = new Color(110, 5, 28);
-	Color mediumRed = new Color(146, 28, 54);
-	Color lightRed = new Color(174, 56, 82);
-	Color lightestRed = new Color(210, 100, 124);
+	Color darkest = new Color(10, 120, 141);
+	Color dark = new Color(37, 140, 159);
+	Color medium = new Color(66, 164, 183);
+	Color light = new Color(104, 191, 207);
+	Color lightest = new Color(155, 218, 230);
 	
-	Color backgroundColor = darkestRed;
-	Color buttonColor = lightRed;
-	Color textColor = darkRed;
-	int fontSize = 30;
+	Color backgroundColor = darkest;	 //menu background
+	Color buttonColor = light;			 //button background
+	Color textColor = dark;				 //button text
+	Color textHighlightColor = lightest; //button text when hovered
+	Color titleTextColor = medium;		 //title text
 	
 	public Menu() {
-		setTitle("Game Menu");
-		setSize(400,500);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
 		label = new JLabel("Project Themis:");
 		label.setLayout(layout);
-		label.setForeground(mediumRed);
+		label.setForeground(titleTextColor);
 		label.setOpaque(true);
 		label.setBackground(backgroundColor);
 		label.setHorizontalAlignment(JLabel.CENTER);
-		label.setFont(new Font("Mistral",1,40));
+		label.setFont(new Font("Rockwell",1,48));
 		label.setAlignmentX(Component.CENTER_ALIGNMENT);
 		layout = new BoxLayout(label, BoxLayout.Y_AXIS);
 		
@@ -70,7 +62,6 @@ public class Menu extends JFrame {
 	    gameBox.add(Box.createVerticalStrut(15));
 	    
 	    options = new JPanel();
-	    options.setVisible(true);
 	    options.setBackground(backgroundColor);
 	    options.setLayout(new FlowLayout());
 	    options.add(setUpButton("Login", 15));
@@ -79,12 +70,14 @@ public class Menu extends JFrame {
 	    
 	    boardpanel = new JFrame();
 	    boardpanel.add(gameBox, BorderLayout.CENTER);
+	    boardpanel.setTitle("Menu");
 	    boardpanel.add(options, BorderLayout.SOUTH);
 	    boardpanel.setSize(400, 300);
+	    boardpanel.setResizable(false);
 	    boardpanel.add(label, BorderLayout.NORTH);
-	    boardpanel.setBackground(backgroundColor);
 	    boardpanel.setVisible(true);
 	    boardpanel.setLocationRelativeTo(null);
+	    boardpanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 	private JButton setUpButton(String name, int fontSize) {
@@ -118,14 +111,15 @@ public class Menu extends JFrame {
 						passwordField.requestFocusInWindow(); //this line does not have any effect. >:(
 						message.showConfirmDialog(null, pwBox, "Enter your password", JOptionPane.OK_CANCEL_OPTION);
 						String password = new String(passwordField.getPassword());
-
-						System.out.println(password);
 						
 						ProjectThemisClient.setUser(username);
 						ProjectThemisClient.setPass(password);
 
 						authen = false;
-						ProjectThemisClient.login();
+						if(password.contains(" "))
+							JOptionPane.showMessageDialog(message, "Login failed!");
+						else
+							ProjectThemisClient.login();
 												
 						break;
 				case "Create an account": 
@@ -142,8 +136,10 @@ public class Menu extends JFrame {
 						message.add(pwBox);
 						message.showConfirmDialog(null, pwBox, "Enter a password", JOptionPane.OK_CANCEL_OPTION);
 						String newpassword = new String(passwordField.getPassword());
-						
-						ProjectThemisClient.newAccount(newusername, newpassword);
+						if(newpassword.contains(" "))
+							JOptionPane.showMessageDialog(message, "Password does not meet requirements! Password cannot contain any whitespace!");
+						else
+							ProjectThemisClient.newAccount(newusername, newpassword);
 						break;
 				case "Connect 4" : //new Connect4(6);
 					if(authen)
@@ -154,9 +150,9 @@ public class Menu extends JFrame {
 						ProjectThemisClient.launchTicTacToe();
 					break;
 				case "Help" : message = new JOptionPane();
-						JOptionPane.showMessageDialog(message, "<html> <b>Create an account and login to play a game!</b>" + 
-									     "\n<b>TicTacToe:</b> Your goal is to get three of your pieces in a row. Click to place a piece." +
-									      "\n<b>Connect Four:</b> Your goal is to get 4 of your pieces in a row. Placing a piece by clicking will result in the placed piece falling to the lowest available position in the selected column.</html>");
+						JOptionPane.showMessageDialog(message, "Create an account and login to play a game!" + 
+									     "\nTicTacToe: Your goal is to get three of your pieces in a row. Click to place a piece." +
+									      "\nConnect Four: Your goal is to get 4 of your pieces in a row. Placing a piece by clicking will result in the placed piece falling to the lowest available position in the selected column.");
 					
 					break;
 				}
@@ -164,7 +160,7 @@ public class Menu extends JFrame {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				button.setForeground(lightestRed);
+				button.setForeground(textHighlightColor);
 			}
 				
 			@Override

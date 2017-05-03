@@ -1,9 +1,7 @@
+package server;
 
 import java.net.*;
 import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 
 public class ProjectThemisServer {
@@ -45,6 +43,14 @@ public class ProjectThemisServer {
 			e.printStackTrace();
 			System.out.println("Server error");
 
+		}
+		finally {
+			if(ss2 != null)
+				try {
+					ss2.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
 
 		while (true) {

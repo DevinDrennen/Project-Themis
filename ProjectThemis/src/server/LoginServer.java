@@ -1,3 +1,4 @@
+package server;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -5,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class LoginServer {
+import shared.PasswordAuthentication;
+
+ class LoginServer {
 	static Connection conn = null; //A connection to the MySQL Database.
 	static Statement stmt = null; //A statement to be executed on the database.
 	static ResultSet rs = null; //The results from a query.

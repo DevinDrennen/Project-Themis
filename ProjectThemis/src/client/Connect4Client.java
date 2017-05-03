@@ -1,3 +1,4 @@
+package client;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -76,12 +77,14 @@ public class Connect4Client extends JFrame {
 
 	private class NewGameListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			resetBoard();
-
 			os.println("CONNECT4 ENDGAME");
 			os.flush();
 			os.println("CONNECT4 NEWGAME");
 			os.flush();
+			
+			resetBoard();
+
+			
 
 
 			//started setting this up for opponent name display
@@ -101,6 +104,7 @@ public class Connect4Client extends JFrame {
 		//turn.red();
 		setTitle("Connect Four");
 		setSize(500,500);
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
 		board = new char[numRows][numCols];
