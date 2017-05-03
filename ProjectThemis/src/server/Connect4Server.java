@@ -6,12 +6,11 @@ package server;
  * It will handle a number of basic commands for transmitting data
  * between the two.
  */
-import java.net.*;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.io.*;

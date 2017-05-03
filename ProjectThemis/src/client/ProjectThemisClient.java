@@ -62,9 +62,11 @@ public class ProjectThemisClient {
         int portNumber = 4445; //Don't forget to set this - this might join the command line parser in the future.
         //Todo: Find smart way to let the user decide the order of commands.
         
+        Socket socket = null;
+        
         //Sets up communications with server.
         try {
-        	Socket socket = new Socket(hostName, portNumber); //The socket is the channel it uses to communicate with the server.
+        	socket = new Socket(hostName, portNumber); //The socket is the channel it uses to communicate with the server.
             os = new PrintWriter(socket.getOutputStream(), true); //Output stream - things are sent from here.
             is = new BufferedReader( new InputStreamReader(socket.getInputStream())); //Input stream - things come in here.
             BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in)); //TBH idk what this is for.
@@ -82,8 +84,6 @@ public class ProjectThemisClient {
         			processInput(line);
         		line = is.readLine();
         	}
-        	
-          
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
             System.exit(1);
@@ -92,6 +92,11 @@ public class ProjectThemisClient {
                 hostName);
             System.exit(1);
         } 
+        finally {
+        	if(socket != null){
+        		socket.close();
+        	}
+        }
 	}
 	
 	//Processes our inputs and ensures the right classes get their messages.
