@@ -129,7 +129,7 @@ public class Connect4Client extends JFrame {
 		gameOver = false;
 		turn.red();
 		add(boardpanel,BorderLayout.CENTER);
-		add(NewGame,BorderLayout.SOUTH);
+		//add(NewGame,BorderLayout.SOUTH);
 		add(playerTurn,BorderLayout.NORTH);
 		playerTurn.setHorizontalAlignment(JLabel.CENTER);
 		playerTurn.setFont(new Font(null,1,24));
