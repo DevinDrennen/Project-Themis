@@ -64,9 +64,12 @@ public class Connect4Client extends JFrame {
 					if (findLowestOpen(c) != -1) {
 						sendMove(makeMove(c),c);
 						moveCount++;
-						turn.flip();  
-						playerTurn.setText("It is " +turn.name+ "'s Turn!");
 						winCheck(turn.symbol);
+						if(!gameOver){
+							turn.flip();  
+							playerTurn.setText("It is " +turn.name+ "'s Turn!");
+						}
+						
 						//note that we're sending playerNo to the output stream
 						//even though our makeMove method doesn't take it as a parameter
 					}
@@ -79,10 +82,13 @@ public class Connect4Client extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			os.println("CONNECT4 ENDGAME");
 			os.flush();
+			
+			resetBoard();
+			
 			os.println("CONNECT4 NEWGAME");
 			os.flush();
 			
-			resetBoard();
+			
 
 			
 
@@ -235,10 +241,12 @@ public class Connect4Client extends JFrame {
 			if(board[row][col] != ' ')
 				return false;
 			if(makeMove(col) != -1){
-				turn.flip();
-				playerTurn.setText("It is " +turn.name+ "'s Turn!");
 				moveCount++;
 				winCheck(turn.symbol);
+				if(!gameOver){
+					turn.flip();  
+					playerTurn.setText("It is " +turn.name+ "'s Turn!");
+				}
 				return true;
 			}
 		}
@@ -345,7 +353,7 @@ public class Connect4Client extends JFrame {
 		if(count == 0)
 			return 0;
 		if(player == board[r][c]){
-			if(count > 4)
+			if(count > 3)
 				return count;
 			if(r-1 > 0)
 				return checkU(player, r-1, c, ++count);
@@ -358,7 +366,7 @@ public class Connect4Client extends JFrame {
 		if(count == 0)
 			return 0;
 		if(player == board[r][c]){
-			if(count > 4)
+			if(count > 3)
 				return count;
 			if(r+1 < numRows)
 				return checkD(player, r+1, c, ++count);
@@ -371,7 +379,7 @@ public class Connect4Client extends JFrame {
 		if(count == 0)
 			return 0;
 		if(player == board[r][c]){
-			if(count > 4)
+			if(count > 3)
 				return count;
 			if(c+1 < numCols)
 				return checkR(player, r, c+1, ++count);
@@ -384,7 +392,7 @@ public class Connect4Client extends JFrame {
 		if(count == 0)
 			return 0;
 		if(player == board[r][c]){
-			if(count > 4)
+			if(count > 3)
 				return count;
 			if(c-1 > 0)
 				return checkL(player, r, c-1, ++count);
@@ -397,7 +405,7 @@ public class Connect4Client extends JFrame {
 		if(count == 0)
 			return 0;
 		if(player == board[r][c]){
-			if(count > 4)
+			if(count > 3)
 				return count;
 			if(c-1 > 0 && r-1 > 0)
 				return checkUL(player, r-1, c-1, ++count);
@@ -410,7 +418,7 @@ public class Connect4Client extends JFrame {
 		if(count == 0)
 			return 0;
 		if(player == board[r][c]){
-			if(count > 4)
+			if(count > 3)
 				return count;
 			if(c-1 > 0 && r+1 < numRows)
 				return checkDL(player, r+1, c-1, ++count);
@@ -423,7 +431,7 @@ public class Connect4Client extends JFrame {
 		if(count == 0)
 			return 0;
 		if(player == board[r][c]){
-			if(count > 4)
+			if(count > 3)
 				return count;
 			if(c+1 < numCols && r+1 < numRows)
 				return checkDR(player, r+1, c+1, ++count);
@@ -436,7 +444,7 @@ public class Connect4Client extends JFrame {
 		if(count == 0)
 			return 0;
 		if(player == board[r][c]){
-			if(count > 4)
+			if(count > 3)
 				return count;
 			if(c+1 < numCols && r-1 > 0)
 				return checkUR(player, r-1, c+1, ++count);
@@ -482,7 +490,7 @@ public class Connect4Client extends JFrame {
 		System.out.println(inputs[1]);
 		switch (inputs[1]){
 		case "ENDGAME":
-			gameOver = true;
+			//gameOver = true;
 			break;
 		case "NEWGAME":
 			gameOver = false;

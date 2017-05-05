@@ -146,12 +146,16 @@ public class Connect4Server {
 		if(!rejoinPVP()) //First, try to rejoin a running game.
 			if(!joinPVP()) //If you can't find a game with only one player and join it.
 				newPVP(); //If you can't do that, make your own game.
-			
+		
+		
+		os.println("CONNECT4 NEWGAME");
+		os.flush();
+		
+		
 	    listener.updatePVPID(pvpID);
 	    listener.setActive(true);
 
-		os.println("CONNECT4 NEWGAME");
-		os.flush();
+		
 	}
 	
 	
