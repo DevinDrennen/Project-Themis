@@ -1,4 +1,5 @@
-package client;
+
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -47,7 +48,7 @@ public class Connect4Client extends JFrame {
 		playerID = ProjectThemisClient.playerID;
 
 		numRows = n;
-		numCols = n+1;
+		numCols = n;
 		initBoard();
 	}
 
@@ -271,7 +272,7 @@ public class Connect4Client extends JFrame {
 			//Start horizontal check
 			for(int r = 0; r < numRows; r++){
 				for(int c = 0; c < numCols; c++){
-					if(checkU(player, r, c, 1) > 4){
+					if(checkU(player, r, c, 1) > 3){
 						for(int i = r; i > r-4; --i){
 							winMarker[i][c] = board[i][c];
 						}
@@ -280,7 +281,7 @@ public class Connect4Client extends JFrame {
 						return true;
 					}
 
-					if(checkD(player, r, c, 1) > 4){
+					if(checkD(player, r, c, 1) > 3){
 						for(int i = r; i < r+4; ++i){
 							winMarker[i][c] = board[i][c];
 						}
@@ -289,7 +290,7 @@ public class Connect4Client extends JFrame {
 						return true;
 					}
 
-					if(checkR(player, r, c, 1) > 4){
+					if(checkR(player, r, c, 1) > 3){
 						for(int i = c; i < c+4; ++i){
 							winMarker[r][i] = board[r][i];
 						}
@@ -298,7 +299,7 @@ public class Connect4Client extends JFrame {
 						return true;
 					}
 
-					if(checkL(player, r, c, 1) > 4){
+					if(checkL(player, r, c, 1) > 3){
 						for(int i = r; i > c-4; --i){
 							winMarker[r][i] = board[r][i];
 						}
@@ -307,7 +308,7 @@ public class Connect4Client extends JFrame {
 						return true;
 					}
 
-					if(checkUR(player, r, c, 1) > 4){
+					if(checkUR(player, r, c, 1) > 3){
 						for(int i = 0; i < 4; i++){
 							winMarker[r-i][c+1] = board[r-1][c+1];
 						}
@@ -316,7 +317,7 @@ public class Connect4Client extends JFrame {
 						return true;
 					}
 
-					if(checkDR(player, r, c, 1) > 4){
+					if(checkDR(player, r, c, 1) > 3){
 						for(int i = 0; i < 4; i++){
 							winMarker[r+i][c+1] = board[r+1][c+1];
 						}
@@ -325,7 +326,7 @@ public class Connect4Client extends JFrame {
 						return true;
 					}
 
-					if(checkUL(player, r, c, 1) > 4){
+					if(checkUL(player, r, c, 1) > 3){
 						for(int i = 0; i < 4; i++){
 							winMarker[r-i][c-1] = board[r-1][c-1];
 						}
@@ -334,7 +335,7 @@ public class Connect4Client extends JFrame {
 						return true;
 					}
 
-					if(checkDL(player, r, c, 1) > 4){
+					if(checkDL(player, r, c, 1) > 3){
 						for(int i = 0; i < 4; i++){
 							winMarker[r-i][c-1] = board[r-1][c-1];
 						}

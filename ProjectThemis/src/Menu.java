@@ -1,4 +1,5 @@
-package client;
+
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -14,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+
 import java.awt.event.MouseListener;
 
 public class Menu extends JFrame {

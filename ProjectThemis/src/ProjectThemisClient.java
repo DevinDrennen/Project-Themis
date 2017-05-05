@@ -1,8 +1,8 @@
-package client;
-import java.io.*;
-import java.net.*;
 
-import PasswordAuthentication;
+
+import java.io.*;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 //Main class for client side things.
 //Will create client classes for each game.

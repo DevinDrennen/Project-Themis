@@ -262,6 +262,11 @@ class Connect4Listener extends Thread {
 	
 	public void setActive(boolean active){
 		this.active = active;
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	//Find any moves in the database for the game. Ideally, we should be storing old ones so we don't keep sending them.  #Goals
