@@ -84,8 +84,6 @@ public class Connect4Client extends JFrame {
 			os.println("CONNECT4 ENDGAME");
 			os.flush();
 			
-			resetBoard();
-			
 			os.println("CONNECT4 NEWGAME");
 			os.flush();
 			
@@ -494,6 +492,7 @@ public class Connect4Client extends JFrame {
 			//gameOver = true;
 			break;
 		case "NEWGAME":
+			resetBoard();
 			gameOver = false;
 			break;
 		case "MOVE":

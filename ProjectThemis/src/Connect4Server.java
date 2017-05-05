@@ -322,12 +322,12 @@ class Connect4Listener extends Thread {
 	void sendMoves(int[][] moves){
 		if(moves != null)
 			for(int i = 0; i < moves.length; i++){
-				if(completedMoves[moves[i][0]][moves[i][1]] == 0){
+				//if(completedMoves[moves[i][0]][moves[i][1]] == 0){
 					completedMoves[moves[i][0]][moves[i][1]] = moves[i][2];
 					os.flush();
 					os.println("CONNECT4 MOVE " + moves[i][0] + " " + moves[i][1] + " " + moves[i][2]);
 					os.flush();
-				}
+				//}
 		}
 	}
 	
